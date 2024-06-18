@@ -1,2 +1,4 @@
 # pkimetal
-HTTP-based server that performs Certificate/TBSCertificate linting
+PKI Meta-Linter
+
+Documentation coming soon.
