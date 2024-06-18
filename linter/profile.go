@@ -168,9 +168,9 @@ func init() {
 			CrlProfileIDs = append(CrlProfileIDs, k)
 		} else if strings.HasSuffix(v.Name, "_ocspresponse") {
 			OcspProfileIDs = append(OcspProfileIDs, k)
-		} else if strings.Contains(v.Name, "_root_") {
+		} else if strings.Contains(v.Name, "_root_") || strings.HasSuffix(v.Name, "_root") {
 			RootProfileIDs = append(RootProfileIDs, k)
-		} else if strings.Contains(v.Name, "_subordinate_") || strings.Contains(v.Name, "_cross_") {
+		} else if strings.Contains(v.Name, "_subordinate_") || strings.HasSuffix(v.Name, "_subordinate") || strings.Contains(v.Name, "_cross_") {
 			SubordinateProfileIDs = append(SubordinateProfileIDs, k)
 		} else if strings.HasPrefix(v.Name, "sbr_leaf_") {
 			SbrLeafProfileIDs = append(SbrLeafProfileIDs, k)
