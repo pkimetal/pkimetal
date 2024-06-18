@@ -381,7 +381,10 @@ func VersionString(version string) string {
 	if version == NOT_INSTALLED {
 		return "[not installed]"
 	} else if strings.Contains(version, ".") {
-		return "v" + version
+		if !strings.HasPrefix(version, "v") {
+			version = "v" + version
+		}
+		return version
 	} else if len(version) >= 7 {
 		return "git:" + version[0:7]
 	} else {
