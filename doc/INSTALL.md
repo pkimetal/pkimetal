@@ -19,13 +19,13 @@ docker run -p 8080:8080 -it pkimetal
 
 ## Installation: Manual (Not supported)
 
-Install the runtime dependencies (see [Dockerfile](Dockerfile) for tips), and build the pkimetal executable by running `make`.
+Install the runtime dependencies (see [Dockerfile](/Dockerfile) for tips), and build the pkimetal executable by running `make`.
 
 ## Configuration
 
 pkimetal uses [Viper](https://github.com/spf13/viper) to read configuration settings from environment variables and/or a `config.yaml` file.
 
-For a full list of configuration options and their default values, please consult the [config.go](config/config.go) source code.
+For a full list of configuration options and their default values, please consult the [config.go](/config/config.go) source code.
 
 Here is an example `config.yaml` file that demonstrates some of the highlights:
 
