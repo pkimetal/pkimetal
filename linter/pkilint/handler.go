@@ -32,10 +32,11 @@ func (l *Pkilint) StartInstance() (useHandleRequest bool, directory, cmd string,
 		[]string{"-c", `#!/usr/bin/python3
 import base64
 from sys import stdin
-from pkilint import finding_filter, loader, pkix, validation
+from pkilint import etsi, finding_filter, loader, pkix, validation
 from pkilint.cabf import cabf_crl, serverauth, smime
 from pkilint.cabf.smime import smime_constants
 from pkilint.cabf.serverauth import serverauth_constants
+from pkilint.etsi import etsi_constants
 from pkilint.pkix import certificate, crl, extension, name, ocsp
 from pkilint.report import ReportGeneratorJson
 
@@ -81,6 +82,27 @@ def lint_cabf_serverauth_cert(profile_id, pem_data):
 		cert = loader.load_pem_certificate(pem_data, "")
 		certificate_type = serverauth_profile_dictionary.get(profile_id, serverauth.determine_certificate_type(cert))
 		results, _ = finding_filter.filter_results(serverauth_finding_filters[certificate_type], serverauth_doc_validators[certificate_type].validate(cert.root))
+		return ReportGeneratorJson(results, validation.ValidationFindingSeverity.DEBUG).generate()
+	except Exception as e:
+		return "F: Exception: " + str(e)
+
+
+# lint_etsi_cert:
+` + etsi_profile_dictionary + `
+etsi_profile_ids = {` + linter.ProfileIDList(linter.EtsiCertificateProfileIDs) + `}
+etsi_doc_validators = {}
+etsi_finding_filters = {}
+
+def init_etsi_validators_and_filters():
+	for ct in etsi_constants.CertificateType:
+		etsi_doc_validators[ct] = certificate.create_pkix_certificate_validator_container(etsi.create_decoding_validators(ct), etsi.create_validators(ct))
+		etsi_finding_filters[ct] = etsi.create_etsi_finding_filters(ct)
+
+def lint_etsi_cert(profile_id, pem_data):
+	try:
+		cert = loader.load_pem_certificate(pem_data, "")
+		certificate_type = etsi_profile_dictionary.get(profile_id, etsi.determine_certificate_type(cert))
+		results, _ = finding_filter.filter_results(etsi_finding_filters[certificate_type], etsi_doc_validators[certificate_type].validate(cert.root))
 		return ReportGeneratorJson(results, validation.ValidationFindingSeverity.DEBUG).generate()
 	except Exception as e:
 		return "F: Exception: " + str(e)

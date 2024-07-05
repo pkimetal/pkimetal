@@ -81,6 +81,45 @@ const (
 	CSBR_LEAF_CODESIGNING_OV
 	CSBR_LEAF_CODESIGNING_EV
 	CSBR_LEAF_TIMESTAMPING
+	// ETSI.
+	ETSI_LEAF_TLSSERVER_NCPWNATURALPERSON
+	ETSI_LEAF_TLSSERVER_NCPWNATURALPERSON_PRECERTIFICATE
+	ETSI_LEAF_TLSSERVER_NCPWLEGALPERSON
+	ETSI_LEAF_TLSSERVER_NCPWLEGALPERSON_PRECERTIFICATE
+	ETSI_LEAF_TLSSERVER_DVCP
+	ETSI_LEAF_TLSSERVER_DVCP_PRECERTIFICATE
+	ETSI_LEAF_TLSSERVER_IVCP
+	ETSI_LEAF_TLSSERVER_IVCP_PRECERTIFICATE
+	ETSI_LEAF_TLSSERVER_OVCP
+	ETSI_LEAF_TLSSERVER_OVCP_PRECERTIFICATE
+	ETSI_LEAF_TLSSERVER_EVCP
+	ETSI_LEAF_TLSSERVER_EVCP_PRECERTIFICATE
+	ETSI_LEAF_TLSSERVER_QEVCPWEIDAS
+	ETSI_LEAF_TLSSERVER_QEVCPWEIDAS_PRECERTIFICATE
+	ETSI_LEAF_TLSSERVER_QNCPWIVEIDAS
+	ETSI_LEAF_TLSSERVER_QNCPWIVEIDAS_PRECERTIFICATE
+	ETSI_LEAF_TLSSERVER_QNCPWOVEIDAS
+	ETSI_LEAF_TLSSERVER_QNCPWOVEIDAS_PRECERTIFICATE
+	ETSI_LEAF_TLSSERVER_QNCPWGENNATURALPERSONEIDAS
+	ETSI_LEAF_TLSSERVER_QNCPWGENNATURALPERSONEIDAS_PRECERTIFICATE
+	ETSI_LEAF_TLSSERVER_QNCPWGENLEGALPERSONEIDAS
+	ETSI_LEAF_TLSSERVER_QNCPWGENLEGALPERSONEIDAS_PRECERTIFICATE
+	ETSI_LEAF_TLSSERVER_QEVCPWNONEIDAS
+	ETSI_LEAF_TLSSERVER_QEVCPWNONEIDAS_PRECERTIFICATE
+	ETSI_LEAF_TLSSERVER_QNCPWIVNONEIDAS
+	ETSI_LEAF_TLSSERVER_QNCPWIVNONEIDAS_PRECERTIFICATE
+	ETSI_LEAF_TLSSERVER_QNCPWOVNONEIDAS
+	ETSI_LEAF_TLSSERVER_QNCPWOVNONEIDAS_PRECERTIFICATE
+	ETSI_LEAF_TLSSERVER_QNCPWGENNATURALPERSONNONEIDAS
+	ETSI_LEAF_TLSSERVER_QNCPWGENNATURALPERSONNONEIDAS_PRECERTIFICATE
+	ETSI_LEAF_TLSSERVER_QNCPWGENLEGALPERSONNONEIDAS
+	ETSI_LEAF_TLSSERVER_QNCPWGENLEGALPERSONNONEIDAS_PRECERTIFICATE
+	ETSI_LEAF_TLSSERVER_QEVCPWPSD2EIDAS
+	ETSI_LEAF_TLSSERVER_QEVCPWPSD2EIDAS_PRECERTIFICATE
+	ETSI_LEAF_TLSSERVER_QEVCPWPSD2EIDASNONBROWSER
+	ETSI_LEAF_TLSSERVER_QEVCPWPSD2EIDASNONBROWSER_PRECERTIFICATE
+	ETSI_LEAF_NCPNATURALPERSON
+	ETSI_LEAF_NCPLEGALPERSON
 )
 
 var (
@@ -150,10 +189,49 @@ var (
 		CSBR_LEAF_CODESIGNING_OV:      {Name: "csbr_leaf_codesigning_ov", Source: "Code Signing BRs", Description: "Code Signing Certificate: Organization Validated", Autodetectable: true},
 		CSBR_LEAF_CODESIGNING_EV:      {Name: "csbr_leaf_codesigning_ev", Source: "Code Signing BRs", Description: "Code Signing Certificate: Extended Validation", Autodetectable: true},
 		CSBR_LEAF_TIMESTAMPING:        {Name: "csbr_leaf_timestamping", Source: "Code Signing BRs", Description: "Time Stamping Certificate", Autodetectable: true},
+		// ETSI.
+		ETSI_LEAF_TLSSERVER_NCPWNATURALPERSON:                            {Name: "etsi_leaf_tlsserver_ncpwnaturalperson", Source: "EN 319 412", Description: "ETSI Website Authentication Certificate: Natural Person", Autodetectable: false},
+		ETSI_LEAF_TLSSERVER_NCPWNATURALPERSON_PRECERTIFICATE:             {Name: "etsi_leaf_tlsserver_ncpwnaturalperson_precertificate", Source: "EN 319 412", Description: "ETSI Website Authentication Precertificate: Natural Person", Autodetectable: false},
+		ETSI_LEAF_TLSSERVER_NCPWLEGALPERSON:                              {Name: "etsi_leaf_tlsserver_ncpwlegalperson", Source: "EN 319 412", Description: "ETSI Website Authentication Certificate: Legal Person", Autodetectable: false},
+		ETSI_LEAF_TLSSERVER_NCPWLEGALPERSON_PRECERTIFICATE:               {Name: "etsi_leaf_tlsserver_ncpwlegalperson_precertificate", Source: "EN 319 412", Description: "ETSI Website Authentication Precertificate: Legal Person", Autodetectable: false},
+		ETSI_LEAF_TLSSERVER_DVCP:                                         {Name: "etsi_leaf_tlsserver_dvcp", Source: "EN 319 412", Description: "ETSI Server Certificate: Domain Validated", Autodetectable: false},
+		ETSI_LEAF_TLSSERVER_DVCP_PRECERTIFICATE:                          {Name: "etsi_leaf_tlsserver_dvcp_precertificate", Source: "EN 319 412", Description: "ETSI Server Precertificate: Domain Validated", Autodetectable: false},
+		ETSI_LEAF_TLSSERVER_IVCP:                                         {Name: "etsi_leaf_tlsserver_ivcp", Source: "EN 319 412", Description: "ETSI Server Certificate: Individual Validated", Autodetectable: false},
+		ETSI_LEAF_TLSSERVER_IVCP_PRECERTIFICATE:                          {Name: "etsi_leaf_tlsserver_ivcp_precertificate", Source: "EN 319 412", Description: "ETSI Server Precertificate: Individual Validated", Autodetectable: false},
+		ETSI_LEAF_TLSSERVER_OVCP:                                         {Name: "etsi_leaf_tlsserver_ovcp", Source: "EN 319 412", Description: "ETSI Server Certificate: Organization Validated", Autodetectable: false},
+		ETSI_LEAF_TLSSERVER_OVCP_PRECERTIFICATE:                          {Name: "etsi_leaf_tlsserver_ovcp_precertificate", Source: "EN 319 412", Description: "ETSI Server Precertificate: Organization Validated", Autodetectable: false},
+		ETSI_LEAF_TLSSERVER_EVCP:                                         {Name: "etsi_leaf_tlsserver_evcp", Source: "EN 319 412", Description: "ETSI Server Certificate: Extended Validation", Autodetectable: false},
+		ETSI_LEAF_TLSSERVER_EVCP_PRECERTIFICATE:                          {Name: "etsi_leaf_tlsserver_evcp_precertificate", Source: "EN 319 412", Description: "ETSI Server Precertificate: Extended Validation", Autodetectable: false},
+		ETSI_LEAF_TLSSERVER_QEVCPWEIDAS:                                  {Name: "etsi_leaf_tlsserver_qevcpweidas", Source: "EN 319 412", Description: "ETSI Website Authentication Certificate: Extended Validation (Qualified, eIDAS)", Autodetectable: false},
+		ETSI_LEAF_TLSSERVER_QEVCPWEIDAS_PRECERTIFICATE:                   {Name: "etsi_leaf_tlsserver_qevcpweidas_precertificate", Source: "EN 319 412", Description: "ETSI Website Authentication Precertificate: Extended Validation (Qualified, eIDAS)", Autodetectable: false},
+		ETSI_LEAF_TLSSERVER_QNCPWIVEIDAS:                                 {Name: "etsi_leaf_tlsserver_qncpwiveidas", Source: "EN 319 412", Description: "ETSI Website Authentication Certificate: Individual Validated (Qualified, eIDAS)", Autodetectable: false},
+		ETSI_LEAF_TLSSERVER_QNCPWIVEIDAS_PRECERTIFICATE:                  {Name: "etsi_leaf_tlsserver_qncpwiveidas_precertificate", Source: "EN 319 412", Description: "ETSI Website Authentication Precertificate: Individual Validated (Qualified, eIDAS)", Autodetectable: false},
+		ETSI_LEAF_TLSSERVER_QNCPWOVEIDAS:                                 {Name: "etsi_leaf_tlsserver_qncpwoveidas", Source: "EN 319 412", Description: "ETSI Website Authentication Certificate: Organization Validated (Qualified, eIDAS)", Autodetectable: false},
+		ETSI_LEAF_TLSSERVER_QNCPWOVEIDAS_PRECERTIFICATE:                  {Name: "etsi_leaf_tlsserver_qncpwoveidas_precertificate", Source: "EN 319 412", Description: "ETSI Website Authentication Precertificate: Organization Validated (Qualified, eIDAS)", Autodetectable: false},
+		ETSI_LEAF_TLSSERVER_QNCPWGENNATURALPERSONEIDAS:                   {Name: "etsi_leaf_tlsserver_qncpwgennaturalpersoneidas", Source: "EN 319 412", Description: "ETSI Website Authentication Certificate: Natural Person (Qualified, eIDAS)", Autodetectable: false},
+		ETSI_LEAF_TLSSERVER_QNCPWGENNATURALPERSONEIDAS_PRECERTIFICATE:    {Name: "etsi_leaf_tlsserver_qncpwgennaturalpersoneidas_precertificate", Source: "EN 319 412", Description: "ETSI Website Authentication Precertificate: Natural Person (Qualified, eIDAS)", Autodetectable: false},
+		ETSI_LEAF_TLSSERVER_QNCPWGENLEGALPERSONEIDAS:                     {Name: "etsi_leaf_tlsserver_qncpwgenlegalpersoneidas", Source: "EN 319 412", Description: "ETSI Website Authentication Certificate: Legal Person (Qualified, eIDAS)", Autodetectable: false},
+		ETSI_LEAF_TLSSERVER_QNCPWGENLEGALPERSONEIDAS_PRECERTIFICATE:      {Name: "etsi_leaf_tlsserver_qncpwgenlegalpersoneidas_precertificate", Source: "EN 319 412", Description: "ETSI Website Authentication Precertificate: Legal Person (Qualified, eIDAS)", Autodetectable: false},
+		ETSI_LEAF_TLSSERVER_QEVCPWNONEIDAS:                               {Name: "etsi_leaf_tlsserver_qevcpwnoneidas", Source: "EN 319 412", Description: "ETSI Website Authentication Certificate: Extended Validation (Qualified, non-eIDAS)", Autodetectable: false},
+		ETSI_LEAF_TLSSERVER_QEVCPWNONEIDAS_PRECERTIFICATE:                {Name: "etsi_leaf_tlsserver_qevcpwnoneidas_precertificate", Source: "EN 319 412", Description: "ETSI Website Authentication Precertificate: Extended Validation (Qualified, non-eIDAS)", Autodetectable: false},
+		ETSI_LEAF_TLSSERVER_QNCPWIVNONEIDAS:                              {Name: "etsi_leaf_tlsserver_qncpwivnoneidas", Source: "EN 319 412", Description: "ETSI Website Authentication Certificate: Individual Validated (Qualified, non-eIDAS)", Autodetectable: false},
+		ETSI_LEAF_TLSSERVER_QNCPWIVNONEIDAS_PRECERTIFICATE:               {Name: "etsi_leaf_tlsserver_qncpwivnoneidas_precertificate", Source: "EN 319 412", Description: "ETSI Website Authentication Precertificate: Individual Validated (Qualified, non-eIDAS)", Autodetectable: false},
+		ETSI_LEAF_TLSSERVER_QNCPWOVNONEIDAS:                              {Name: "etsi_leaf_tlsserver_qncpwovnoneidas", Source: "EN 319 412", Description: "ETSI Website Authentication Certificate: Organization Validated (Qualified, non-eIDAS)", Autodetectable: false},
+		ETSI_LEAF_TLSSERVER_QNCPWOVNONEIDAS_PRECERTIFICATE:               {Name: "etsi_leaf_tlsserver_qncpwovnoneidas_precertificate", Source: "EN 319 412", Description: "ETSI Website Authentication Precertificate: Organization Validated (Qualified, non-eIDAS)", Autodetectable: false},
+		ETSI_LEAF_TLSSERVER_QNCPWGENNATURALPERSONNONEIDAS:                {Name: "etsi_leaf_tlsserver_qncpwgennaturalpersonnoneidas", Source: "EN 319 412", Description: "ETSI Website Authentication Certificate: Natural Person (Qualified, non-EIDAS)", Autodetectable: false},
+		ETSI_LEAF_TLSSERVER_QNCPWGENNATURALPERSONNONEIDAS_PRECERTIFICATE: {Name: "etsi_leaf_tlsserver_qncpwgennaturalpersonnoneidas_precertificate", Source: "EN 319 412", Description: "ETSI Website Authentication Precertificate: Natural Person (Qualified, non-eIDAS)", Autodetectable: false},
+		ETSI_LEAF_TLSSERVER_QNCPWGENLEGALPERSONNONEIDAS:                  {Name: "etsi_leaf_tlsserver_qncpwgenlegalpersonnoneidas", Source: "EN 319 412", Description: "ETSI Website Authentication Certificate: Legal Person (Qualified, non-eIDAS)", Autodetectable: false},
+		ETSI_LEAF_TLSSERVER_QNCPWGENLEGALPERSONNONEIDAS_PRECERTIFICATE:   {Name: "etsi_leaf_tlsserver_qncpwgenlegalpersonnoneidas_precertificate", Source: "EN 319 412", Description: "ETSI Website Authentication Certificate: Legal Person (Qualified, non-eIDAS)", Autodetectable: false},
+		ETSI_LEAF_TLSSERVER_QEVCPWPSD2EIDAS:                              {Name: "etsi_leaf_tlsserver_qevcpwpsd2eidas", Source: "EN 319 412", Description: "ETSI Website Authentication Certificate: Extended Validation, PSD2 (Qualified, eIDAS)", Autodetectable: false},
+		ETSI_LEAF_TLSSERVER_QEVCPWPSD2EIDAS_PRECERTIFICATE:               {Name: "etsi_leaf_tlsserver_qevcpwpsd2eidas_precertificate", Source: "EN 319 412", Description: "ETSI Website Authentication Precertificate: Extended Validation, PSD2 (Qualified, eIDAS)", Autodetectable: false},
+		ETSI_LEAF_TLSSERVER_QEVCPWPSD2EIDASNONBROWSER:                    {Name: "etsi_leaf_tlsserver_qevcpwpsd2eidasnonbrowser", Source: "EN 319 412", Description: "ETSI Website Authentication Certificate: Extended Validation, PSD2 (Qualified, eIDAS, non-Browser)", Autodetectable: false},
+		ETSI_LEAF_TLSSERVER_QEVCPWPSD2EIDASNONBROWSER_PRECERTIFICATE:     {Name: "etsi_leaf_tlsserver_qevcpwpsd2eidasnonbrowser_precertificate", Source: "EN 319 412", Description: "ETSI Website Authentication Precertificate: Extended Validation, PSD2 (Qualified, eIDAS, non-Browser)", Autodetectable: false},
+		ETSI_LEAF_NCPNATURALPERSON:                                       {Name: "etsi_leaf_ncpnaturalperson", Source: "EN 319 412", Description: "ETSI Electronic Seal Certificate: Natural Person", Autodetectable: false},
+		ETSI_LEAF_NCPLEGALPERSON:                                         {Name: "etsi_leaf_ncplegalperson", Source: "EN 319 412", Description: "ETSI Electronic Seal Certificate: Legal Person ", Autodetectable: false},
 	}
 
-	AllProfilesOrdered                                                                                                                                                                            []Profile
-	CrlProfileIDs, OcspProfileIDs, RootProfileIDs, SubordinateProfileIDs, SbrLeafProfileIDs, TbrTevgLeafProfileIDs, TbrTevgCertificateProfileIDs, NonCabforumProfileIDs, NonCertificateProfileIDs []ProfileId
+	AllProfilesOrdered                                                                                                                                                                                                       []Profile
+	CrlProfileIDs, OcspProfileIDs, RootProfileIDs, SubordinateProfileIDs, SbrLeafProfileIDs, TbrTevgLeafProfileIDs, TbrTevgCertificateProfileIDs, NonCabforumProfileIDs, NonCertificateProfileIDs, EtsiCertificateProfileIDs []ProfileId
 )
 
 func init() {
@@ -181,10 +259,14 @@ func init() {
 
 	// Second pass.  NonCabforumProfileIDs intersects with other lists, and TbrTevgCertificateProfileIDs requires CrlProfileIDs to be populated first.
 	for k, v := range AllProfiles {
-		if strings.HasPrefix(v.Name, "rfc") {
+		if strings.HasPrefix(v.Name, "rfc") || strings.HasPrefix(v.Name, "etsi_leaf_ncp") {
 			NonCabforumProfileIDs = append(NonCabforumProfileIDs, k)
-		} else if (strings.HasPrefix(v.Name, "tbr_") || strings.HasPrefix(v.Name, "tevg_")) && (!slices.Contains(CrlProfileIDs, k)) && (!slices.Contains(OcspProfileIDs, k)) {
+		} else if (strings.HasPrefix(v.Name, "tbr_") || strings.HasPrefix(v.Name, "tevg_") || strings.HasPrefix(v.Name, "etsi_")) && (!slices.Contains(CrlProfileIDs, k)) && (!slices.Contains(OcspProfileIDs, k)) {
 			TbrTevgCertificateProfileIDs = append(TbrTevgCertificateProfileIDs, k)
+		}
+
+		if strings.HasPrefix(v.Name, "etsi_") {
+			EtsiCertificateProfileIDs = append(EtsiCertificateProfileIDs, k)
 		}
 	}
 
