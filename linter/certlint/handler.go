@@ -19,6 +19,7 @@ func init() {
 	(&linter.Linter{
 		Name:         "certlint",
 		Version:      getCertlintVersion(),
+		Url:          "https://github.com/certlint/certlint",
 		Unsupported:  linter.NonCertificateProfileIDs,
 		NumInstances: config.Config.Linter.Certlint.NumProcesses,
 		Interface:    func() linter.LinterInterface { return &Certlint{} },

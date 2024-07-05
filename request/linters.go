@@ -15,6 +15,7 @@ type linterInfo struct {
 	Name      string
 	Instances int
 	Version   string
+	Url       string
 }
 
 func Linters(fhctx *fasthttp.RequestCtx) {
@@ -25,6 +26,7 @@ func Linters(fhctx *fasthttp.RequestCtx) {
 			Name:      l.Name,
 			Instances: l.NumInstances,
 			Version:   linter.VersionString(l.Version),
+			Url:       l.Url,
 		})
 	}
 

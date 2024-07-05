@@ -19,6 +19,7 @@ func init() {
 	(&linter.Linter{
 		Name:         "pkilint",
 		Version:      pkilintVersion,
+		Url:          "https://github.com/digicert/pkilint",
 		Unsupported:  nil,
 		NumInstances: config.Config.Linter.Pkilint.NumProcesses,
 		Interface:    func() linter.LinterInterface { return &Pkilint{} },

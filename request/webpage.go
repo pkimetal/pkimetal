@@ -250,7 +250,7 @@ func APIWebpage(fhctx *fasthttp.RequestCtx, endpoint string) {
 		if l.NumInstances <= 0 {
 			response.WriteString(`<S style="color:#888888">`)
 		}
-		response.WriteString(l.Name + ` ` + linter.VersionString(l.Version))
+		response.WriteString(`<A href="` + l.Url + `">` + l.Name + `</A> ` + linter.VersionString(l.Version))
 		if l.NumInstances <= 0 {
 			response.WriteString(`</S>`)
 		}

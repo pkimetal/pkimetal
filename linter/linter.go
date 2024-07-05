@@ -30,6 +30,7 @@ type LinterInterface interface {
 type Linter struct {
 	Name             string
 	Version          string
+	Url              string
 	Unsupported      []ProfileId
 	NumInstances     int
 	ReqChannel       chan LintingRequest

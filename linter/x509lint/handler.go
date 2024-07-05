@@ -35,6 +35,7 @@ func init() {
 	(&linter.Linter{
 		Name:         "x509lint",
 		Version:      VcsRevision,
+		Url:          "https://github.com/kroeckx/x509lint",
 		Unsupported:  linter.NonCertificateProfileIDs,
 		NumInstances: config.Config.Linter.X509lint.NumGoroutines,
 		Interface:    func() linter.LinterInterface { return &X509lint{} },

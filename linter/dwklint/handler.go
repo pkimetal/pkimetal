@@ -20,6 +20,7 @@ func init() {
 	(&linter.Linter{
 		Name:         "dwklint",
 		Version:      linter.GetPackageVersion("github.com/CVE-2008-0166/dwklint"),
+		Url:          "https://github.com/CVE-2008-0166/dwklint",
 		Unsupported:  linter.NonCertificateProfileIDs,
 		NumInstances: config.Config.Linter.Dwklint.NumGoroutines,
 		Interface:    func() linter.LinterInterface { return &Dwklint{} },

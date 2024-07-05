@@ -29,6 +29,7 @@ func init() {
 	(&linter.Linter{
 		Name:         "zlint",
 		Version:      linter.GetPackageVersion("github.com/zmap/zlint"),
+		Url:          "https://github.com/zmap/zlint",
 		Unsupported:  linter.OcspProfileIDs,
 		NumInstances: config.Config.Linter.Zlint.NumGoroutines,
 		Interface:    func() linter.LinterInterface { return &Zlint{} },

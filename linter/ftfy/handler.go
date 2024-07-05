@@ -27,6 +27,7 @@ func init() {
 	(&linter.Linter{
 		Name:         "ftfy",
 		Version:      ftfyVersion,
+		Url:          "https://github.com/rspeer/python-ftfy",
 		Unsupported:  linter.NonCertificateProfileIDs,
 		NumInstances: config.Config.Linter.Ftfy.NumProcesses,
 		Interface:    func() linter.LinterInterface { return &Ftfy{} },
