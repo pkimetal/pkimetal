@@ -61,6 +61,13 @@ Special-purpose linters:
 - [dwklint](https://github.com/CVE-2008-0166/dwklint)
 - [ftfy](https://github.com/rspeer/python-ftfy)
 
+## Docker containers
+
+Docker containers are pre-built automatically and published on the Github Container Repository (GHCR). Two different release cicles are provided:
+
+- Development releases. These have a "dev.{timestamp}" tag on GHCR. These builds are automatically created upon every push to the main branch.
+- Stable releases. These have a "vX.X.X" tag on GHCR and are automatically built and published when a new pkimetal release is created. Additionally, the latest build for these also received the "latest" tag. The Stable releases are recommended for production usage over the development releases. 
+
 ## About this project
 
 pkimetal was created and is currently maintained by Rob Stradling at Sectigo. It is hoped that other publicly-trusted CAs and ecosystem participants will benefit and collaborate on future development.  :-)
