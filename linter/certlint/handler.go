@@ -14,11 +14,25 @@ import (
 
 type Certlint struct{}
 
+var GitDescribeTagsAlways, RubyDir string
+
 func init() {
-	// Register Certlint.
+	// Determine certlint installation directory.
+	if config.Config.Linter.Certlint.RubyDir == "autodetect" {
+		if config.Config.Linter.Certlint.RubyDir = RubyDir; RubyDir == "" {
+			config.Config.Linter.Certlint.RubyDir = "/usr/local/certlint"
+		}
+	}
+	// Get certlint version, either embedded during the build process or with the help of the Ruby interpreter.
+	certlintVersion := GitDescribeTagsAlways
+	if certlintVersion == "" {
+		certlintVersion = getCertlintVersion()
+	}
+
+	// Register certlint.
 	(&linter.Linter{
 		Name:         "certlint",
-		Version:      getCertlintVersion(),
+		Version:      certlintVersion,
 		Url:          "https://github.com/certlint/certlint",
 		Unsupported:  linter.NonCertificateProfileIDs,
 		NumInstances: config.Config.Linter.Certlint.NumProcesses,
@@ -27,7 +41,7 @@ func init() {
 }
 
 func getCertlintVersion() string {
-	// Extract the Certlint version with the help of the Ruby interpreter.
+	// Extract the certlint version with the help of the Ruby interpreter.
 	versionString := linter.NOT_INSTALLED
 	cmd := exec.Command("ruby", "-I", "lib:ext", "-e", `#!/usr/bin/ruby -Eutf-8:utf-8
 # encoding: UTF-8
@@ -35,7 +49,7 @@ require 'certlint'
 $stdout.sync = true
 $stdout.puts(CertLint::VERSION)
 `)
-	cmd.Dir = "/usr/local/certlint"
+	cmd.Dir = config.Config.Linter.Certlint.RubyDir
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		logger.Logger.Error("cmd.StdoutPipe() failed", zap.Error(err))
@@ -55,8 +69,8 @@ $stdout.puts(CertLint::VERSION)
 }
 
 func (l *Certlint) StartInstance() (useHandleRequest bool, directory, cmd string, args []string) {
-	// Start Certlint server and configure STDIN/STDOUT pipes.
-	return false, "/usr/local/certlint", "ruby",
+	// Start certlint server and configure STDIN/STDOUT pipes.
+	return false, config.Config.Linter.Certlint.RubyDir, "ruby",
 		[]string{"-I", "lib:ext", "-e", `#!/usr/bin/ruby -Eutf-8:utf-8
 # encoding: UTF-8
 require 'set'

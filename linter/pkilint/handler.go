@@ -10,10 +10,20 @@ import (
 
 type Pkilint struct{}
 
+var GitDescribeTagsAlways, PythonDir string
+
 func init() {
-	// Get pkilint package details from pipx; if requested in the config, autodetect the site-packages directory.
+	// Get pkilint package details, either embedded during the build process or from pipx; if requested in the config, autodetect the site-packages directory.
 	var pkilintVersion string
-	pkilintVersion, config.Config.Linter.Pkilint.PythonDir = linter.GetPackageDetailsFromPipx("pkilint", config.Config.Linter.Pkilint.PythonDir)
+	if GitDescribeTagsAlways != "" {
+		pkilintVersion, config.Config.Linter.Pkilint.PythonDir = GitDescribeTagsAlways, PythonDir
+	} else {
+		pkilintVersion, config.Config.Linter.Pkilint.PythonDir = linter.GetPackageDetailsFromPipx("pkilint", config.Config.Linter.Pkilint.PythonDir)
+	}
+	switch config.Config.Linter.Pkilint.PythonDir {
+	case "", "autodetect":
+		panic("pkilint: PythonDir must be set")
+	}
 
 	// Register pkilint.
 	(&linter.Linter{
@@ -27,7 +37,7 @@ func init() {
 }
 
 func (l *Pkilint) StartInstance() (useHandleRequest bool, directory, cmd string, args []string) {
-	// Start Pkilint server and configure STDIN/STDOUT pipes.
+	// Start pkilint server and configure STDIN/STDOUT pipes.
 	// To improve performance (up to ~10x!), the validators and finding filters are created once and reused.
 	return false, config.Config.Linter.Pkilint.PythonDir, "python3",
 		[]string{"-c", `#!/usr/bin/python3

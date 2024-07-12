@@ -19,16 +19,17 @@ import (
 type Zlint struct{}
 
 var (
+	GitDescribeTagsAlways   string
 	defaultRegistry         lint.Registry
 	cabforumTLSLeafRegistry lint.Registry
 	notCabforumRegistry     lint.Registry
 )
 
 func init() {
-	// Register Zlint.
+	// Register zlint.
 	(&linter.Linter{
 		Name:         "zlint",
-		Version:      linter.GetPackageVersion("github.com/zmap/zlint"),
+		Version:      linter.GetPackageVersionOrGitDescribeTagsAlways("github.com/zmap/zlint", GitDescribeTagsAlways),
 		Url:          "https://github.com/zmap/zlint",
 		Unsupported:  linter.OcspProfileIDs,
 		NumInstances: config.Config.Linter.Zlint.NumGoroutines,
@@ -42,7 +43,7 @@ func init() {
 	if cabforumTLSLeafRegistry, err = defaultRegistry.Filter(lint.FilterOptions{
 		ExcludeNames: []string{"w_ext_subject_key_identifier_missing_sub_cert"},
 	}); err != nil {
-		logger.Logger.Fatal("Failed to configure filtered Zlint registry for BR/EVG TLS Server leaf certificates", zap.Error(err))
+		logger.Logger.Fatal("Failed to configure filtered zlint registry for BR/EVG TLS Server leaf certificates", zap.Error(err))
 	}
 
 	// Filter out CABForum lints for non-CABForum profiles.
@@ -53,12 +54,12 @@ func init() {
 			lint.CABFSMIMEBaselineRequirements,
 		},
 	}); err != nil {
-		logger.Logger.Fatal("Failed to configure filtered Zlint registry for disabling CABForum lints", zap.Error(err))
+		logger.Logger.Fatal("Failed to configure filtered zlint registry for disabling CABForum lints", zap.Error(err))
 	}
 }
 
 func (l *Zlint) StartInstance() (useHandleRequest bool, directory, cmd string, args []string) {
-	return true, "", "", nil // Zlint is run in Goroutine(s) in the pkimetal process, so there are no external backends.
+	return true, "", "", nil // zlint is run in Goroutine(s) in the pkimetal process, so there are no external backends.
 }
 
 func (l *Zlint) StopInstance(lin *linter.LinterInstance) {

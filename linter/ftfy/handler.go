@@ -16,14 +16,23 @@ import (
 
 type Ftfy struct{}
 
+var GitDescribeTagsAlways, PythonDir string
 var dmp *diffmatchpatch.DiffMatchPatch = diffmatchpatch.New()
 
 func init() {
-	// Get FTFY package details from pipx; if requested in the config, autodetect the site-packages directory.
+	// Get ftfy package details, either embedded during the build process or from pipx; if requested in the config, autodetect the site-packages directory.
 	var ftfyVersion string
-	ftfyVersion, config.Config.Linter.Ftfy.PythonDir = linter.GetPackageDetailsFromPipx("ftfy", config.Config.Linter.Ftfy.PythonDir)
+	if GitDescribeTagsAlways != "" {
+		ftfyVersion, config.Config.Linter.Ftfy.PythonDir = GitDescribeTagsAlways, PythonDir
+	} else {
+		ftfyVersion, config.Config.Linter.Ftfy.PythonDir = linter.GetPackageDetailsFromPipx("ftfy", config.Config.Linter.Ftfy.PythonDir)
+	}
+	switch config.Config.Linter.Ftfy.PythonDir {
+	case "", "autodetect":
+		panic("ftfy: PythonDir must be set")
+	}
 
-	// Register FTFY.
+	// Register ftfy.
 	(&linter.Linter{
 		Name:         "ftfy",
 		Version:      ftfyVersion,
@@ -35,9 +44,9 @@ func init() {
 }
 
 func (l *Ftfy) StartInstance() (useHandleRequest bool, directory, cmd string, args []string) {
-	// Start FTFY server and configure STDIN/STDOUT pipes.
-	// FTFY is run in a separate process, so the instances are "external"; however, since the input is preprocessed in the frontend we return external=false.
-	// Configure FTFY "normalization" and other features to reduce the likelihood of false positives.
+	// Start ftfy server and configure STDIN/STDOUT pipes.
+	// ftfy is run in a separate process, so the instances are "external"; however, since the input is preprocessed in the frontend we return external=false.
+	// Configure ftfy "normalization" and other features to reduce the likelihood of false positives.
 	return true, config.Config.Linter.Ftfy.PythonDir, "python3",
 		[]string{"-c", `#!/usr/bin/python3
 from ftfy import fix_text, TextFixerConfig
@@ -73,7 +82,7 @@ func removePrintableASCIIExceptSemicolon(r rune) rune {
 func (l *Ftfy) HandleRequest(lin *linter.LinterInstance, lreq *linter.LintingRequest, ctx context.Context) []linter.LintingResult {
 	var lres []linter.LintingResult
 
-	// Produce a one-line string that concatenates everything that we want FTFY to check.  (Subject.String() does some conversion and so is unsuitable for this purpose).
+	// Produce a one-line string that concatenates everything that we want ftfy to check.  (Subject.String() does some conversion and so is unsuitable for this purpose).
 	var ftfyInput string
 	for _, atv := range lreq.Cert.Subject.Names {
 		switch atv.Value.(type) {
@@ -85,10 +94,10 @@ func (l *Ftfy) HandleRequest(lin *linter.LinterInstance, lreq *linter.LintingReq
 	if ftfyInput = strings.ReplaceAll(ftfyInput, "\n", " "); strings.Map(removePrintableASCIIExceptSemicolon, ftfyInput) == "" {
 		lres = append(lres, linter.LintingResult{
 			Severity: linter.SEVERITY_INFO,
-			Finding:  "FTFY not invoked, because Subject DN only contains printable ASCII characters",
+			Finding:  "ftfy not invoked, because Subject DN only contains printable ASCII characters",
 		})
 	} else { // At least one character is not printable ASCII.
-		// FTFY can't deal with the Unicode Replacement Character (\uFFFD), but since this character always indicates that the string is incorrect we should always block it.
+		// ftfy can't deal with the Unicode Replacement Character (\uFFFD), but since this character always indicates that the string is incorrect we should always block it.
 		if strings.ContainsRune(ftfyInput, '\uFFFD') {
 			lres = append(lres, linter.LintingResult{
 				Severity: linter.SEVERITY_ERROR,
@@ -106,7 +115,7 @@ func (l *Ftfy) HandleRequest(lin *linter.LinterInstance, lreq *linter.LintingReq
 				Finding:  "Stdout.Scan() => false",
 			})
 		} else if ftfyOutput := lin.Stdout.Text(); ftfyInput != ftfyOutput {
-			// FTFY "fixed" one or more things that we haven't listed as false positives.
+			// ftfy "fixed" one or more things that we haven't listed as false positives.
 			// Return finding(s).
 			field := ""
 			for _, diff := range dmp.DiffMain(ftfyInput, ftfyOutput, false) {

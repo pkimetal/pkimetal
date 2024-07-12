@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "pkilint"
+version = "0.11.1"
+description = "A framework for verifying PKI structures"
+authors = ["DigiCert, Inc. <corey.bonnell@digicert.com>"]
+license = "MIT"
+include = ["README.md", "CHANGELOG.md", "tests"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.9,<4"
+pyasn1 = ">=0.6.0"
+pyasn1-alt-modules = ">=0.4.3"
+cryptography = ">=39"
+iso3166 = ">=2.1.1"
+# version is pinned due to https://github.com/python-validators/validators/issues/346
+validators = "==0.22"
+python-dateutil = ">=2.9.0"
+publicsuffixlist = ">=1.0.1"
+iso4217 = ">=1.11"
+python-iso639 = ">=2024.4.27"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

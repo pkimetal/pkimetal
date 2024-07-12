@@ -21,20 +21,20 @@ import "C"
 
 type X509lint struct{}
 
-var VcsRevision string
+var GitDescribeTagsAlways string
 
 func init() {
-	// X509lint is run in-process via CGO.  Since it stores linter request state in global variables, multiple backends cannot be supported.
+	// x509lint is run in-process via CGO.  Since it stores linter request state in global variables, multiple backends cannot be supported.
 	switch config.Config.Linter.X509lint.NumGoroutines {
 	case 0, 1:
 	default:
 		panic("x509lint: numGoroutines must be 0 or 1")
 	}
 
-	// Register X509lint.
+	// Register x509lint.
 	(&linter.Linter{
 		Name:         "x509lint",
-		Version:      VcsRevision,
+		Version:      GitDescribeTagsAlways,
 		Url:          "https://github.com/kroeckx/x509lint",
 		Unsupported:  linter.NonCertificateProfileIDs,
 		NumInstances: config.Config.Linter.X509lint.NumGoroutines,
@@ -44,7 +44,7 @@ func init() {
 
 func (l *X509lint) StartInstance() (useHandleRequest bool, directory, cmd string, args []string) {
 	C.check_init()
-	return true, "", "", nil // X509lint is run in a Goroutine in the pkimetal process, so there are no "external" instances.
+	return true, "", "", nil // x509lint is run in a Goroutine in the pkimetal process, so there are no "external" instances.
 }
 
 func (l *X509lint) StopInstance(lin *linter.LinterInstance) {
