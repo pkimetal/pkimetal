@@ -4,7 +4,7 @@ clean: clean_x509lint
 	rm -f pkimetal
 
 pkimetal: fetch_x509lint
-	CGO_ENABLED=1 GOOS=linux go build -modfile=go.mod -o $@ -ldflags " \
+	CGO_ENABLED=1 GOOS=linux go build -modfile=dev_go.mod -o $@ -ldflags " \
 	-X github.com/pkimetal/pkimetal/config.BuildTimestamp=$(shell date --utc +%Y-%m-%dT%H:%M:%SZ) \
 	-X github.com/pkimetal/pkimetal/config.PkimetalVersion=$(shell git describe --tags --always) \
 	-X github.com/pkimetal/pkimetal/linter/x509lint.GitDescribeTagsAlways=$(shell cat linter/x509lint/x509lint_gitdescribetagsalways)"

@@ -11,7 +11,16 @@ import (
 
 type Dwklint struct{}
 
+var GitDescribeTagsAlways, BlocklistDir string
+
 func init() {
+	// Determine blocklist directory.
+	if config.Config.Linter.Dwklint.BlocklistDir == "autodetect" {
+		if config.Config.Linter.Dwklint.BlocklistDir = BlocklistDir; BlocklistDir == "" {
+			config.Config.Linter.Dwklint.BlocklistDir = "/usr/local/dwk_blocklists"
+		}
+	}
+	// Load blocklists.
 	if err := dwklint.LoadBlocklists(config.Config.Linter.Dwklint.BlocklistDir); err != nil {
 		panic(err)
 	}
@@ -19,7 +28,7 @@ func init() {
 	// Register dwklint.
 	(&linter.Linter{
 		Name:         "dwklint",
-		Version:      linter.GetPackageVersion("github.com/CVE-2008-0166/dwklint"),
+		Version:      linter.GetPackageVersionOrGitDescribeTagsAlways("github.com/CVE-2008-0166/dwklint", GitDescribeTagsAlways),
 		Url:          "https://github.com/CVE-2008-0166/dwklint",
 		Unsupported:  linter.NonCertificateProfileIDs,
 		NumInstances: config.Config.Linter.Dwklint.NumGoroutines,

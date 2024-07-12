@@ -378,16 +378,49 @@ func GetPackageVersion(packageNamePrefix string) string {
 	return NOT_INSTALLED
 }
 
+func GetPackageVersionOrGitDescribeTagsAlways(packageName, gitDescribeTagsAlways string) string {
+	if packageVersion := GetPackageVersion(packageName); packageVersion == gitDescribeTagsAlways {
+		return packageVersion
+	} else if idx := strings.LastIndex(packageVersion, "-"); idx == -1 {
+		return packageVersion
+	} else if idx2 := strings.LastIndex(gitDescribeTagsAlways, "-g"); idx2 == -1 {
+		return packageVersion
+	} else {
+		packageGitCommit := packageVersion[idx+1:]
+		gitDescCommit := gitDescribeTagsAlways[idx2+2:]
+		var length int
+		if len(packageGitCommit) < len(gitDescCommit) {
+			length = len(packageGitCommit)
+		} else {
+			length = len(gitDescCommit)
+		}
+
+		if packageGitCommit[:length] == gitDescCommit[:length] {
+			return gitDescribeTagsAlways
+		} else {
+			return packageVersion
+		}
+	}
+}
+
 func VersionString(version string) string {
 	if version == NOT_INSTALLED {
-		return "[not installed]"
+		return "[" + version + "]"
+	} else if strings.Contains(version, "-g") {
+		// git describe format: v0.0.0-0-gabcdef1
+		return version
+	} else if idx := strings.LastIndex(version, "-"); idx != -1 && len(version)-idx > 7 {
+		// go.mod version format: v0.0.0-20210101000000-abcdef123456
+		return "g" + version[idx+1:idx+8]
 	} else if strings.Contains(version, ".") {
+		// Stable version format: v0.0.0
 		if !strings.HasPrefix(version, "v") {
 			version = "v" + version
 		}
 		return version
 	} else if len(version) >= 7 {
-		return "git:" + version[0:7]
+		// Git commit hash format: abcdef123456...
+		return "g" + version[0:7]
 	} else {
 		return "(" + version + ")"
 	}

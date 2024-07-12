@@ -31,7 +31,7 @@ func init() {
 }
 
 func GetPackageDetailsFromPipx(packageName, directory string) (string, string) {
-	// Extract the package version from the output of "pipx list".
+	// Extract the package version and determine the Python directory from the output of "pipx list".
 	packageVersion := NOT_INSTALLED
 	cmd := exec.Command("pipx", "list")
 	if stdout, err := cmd.StdoutPipe(); err != nil {
