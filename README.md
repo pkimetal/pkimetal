@@ -63,10 +63,10 @@ Special-purpose linters:
 
 ## Docker containers
 
-Docker containers are pre-built automatically and published on the Github Container Repository (GHCR). Two different release cicles are provided:
+Docker containers are pre-built automatically and published on the Github Container Repository (GHCR). Two different release cycles are provided:
 
-- Development releases. These have a "dev.{timestamp}" tag on GHCR. These builds are automatically created upon every push to the main branch.
-- Stable releases. These have a "vX.X.X" tag on GHCR and are automatically built and published when a new pkimetal release is created. Additionally, the latest build for these also received the "latest" tag. The Stable releases are recommended for production usage over the development releases. 
+- Development releases. These have a "dev.{timestamp}" tag on GHCR. These builds are automatically created upon every push to the main branch and use the latest commit of the main branch as code-base. Dockerfile.dev is used for building the container.
+- Stable releases. These have a "vX.X.X" tag on GHCR and are automatically built and published when a new pkimetal release is created and use the associated release version as code-base. Additionally, the latest build for these also received the "latest" tag. The Stable releases are recommended for production usage over the development releases. 
 
 ## About this project
 
