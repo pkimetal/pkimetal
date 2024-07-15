@@ -48,7 +48,7 @@ jobs:
         run: |
           COMMIT_HASH=$(git rev-parse --short HEAD)
           COMMIT_TIMESTAMP=$(git show -s --format=%ct HEAD)
-          ISO_TIMESTAMP=$(date -u -d "$COMMIT_TIMESTAMP" +'%Y%m%dT%H%M%SZ')
+          ISO_TIMESTAMP=$(date -u -d "@$COMMIT_TIMESTAMP" +'%Y%m%dT%H%M%SZ')
           echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
           echo "ISO_TIMESTAMP=$ISO_TIMESTAMP" >> $GITHUB_ENV
           
