@@ -1,5 +1,5 @@
 # BUILD.
-FROM docker.io/library/golang:1.22.5-alpine as build
+FROM docker.io/library/golang:1.22.5-alpine AS build
 
 # Install build dependencies.
 RUN apk add --no-cache --update \
