@@ -2,6 +2,7 @@ package request
 
 import (
 	"crypto/x509"
+	"crypto/x509/pkix"
 	"encoding/asn1"
 
 	"github.com/pkimetal/pkimetal/linter"
@@ -9,13 +10,14 @@ import (
 
 var (
 	// Additional Extended Key Usage OIDs.
-	oidDocumentSigning              asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 7, 3, 36}
-	oidPrecertificateSigning        asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 11129, 2, 4, 4}
-	oidMicrosoftDocumentSigning     asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 311, 10, 3, 12}
-	oidAdobeAuthenticDocumentsTrust asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 2, 840, 113583, 1, 1, 5}
+	oidEKU_DocumentSigning              asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 7, 3, 36}
+	oidEKU_PrecertificateSigning        asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 11129, 2, 4, 4}
+	oidEKU_MicrosoftDocumentSigning     asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 311, 10, 3, 12}
+	oidEKU_AdobeAuthenticDocumentsTrust asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 2, 840, 113583, 1, 1, 5}
 
 	// Additional Extension OIDs.
-	oidPrecertificatePoison asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 11129, 2, 4, 3}
+	oidExtension_PrecertificatePoison asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 11129, 2, 4, 3}
+	oidExtension_QCStatements         asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 7, 1, 3}
 
 	// CABForum Certificate Policy OIDs.
 	oidPolicy_TLSServer_TBR_DV          asn1.ObjectIdentifier = asn1.ObjectIdentifier{2, 23, 140, 1, 2, 1}
@@ -38,6 +40,16 @@ var (
 	oidPolicy_CodeSigning_CSBR_OV       asn1.ObjectIdentifier = asn1.ObjectIdentifier{2, 23, 140, 1, 4, 1}
 	oidPolicy_CodeSigning_CSBR_EV       asn1.ObjectIdentifier = asn1.ObjectIdentifier{2, 23, 140, 1, 3}
 	oidPolicy_TimeStamping_CSBR         asn1.ObjectIdentifier = asn1.ObjectIdentifier{2, 23, 140, 1, 4, 2}
+
+	// Distinguished Name Attribute OIDs.
+	oidAttribute_givenName asn1.ObjectIdentifier = asn1.ObjectIdentifier{2, 5, 4, 42}
+	oidAttribute_surname   asn1.ObjectIdentifier = asn1.ObjectIdentifier{2, 5, 4, 4}
+	oidAttribute_pseudonym asn1.ObjectIdentifier = asn1.ObjectIdentifier{2, 5, 4, 65}
+
+	// QCStatement OIDs.
+	oidQCStatement_etsiQcsQcCompliance    asn1.ObjectIdentifier = asn1.ObjectIdentifier{0, 4, 0, 1862, 1, 1}
+	oidQCStatement_etsiQcsQcCClegislation asn1.ObjectIdentifier = asn1.ObjectIdentifier{0, 4, 0, 1862, 1, 7}
+	oidQCStatement_etsiPsd2QcStatement    asn1.ObjectIdentifier = asn1.ObjectIdentifier{0, 4, 0, 19495, 2}
 )
 
 func (ri *RequestInfo) GetProfile(profileName string) bool {
@@ -89,7 +101,7 @@ func (ri *RequestInfo) GetProfile(profileName string) bool {
 					// If "ExtKeyUsage" didn't detect the type, use "UnknownExtKeyUsage" to detect Precertificate Signing.
 					if ri.profileId == linter.RFC5280_SUBORDINATE {
 						for _, eku2 := range ri.cert.UnknownExtKeyUsage {
-							if eku2.Equal(oidPrecertificateSigning) {
+							if eku2.Equal(oidEKU_PrecertificateSigning) {
 								ri.profileId = linter.TBR_SUBORDINATE_PRECERTSIGNING
 								break
 							}
@@ -127,7 +139,7 @@ func (ri *RequestInfo) GetProfile(profileName string) bool {
 				// If "ExtKeyUsage" didn't detect the type, use "UnknownExtKeyUsage" to detect Document Signing.
 				if ri.profileId == linter.RFC5280_LEAF {
 					for _, eku2 := range ri.cert.UnknownExtKeyUsage {
-						if eku2.Equal(oidDocumentSigning) || eku2.Equal(oidMicrosoftDocumentSigning) || eku2.Equal(oidAdobeAuthenticDocumentsTrust) {
+						if eku2.Equal(oidEKU_DocumentSigning) || eku2.Equal(oidEKU_MicrosoftDocumentSigning) || eku2.Equal(oidEKU_AdobeAuthenticDocumentsTrust) {
 							ri.profileId = linter.RFC5280_LEAF_DOCUMENTSIGNING
 							break
 						}
@@ -146,36 +158,110 @@ func (ri *RequestInfo) GetProfile(profileName string) bool {
 }
 
 func (ri *RequestInfo) detectLeafTLSServerProfile() linter.ProfileId {
-	for _, p := range ri.cert.PolicyIdentifiers {
-		isPrecertificate := false
-		for _, e := range ri.cert.Extensions {
-			if e.Id.Equal(oidPrecertificatePoison) {
-				isPrecertificate = true
-				break
-			}
+	isPrecertificate := false
+	for _, e := range ri.cert.Extensions {
+		if e.Id.Equal(oidExtension_PrecertificatePoison) {
+			isPrecertificate = true
+			break
 		}
+	}
+
+	isQualified, isEidasQualified, isPSD2 := getQualifiedStatementInfo(ri.cert.Extensions)
+	for _, p := range ri.cert.PolicyIdentifiers {
 		if isPrecertificate {
 			if p.Equal(oidPolicy_TLSServer_TBR_DV) {
 				return linter.TBR_LEAF_TLSSERVER_DV_PRECERTIFICATE
 			} else if p.Equal(oidPolicy_TLSServer_TBR_OV) {
-				return linter.TBR_LEAF_TLSSERVER_OV_PRECERTIFICATE
+				if isEidasQualified {
+					return linter.ETSI_LEAF_TLSSERVER_QNCPWOVEIDAS_PRECERTIFICATE
+				} else if isQualified {
+					return linter.ETSI_LEAF_TLSSERVER_QNCPWOVNONEIDAS_PRECERTIFICATE
+				} else {
+					return linter.TBR_LEAF_TLSSERVER_OV_PRECERTIFICATE
+				}
 			} else if p.Equal(oidPolicy_TLSServer_TBR_IV) {
-				return linter.TBR_LEAF_TLSSERVER_IV_PRECERTIFICATE
+				if isEidasQualified {
+					return linter.ETSI_LEAF_TLSSERVER_QNCPWIVEIDAS_PRECERTIFICATE
+				} else if isQualified {
+					return linter.ETSI_LEAF_TLSSERVER_QNCPWIVNONEIDAS_PRECERTIFICATE
+				} else {
+					return linter.TBR_LEAF_TLSSERVER_IV_PRECERTIFICATE
+				}
 			} else if p.Equal(oidPolicy_TLSServer_TEVG_EV) {
-				return linter.TEVG_LEAF_TLSSERVER_EV_PRECERTIFICATE
+				if isPSD2 {
+					return linter.ETSI_LEAF_TLSSERVER_QEVCPWPSD2EIDAS_PRECERTIFICATE
+				} else if isEidasQualified {
+					return linter.ETSI_LEAF_TLSSERVER_QEVCPWEIDAS_PRECERTIFICATE
+				} else if isQualified {
+					return linter.ETSI_LEAF_TLSSERVER_QEVCPWNONEIDAS_PRECERTIFICATE
+				} else {
+					return linter.TEVG_LEAF_TLSSERVER_EV_PRECERTIFICATE
+				}
 			}
 		} else {
 			if p.Equal(oidPolicy_TLSServer_TBR_DV) {
 				return linter.TBR_LEAF_TLSSERVER_DV
 			} else if p.Equal(oidPolicy_TLSServer_TBR_OV) {
-				return linter.TBR_LEAF_TLSSERVER_OV
+				if isEidasQualified {
+					return linter.ETSI_LEAF_TLSSERVER_QNCPWOVEIDAS
+				} else if isQualified {
+					return linter.ETSI_LEAF_TLSSERVER_QNCPWOVNONEIDAS
+				} else {
+					return linter.TBR_LEAF_TLSSERVER_OV
+				}
 			} else if p.Equal(oidPolicy_TLSServer_TBR_IV) {
-				return linter.TBR_LEAF_TLSSERVER_IV
+				if isEidasQualified {
+					return linter.ETSI_LEAF_TLSSERVER_QNCPWIVEIDAS
+				} else if isQualified {
+					return linter.ETSI_LEAF_TLSSERVER_QNCPWIVNONEIDAS
+				} else {
+					return linter.TBR_LEAF_TLSSERVER_IV
+				}
 			} else if p.Equal(oidPolicy_TLSServer_TEVG_EV) {
-				return linter.TEVG_LEAF_TLSSERVER_EV
+				if isPSD2 {
+					return linter.ETSI_LEAF_TLSSERVER_QEVCPWPSD2EIDAS
+				} else if isEidasQualified {
+					return linter.ETSI_LEAF_TLSSERVER_QEVCPWEIDAS
+				} else if isQualified {
+					return linter.ETSI_LEAF_TLSSERVER_QEVCPWNONEIDAS
+				} else {
+					return linter.TEVG_LEAF_TLSSERVER_EV_PRECERTIFICATE
+				}
 			}
 		}
 	}
+
+	isNaturalPerson := hasAnyNaturalPersonAttribute(ri.cert.Subject)
+	if isNaturalPerson {
+		if isPrecertificate {
+			if isEidasQualified {
+				return linter.ETSI_LEAF_TLSSERVER_QNCPWGENNATURALPERSONEIDAS_PRECERTIFICATE
+			} else if isQualified {
+				return linter.ETSI_LEAF_TLSSERVER_QNCPWGENNATURALPERSONNONEIDAS_PRECERTIFICATE
+			}
+		} else {
+			if isEidasQualified {
+				return linter.ETSI_LEAF_TLSSERVER_QNCPWGENNATURALPERSONEIDAS
+			} else if isQualified {
+				return linter.ETSI_LEAF_TLSSERVER_QNCPWGENNATURALPERSONNONEIDAS
+			}
+		}
+	} else {
+		if isPrecertificate {
+			if isEidasQualified {
+				return linter.ETSI_LEAF_TLSSERVER_QNCPWGENLEGALPERSONEIDAS_PRECERTIFICATE
+			} else if isQualified {
+				return linter.ETSI_LEAF_TLSSERVER_QNCPWGENLEGALPERSONNONEIDAS_PRECERTIFICATE
+			}
+		} else {
+			if isEidasQualified {
+				return linter.ETSI_LEAF_TLSSERVER_QNCPWGENLEGALPERSONEIDAS
+			} else if isQualified {
+				return linter.ETSI_LEAF_TLSSERVER_QNCPWGENLEGALPERSONNONEIDAS
+			}
+		}
+	}
+
 	return linter.RFC5280_LEAF_TLSSERVER
 }
 
@@ -266,4 +352,44 @@ func (ri *RequestInfo) detectSubordinateTimeStampingProfile() linter.ProfileId {
 		}
 	}
 	return linter.RFC5280_SUBORDINATE
+}
+
+type qcStatement struct {
+	StatementId asn1.ObjectIdentifier
+}
+
+func getQualifiedStatementInfo(extensions []pkix.Extension) (bool, bool, bool) {
+	var isQualified, isEidasQualified, isPSD2, hasQcCClegislation bool
+
+	for _, e := range extensions {
+		if e.Id.Equal(oidExtension_QCStatements) {
+			var qcStatements []qcStatement
+			if rest, err := asn1.Unmarshal(e.Value, &qcStatements); err == nil && len(rest) == 0 {
+				for _, s := range qcStatements {
+					if s.StatementId.Equal(oidQCStatement_etsiQcsQcCompliance) {
+						isQualified = true
+					} else if s.StatementId.Equal(oidQCStatement_etsiQcsQcCClegislation) {
+						hasQcCClegislation = true
+					} else if s.StatementId.Equal(oidQCStatement_etsiPsd2QcStatement) {
+						isPSD2 = true
+					}
+				}
+			}
+			if isQualified && !hasQcCClegislation {
+				isEidasQualified = true
+			}
+			break
+		}
+	}
+
+	return isQualified, isEidasQualified, isPSD2
+}
+
+func hasAnyNaturalPersonAttribute(subject pkix.Name) bool {
+	for _, name := range subject.Names {
+		if name.Type.Equal(oidAttribute_givenName) || name.Type.Equal(oidAttribute_surname) || name.Type.Equal(oidAttribute_pseudonym) {
+			return true
+		}
+	}
+	return false
 }
