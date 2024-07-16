@@ -9,6 +9,8 @@ At a glance:
 - [Why use multiple linters?](#why-use-multiple-linters)
 - [Why use pkimetal?](#why-use-pkimetal)
 - [Supported linters](#supported-linters)
+- [Docker containers](#docker-containers)
+- [Public instances](#public-instances)
 - [About this project](#about-this-project)
 
 Details:
@@ -63,11 +65,22 @@ Special-purpose linters:
 
 ## Docker containers
 
-Docker containers are pre-built automatically and published on the Github Container Repository (GHCR). Two different release cycles are provided:
+[Docker containers](https://github.com/pkimetal/pkimetal/pkgs/container/pkimetal) are pre-built automatically and published on the Github Container Repository (GHCR). Two different release cycles are provided:
 
-- Development releases. These have a "dev.{timestamp}" tag on GHCR. These builds are automatically created upon every push to the main branch and use the latest commit of the main branch as code-base. Dockerfile.dev is used for building the container.
-- Stable releases. These have a "vX.X.X" tag on GHCR and are automatically built and published when a new pkimetal release is created and use the associated release version as code-base. Additionally, the latest build for these also received the "latest" tag. The Stable releases are recommended for production usage over the development releases. 
+- Stable releases: These have a "vX.X.X" tag on GHCR and are automatically built and published whenever a corresponding [pkimetal release](https://github.com/pkimetal/pkimetal/releases) is created. The most recent Stable release also receives the "latest" tag. Since Stable releases track versioned releases of each linter project (wherever possible), **only Stable releases are recommended for production usage**.
+- Development releases: These have a "dev.{timestamp}" tag on GHCR and are automatically built and published whenever a corresponding [commit](https://github.com/pkimetal/pkimetal/commits/main/) is pushed to the "main" branch. Since Development releases track the latest commits to the "main"/"master" branch of each linter project, they are NOT RECOMMENDED for production usage.
+
+## Public instances
+
+Sectigo provides public instances of pkimetal that correspond to the two release cycles:
+
+- Stable: https://pkimet.al/
+- Development: https://dev.pkimet.al/
+
+These public instances are provided as-is, on a best effort basis. They are NOT RECOMMENDED for production usage by CAs, because (due to Ballot SC-75) they would be seen as Delegated Third Parties. An on-premise deployment of the [Docker container](#docker-containers) for the latest Stable release is the appropriate way to deploy pkimetal in a production CA environment.
 
 ## About this project
 
-pkimetal was created and is currently maintained by Rob Stradling at Sectigo. It is hoped that other publicly-trusted CAs and ecosystem participants will benefit and collaborate on future development.  :-)
+pkimetal was created and is currently maintained by Rob Stradling at Sectigo (mailto:rob@sectigo.com). It is hoped that other publicly-trusted CAs and ecosystem participants will benefit and collaborate on future development. :-)
+
+The "metal" suffix was chosen for its double-meaning: it's both an abbreviation of "meta-linter" and it conveys the idea that linting strengthens the PKI!
