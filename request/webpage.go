@@ -117,7 +117,7 @@ func FrontPage(fhctx *fasthttp.RequestCtx) {
     </TR>
     <TR>
       <TD>
-        <BR><A href="//` + linter.GetPackagePath() + `/blob/main/doc/REST_API.md" target="_blank">REST API Documentation] [GitHub]</A>
+        <BR><A href="//` + linter.GetPackagePath() + `/blob/main/doc/REST_API.md" target="_blank">REST API Documentation [GitHub]</A>
         <BR><BR><BR>Example webpages that use the linting REST APIs:
         <UL>
           <LI><A href="/` + ENDPOINTSTRING_LINTCERT + `">` + ENDPOINTSTRING_LINTCERT + `</A> - Lint a Certificate</LI>
