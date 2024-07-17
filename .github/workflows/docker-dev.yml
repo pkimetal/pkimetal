@@ -48,9 +48,9 @@ jobs:
         run: |
           COMMIT_HASH=$(git rev-parse --short HEAD)
           COMMIT_TIMESTAMP=$(git show -s --format=%ct HEAD)
-          ISO_TIMESTAMP=$(date -u -d "@$COMMIT_TIMESTAMP" +'%Y%m%dT%H%M%SZ')
+          PACKAGE_TIMESTAMP=$(date -u -d "@$COMMIT_TIMESTAMP" +'%Y%m%d%H%M%S')
           echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
-          echo "ISO_TIMESTAMP=$ISO_TIMESTAMP" >> $GITHUB_ENV
+          echo "PACKAGE_TIMESTAMP=$PACKAGE_TIMESTAMP" >> $GITHUB_ENV
           
       # Build and push Docker image with Buildx
       # https://github.com/docker/build-push-action
@@ -62,8 +62,8 @@ jobs:
           push: true
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
-          tags: ghcr.io/pkimetal/pkimetal-dev:${{ env.ISO_TIMESTAMP }}
-          labels: ghcr.io/pkimetal/pkimetal-dev:${{ env.ISO_TIMESTAMP }}
+          tags: ghcr.io/pkimetal/pkimetal-dev:${{ env.PACKAGE_TIMESTAMP }}
+          labels: ghcr.io/pkimetal/pkimetal-dev:${{ env.PACKAGE_TIMESTAMP }}
 
       # Temp fix
       # https://github.com/docker/build-push-action/issues/252
