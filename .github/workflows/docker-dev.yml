@@ -5,6 +5,11 @@ on:
   push:
     branches:
         - main
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+      
 env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
