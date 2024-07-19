@@ -18,7 +18,7 @@ jobs:
     - name: Setup git
       run: |
           git config --global user.email "gh@pkimet.al"
-          git config --global user.name "PKIMetal"
+          git config --global user.name "pkimetal"
 
     - name: Fetch all branches
       run: git fetch origin
