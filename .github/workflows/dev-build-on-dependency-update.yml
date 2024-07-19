@@ -38,18 +38,11 @@ jobs:
           echo "dev_files_changed=false" >> $GITHUB_ENV
         fi
 
-    - name: Checkout auto-dev-update branch
+    - name: Create auto-dev-update branch
       if: env.dev_files_changed == 'true'
       run: |
-          # Check if the branch already exists on the remote
-          if git ls-remote --heads origin auto-dev-update | grep auto-dev-update; then
-            echo "Branch auto-dev-update already exists. Checking out and pulling updates."
-            git checkout auto-dev-update
-            git pull origin auto-dev-update
-          else
-            echo "Branch auto-dev-update does not exist. Creating and pushing it."
-            git checkout -b auto-dev-update
-          fi
+          git checkout -b auto-dev-update
+          git push origin -u auto-dev-update
 
     - name: Create Pull Request
       if: env.dev_files_changed == 'true'
