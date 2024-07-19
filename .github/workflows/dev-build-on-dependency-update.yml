@@ -55,6 +55,7 @@ jobs:
         branch: auto-dev-update
         title: "Dependency Update"
         body: "This pull request was automatically created due to a linter update."
+        commit-message: Dependency update
 
     - name: Authenticate GitHub CLI
       if: env.dev_files_changed == 'true'
