@@ -1,4 +1,4 @@
-name: Scheduled check and build on new zlint commits
+name: Scheduled check and build on dependency updates
 
 on:
   schedule:
