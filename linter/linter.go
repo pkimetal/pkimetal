@@ -17,6 +17,8 @@ import (
 	"github.com/pkimetal/pkimetal/utils"
 
 	json "github.com/goccy/go-json"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 
 	"go.uber.org/zap"
 )
@@ -28,15 +30,17 @@ type LinterInterface interface {
 }
 
 type Linter struct {
-	Name             string
-	Version          string
-	Url              string
-	Unsupported      []ProfileId
-	NumInstances     int
-	ReqChannel       chan LintingRequest
-	external         bool
-	useHandleRequest bool
-	Interface        func() LinterInterface
+	Name                  string
+	Version               string
+	Url                   string
+	Unsupported           []ProfileId
+	NumInstances          int
+	ReqChannel            chan LintingRequest
+	external              bool
+	useHandleRequest      bool
+	queueTimeSummary      prometheus.Summary
+	processingTimeSummary prometheus.Summary
+	Interface             func() LinterInterface
 }
 
 type LinterInstance struct {
@@ -99,6 +103,21 @@ func (l *Linter) Register() {
 				Mutex:          &sync.Mutex{},
 			})
 		}
+
+		l.queueTimeSummary = promauto.NewSummary(prometheus.SummaryOpts{
+			Namespace:   config.ApplicationNamespace,
+			Subsystem:   "linter",
+			Name:        "queue_time",
+			Help:        "Number of seconds before processing a linting request.",
+			ConstLabels: map[string]string{"linter_name": l.Name},
+		})
+		l.processingTimeSummary = promauto.NewSummary(prometheus.SummaryOpts{
+			Namespace:   config.ApplicationNamespace,
+			Subsystem:   "linter",
+			Name:        "processing_time",
+			Help:        "Number of seconds to process a linting request.",
+			ConstLabels: map[string]string{"linter_name": l.Name},
+		})
 	} else {
 		logger.Logger.Info(
 			"Unused Linter",
@@ -342,11 +361,14 @@ func (lin *LinterInstance) serverLoop(lif LinterInterface, ctx context.Context) 
 				}
 			}
 			// Record meta information.
+			runtime := time.Since(start)
 			lreq.RespChannel <- LintingResult{
 				LinterName: lin.Name,
 				Severity:   SEVERITY_META,
-				Finding:    fmt.Sprintf("Queued: %v; Runtime: %v; Version: %s", queuedFor, time.Since(start), VersionString(lin.Version)),
+				Finding:    fmt.Sprintf("Queued: %v; Runtime: %v; Version: %s", queuedFor, runtime, VersionString(lin.Version)),
 			}
+			lin.queueTimeSummary.Observe(float64(queuedFor) / float64(time.Second))
+			lin.processingTimeSummary.Observe(float64(runtime) / float64(time.Second))
 
 			// Add a dummy linting result to signal the end of the results.
 			lreq.RespChannel <- LintingResult{
