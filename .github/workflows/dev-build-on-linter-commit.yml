@@ -9,7 +9,7 @@ on:
 jobs:
   check_release:
     runs-on: ubuntu-latest
-    name: Daily check for new zlint release
+    name: Hourly check for dependency updates
 
     steps:
     - name: Checkout this repo
