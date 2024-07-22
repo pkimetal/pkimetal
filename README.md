@@ -77,7 +77,7 @@ Sectigo provides public instances of pkimetal that correspond to the two release
 - Stable: https://pkimet.al/
 - Development: https://dev.pkimet.al/
 
-These public instances are provided as-is, on a best effort basis. They are NOT RECOMMENDED for production usage by CAs, because (due to Ballot SC-75) they would be seen as Delegated Third Parties. An on-premise deployment of the [Docker container](#docker-containers) for the latest Stable release is the appropriate way to deploy pkimetal in a production CA environment.
+These public instances are provided as-is, on a best effort basis. They are NOT RECOMMENDED for production usage by CAs, because (due to Ballot SC-75) they may be seen as Delegated Third Parties. Your own deployment of the [Docker container](#docker-containers) for the latest Stable release is the appropriate way to deploy pkimetal in a production CA environment.
 
 ## About this project
 
