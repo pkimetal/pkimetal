@@ -39,13 +39,13 @@ jobs:
         fi
 
     - name: Create auto-release branch
-      if: env.files_changed == 'true'
+      if: env.release_files_changed == 'true'
       run: |
           git checkout -b auto-release
           git push origin -u auto-release
 
     - name: Create Pull Request
-      if: env.files_changed == 'true'
+      if: env.release_files_changed == 'true'
       uses: peter-evans/create-pull-request@v6
       with:
         add-paths: |
