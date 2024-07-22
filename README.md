@@ -68,7 +68,7 @@ Special-purpose linters:
 [Docker containers](https://github.com/pkimetal/pkimetal/pkgs/container/pkimetal) are pre-built automatically and published on the Github Container Repository (GHCR). Two different release cycles are provided:
 
 - Stable releases: These have a "vX.X.X" tag on GHCR and are automatically built and published whenever a corresponding [pkimetal release](https://github.com/pkimetal/pkimetal/releases) is created. The most recent Stable release also receives the "latest" tag. Since Stable releases track versioned releases of each linter project (wherever possible), **only Stable releases are recommended for production usage**.
-- Development releases: These have a "dev.{timestamp}" tag on GHCR and are automatically built and published whenever a corresponding [commit](https://github.com/pkimetal/pkimetal/commits/main/) is pushed to the "main" branch. Since Development releases track the latest commits to the "main"/"master" branch of each linter project, they are NOT RECOMMENDED for production usage.
+- Development releases: These have a "YYYYMMDDHHMMSS" tag on GHCR and are automatically built and published whenever a corresponding [commit](https://github.com/pkimetal/pkimetal/commits/main/) is pushed to the "main" branch. Since Development releases also track the latest commits to the "main"/"master" branch of each linter project, they are NOT RECOMMENDED for production usage.
 
 ## Public instances
 
