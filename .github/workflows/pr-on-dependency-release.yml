@@ -38,12 +38,7 @@ jobs:
           echo "release_files_changed=false" >> $GITHUB_ENV
         fi
 
-    - name: Create auto-release branch
-      if: env.release_files_changed == 'true'
-      run: |
-          git checkout -b auto-release
-          git pull origin/auto-release auto-release
-          git push origin -u auto-release
+  
         
 
     - name: Create Pull Request
