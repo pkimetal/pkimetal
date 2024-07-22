@@ -42,7 +42,9 @@ jobs:
       if: env.release_files_changed == 'true'
       run: |
           git checkout -b auto-release
+          git pull
           git push origin -u auto-release
+        
 
     - name: Create Pull Request
       if: env.release_files_changed == 'true'
