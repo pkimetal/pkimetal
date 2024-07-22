@@ -38,9 +38,6 @@ jobs:
           echo "release_files_changed=false" >> $GITHUB_ENV
         fi
 
-  
-        
-
     - name: Create Pull Request
       if: env.release_files_changed == 'true'
       uses: peter-evans/create-pull-request@v6
