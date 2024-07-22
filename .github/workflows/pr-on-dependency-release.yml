@@ -48,7 +48,7 @@ jobs:
         base: main
         branch: auto-release
         title: "Dependency Release"
-        body: "This pull request was automatically created due to a linter release."
+        body: "This pull request was automatically created due to a dependency release."
         commit-message: Dependency release
         
 

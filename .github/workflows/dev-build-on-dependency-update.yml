@@ -23,8 +23,8 @@ jobs:
     - name: Fetch all branches
       run: git fetch origin
 
-    - name: Run update_dependencies.sh
-      run: chmod +x update_dependencies.sh; ./update_dependencies.sh
+    - name: Run dev_update_dependencies.sh
+      run: chmod +x dev_update_dependencies.sh; ./dev_update_dependencies.sh
 
     - name: Check for changes
       id: check_changes
@@ -54,7 +54,7 @@ jobs:
         base: main
         branch: auto-dev-update
         title: "Dependency Update"
-        body: "This pull request was automatically created due to a linter update."
+        body: "This pull request was automatically created due to a dependency update."
         commit-message: Dependency update
 
     - name: Authenticate GitHub CLI
