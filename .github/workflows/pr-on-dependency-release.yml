@@ -42,7 +42,7 @@ jobs:
       if: env.release_files_changed == 'true'
       run: |
           git checkout -b auto-release
-          git pull
+          git pull origin/auto-release auto-release
           git push origin -u auto-release
         
 
