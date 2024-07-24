@@ -129,16 +129,15 @@ func lintCRL(lreq *linter.LintingRequest, registry *lint.Registry) []linter.Lint
 
 func (l *Zlint) HandleRequest(lin *linter.LinterInstance, lreq *linter.LintingRequest, ctx context.Context) []linter.LintingResult {
 	var registry *lint.Registry
-	var ok bool
-	if slices.Contains(linter.TbrTevgLeafProfileIDs, lreq.ProfileId); ok {
+	if slices.Contains(linter.TbrTevgLeafProfileIDs, lreq.ProfileId) {
 		registry = &cabforumTLSLeafRegistry
-	} else if slices.Contains(linter.NonCabforumProfileIDs, lreq.ProfileId); ok {
+	} else if slices.Contains(linter.NonCabforumProfileIDs, lreq.ProfileId) {
 		registry = &notCabforumRegistry
 	} else {
 		registry = &defaultRegistry
 	}
 
-	if slices.Contains(linter.CrlProfileIDs, lreq.ProfileId); ok {
+	if slices.Contains(linter.CrlProfileIDs, lreq.ProfileId) {
 		return lintCRL(lreq, registry)
 	} else {
 		return lintCert(lreq, registry)
