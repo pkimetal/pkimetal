@@ -225,7 +225,7 @@ func (ri *RequestInfo) detectLeafTLSServerProfile() linter.ProfileId {
 				} else if isQualified {
 					return linter.ETSI_LEAF_TLSSERVER_QEVCPWNONEIDAS
 				} else {
-					return linter.TEVG_LEAF_TLSSERVER_EV_PRECERTIFICATE
+					return linter.TEVG_LEAF_TLSSERVER_EV
 				}
 			}
 		}
