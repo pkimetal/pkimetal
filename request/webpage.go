@@ -204,7 +204,7 @@ func APIWebpage(fhctx *fasthttp.RequestCtx, endpoint string) {
       </TR>
       <TR>
         <TD>Profile:
-          <BR><SELECT name="profile" size="11">`)
+          <BR><SELECT name="profile" size="13">`)
 	for id, profile := range linter.AllProfilesOrdered {
 		isShown := false
 		switch endpoint {
@@ -253,7 +253,10 @@ func APIWebpage(fhctx *fasthttp.RequestCtx, endpoint string) {
 		response.WriteString(`<BR>`)
 	}
 	response.WriteString(`
-        </DIV></TD>
+          </DIV>
+          <BR>Built at:
+          <DIV style="font-size:8pt;font-style:normal">` + config.BuildTimestamp + `</DIV>
+        </TD>
       </TR>
     </TABLE>
   </FORM>
