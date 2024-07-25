@@ -61,5 +61,7 @@ ENV PYTHONUNBUFFERED=1
 RUN pipx install ftfy pkilint
 
 # pkimetal.
+WORKDIR /app
+RUN wget https://ccadb.my.salesforce-sites.com/ccadb/AllCertificateRecordsCSVFormatv2
 COPY --from=build /app/pkimetal /app/pkimetal
 CMD ["/app/pkimetal"]
