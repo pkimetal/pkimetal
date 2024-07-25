@@ -1,9 +1,11 @@
 package request
 
 import (
+	"crypto/sha256"
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/asn1"
+	"encoding/base64"
 
 	"github.com/pkimetal/pkimetal/linter"
 )
@@ -16,8 +18,9 @@ var (
 	oidEKU_AdobeAuthenticDocumentsTrust asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 2, 840, 113583, 1, 1, 5}
 
 	// Additional Extension OIDs.
-	oidExtension_PrecertificatePoison asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 11129, 2, 4, 3}
-	oidExtension_QCStatements         asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 7, 1, 3}
+	oidExtension_AuthorityKeyIdentifier asn1.ObjectIdentifier = asn1.ObjectIdentifier{2, 5, 29, 35}
+	oidExtension_PrecertificatePoison   asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 11129, 2, 4, 3}
+	oidExtension_QCStatements           asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 7, 1, 3}
 
 	// CABForum Certificate Policy OIDs.
 	oidPolicy_TLSServer_TBR_DV          asn1.ObjectIdentifier = asn1.ObjectIdentifier{2, 23, 140, 1, 2, 1}
@@ -42,15 +45,92 @@ var (
 	oidPolicy_TimeStamping_CSBR         asn1.ObjectIdentifier = asn1.ObjectIdentifier{2, 23, 140, 1, 4, 2}
 
 	// Distinguished Name Attribute OIDs.
-	oidAttribute_givenName asn1.ObjectIdentifier = asn1.ObjectIdentifier{2, 5, 4, 42}
-	oidAttribute_surname   asn1.ObjectIdentifier = asn1.ObjectIdentifier{2, 5, 4, 4}
-	oidAttribute_pseudonym asn1.ObjectIdentifier = asn1.ObjectIdentifier{2, 5, 4, 65}
+	oidAttribute_surname                 asn1.ObjectIdentifier = asn1.ObjectIdentifier{2, 5, 4, 4}
+	oidAttribute_organizationName        asn1.ObjectIdentifier = asn1.ObjectIdentifier{2, 5, 4, 10}
+	oidAttribute_givenName               asn1.ObjectIdentifier = asn1.ObjectIdentifier{2, 5, 4, 42}
+	oidAttribute_pseudonym               asn1.ObjectIdentifier = asn1.ObjectIdentifier{2, 5, 4, 65}
+	oidAttribute_jurisdictionCountryName asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 311, 60, 2, 1, 3}
 
 	// QCStatement OIDs.
 	oidQCStatement_etsiQcsQcCompliance    asn1.ObjectIdentifier = asn1.ObjectIdentifier{0, 4, 0, 1862, 1, 1}
 	oidQCStatement_etsiQcsQcCClegislation asn1.ObjectIdentifier = asn1.ObjectIdentifier{0, 4, 0, 1862, 1, 7}
 	oidQCStatement_etsiPsd2QcStatement    asn1.ObjectIdentifier = asn1.ObjectIdentifier{0, 4, 0, 19495, 2}
 )
+
+type authorityKeyIdentifier struct {
+	KeyIdentifier []byte `asn1:"optional,tag:0"`
+}
+
+type qcStatement struct {
+	StatementId asn1.ObjectIdentifier
+}
+
+func getBase64AKI(exts []pkix.Extension) string {
+	for _, ext := range exts {
+		if ext.Id.Equal(oidExtension_AuthorityKeyIdentifier) {
+			var aki authorityKeyIdentifier
+			if _, err := asn1.Unmarshal(ext.Value, &aki); err == nil {
+				return base64.StdEncoding.EncodeToString(aki.KeyIdentifier)
+			}
+			break
+		}
+	}
+	return ""
+}
+
+func getQualifiedStatementInfo(extensions []pkix.Extension) (bool, bool, bool) {
+	var isQualified, isEidasQualified, isPSD2, hasQcCClegislation bool
+
+	for _, e := range extensions {
+		if e.Id.Equal(oidExtension_QCStatements) {
+			var qcStatements []qcStatement
+			if rest, err := asn1.Unmarshal(e.Value, &qcStatements); err == nil && len(rest) == 0 {
+				for _, s := range qcStatements {
+					if s.StatementId.Equal(oidQCStatement_etsiQcsQcCompliance) {
+						isQualified = true
+					} else if s.StatementId.Equal(oidQCStatement_etsiQcsQcCClegislation) {
+						hasQcCClegislation = true
+					} else if s.StatementId.Equal(oidQCStatement_etsiPsd2QcStatement) {
+						isPSD2 = true
+					}
+				}
+			}
+			if isQualified && !hasQcCClegislation {
+				isEidasQualified = true
+			}
+			break
+		}
+	}
+
+	return isQualified, isEidasQualified, isPSD2
+}
+
+func hasAnyNaturalPersonAttribute(subject pkix.Name) bool {
+	for _, name := range subject.Names {
+		if name.Type.Equal(oidAttribute_givenName) || name.Type.Equal(oidAttribute_surname) || name.Type.Equal(oidAttribute_pseudonym) {
+			return true
+		}
+	}
+	return false
+}
+
+func hasOrganizationNameAttribute(subject pkix.Name) bool {
+	for _, name := range subject.Names {
+		if name.Type.Equal(oidAttribute_organizationName) {
+			return true
+		}
+	}
+	return false
+}
+
+func hasJurisdictionCountryNameAttribute(subject pkix.Name) bool {
+	for _, name := range subject.Names {
+		if name.Type.Equal(oidAttribute_jurisdictionCountryName) {
+			return true
+		}
+	}
+	return false
+}
 
 func (ri *RequestInfo) GetProfile(profileName string) bool {
 	// Determine the Profile ID (default = auto-detect).
@@ -73,83 +153,18 @@ func (ri *RequestInfo) GetProfile(profileName string) bool {
 	if ri.profileId == linter.AUTODETECT {
 		switch ri.endpoint {
 		case ENDPOINT_LINTCRL, ENDPOINT_LINTTBSCRL:
-			ri.profileId = linter.RFC5280_CRL
+			ri.profileId = ri.detectCRLProfile()
 		case ENDPOINT_LINTOCSP, ENDPOINT_LINTTBSOCSP:
 			ri.profileId = linter.RFC6960_OCSPRESPONSE
 		case ENDPOINT_LINTCERT, ENDPOINT_LINTTBSCERT:
 			if ri.cert.BasicConstraintsValid && ri.cert.IsCA {
 				if ri.cert.CheckSignatureFrom(ri.cert) == nil {
-					ri.profileId = linter.RFC5280_ROOT
+					ri.profileId = ri.detectRootCertificateProfile()
 				} else {
-					ri.profileId = linter.RFC5280_SUBORDINATE
-					for _, eku := range ri.cert.ExtKeyUsage {
-						switch eku {
-						case x509.ExtKeyUsageServerAuth, x509.ExtKeyUsageMicrosoftServerGatedCrypto, x509.ExtKeyUsageNetscapeServerGatedCrypto:
-							ri.profileId = ri.detectSubordinateTLSServerProfile()
-						case x509.ExtKeyUsageEmailProtection:
-							ri.profileId = ri.detectSubordinateSMIMEProfile()
-						case x509.ExtKeyUsageCodeSigning, x509.ExtKeyUsageMicrosoftCommercialCodeSigning, x509.ExtKeyUsageMicrosoftKernelCodeSigning:
-							ri.profileId = ri.detectSubordinateCodeSigningProfile()
-						case x509.ExtKeyUsageTimeStamping:
-							ri.profileId = ri.detectSubordinateTimeStampingProfile()
-						default:
-							continue
-						}
-						break
-					}
-
-					// If "ExtKeyUsage" didn't detect the type, use "UnknownExtKeyUsage" to detect Precertificate Signing.
-					if ri.profileId == linter.RFC5280_SUBORDINATE {
-						for _, eku2 := range ri.cert.UnknownExtKeyUsage {
-							if eku2.Equal(oidEKU_PrecertificateSigning) {
-								ri.profileId = linter.TBR_SUBORDINATE_PRECERTSIGNING
-								break
-							}
-						}
-					}
+					ri.profileId = ri.detectSubordinateCertificateProfile()
 				}
 			} else {
-				// It's a generic leaf certificate until/unless we determine otherwise.
-				ri.profileId = linter.RFC5280_LEAF
-
-				// Most profiles can be autodetected from the parsed "ExtKeyUsage" list.
-				hasClientAuth := false
-				for _, eku := range ri.cert.ExtKeyUsage {
-					switch eku {
-					// x509.ExtKeyUsageAny is treated as "other leaf", unless more-specific EKU(s) is/are present.
-					case x509.ExtKeyUsageServerAuth, x509.ExtKeyUsageMicrosoftServerGatedCrypto, x509.ExtKeyUsageNetscapeServerGatedCrypto:
-						ri.profileId = ri.detectLeafTLSServerProfile()
-					case x509.ExtKeyUsageEmailProtection:
-						ri.profileId = ri.detectLeafSMIMEProfile()
-					case x509.ExtKeyUsageCodeSigning, x509.ExtKeyUsageMicrosoftCommercialCodeSigning, x509.ExtKeyUsageMicrosoftKernelCodeSigning:
-						ri.profileId = ri.detectLeafCodeSigningProfile()
-					case x509.ExtKeyUsageTimeStamping:
-						ri.profileId = ri.detectLeafTimeStampingProfile()
-					case x509.ExtKeyUsageClientAuth:
-						hasClientAuth = true
-						continue
-					case x509.ExtKeyUsageOCSPSigning:
-						ri.profileId = linter.RFC5280_LEAF_OCSPSIGNING
-					default:
-						continue
-					}
-					break
-				}
-
-				// If "ExtKeyUsage" didn't detect the type, use "UnknownExtKeyUsage" to detect Document Signing.
-				if ri.profileId == linter.RFC5280_LEAF {
-					for _, eku2 := range ri.cert.UnknownExtKeyUsage {
-						if eku2.Equal(oidEKU_DocumentSigning) || eku2.Equal(oidEKU_MicrosoftDocumentSigning) || eku2.Equal(oidEKU_AdobeAuthenticDocumentsTrust) {
-							ri.profileId = linter.RFC5280_LEAF_DOCUMENTSIGNING
-							break
-						}
-					}
-				}
-
-				// Detect "Client Authentication only" last, since this EKU is often combined with other EKUs.
-				if (ri.profileId == linter.RFC5280_LEAF) && hasClientAuth {
-					ri.profileId = linter.RFC5280_LEAF_TLSCLIENT
-				}
+				ri.profileId = ri.detectLeafCertificateProfile()
 			}
 		}
 	}
@@ -157,7 +172,124 @@ func (ri *RequestInfo) GetProfile(profileName string) bool {
 	return true
 }
 
-func (ri *RequestInfo) detectLeafTLSServerProfile() linter.ProfileId {
+func (ri *RequestInfo) detectCRLProfile() linter.ProfileId {
+	// Use the Key Identifier from the CRL's AKI extension to lookup the issuer's capabilities in the CCADB data.
+	if rl, err := x509.ParseRevocationList(ri.decodedInput); err == nil {
+		if keyIdentifier := getBase64AKI(rl.Extensions); keyIdentifier != "" {
+			if ic := issuerCapMap[keyIdentifier]; ic != nil {
+				// Infer the CRL profile based on the issuer's capabilities and CCADB record type.
+				if ic.certificateRecordType == CCADB_RECORD_ROOT {
+					if ic.tlsCapable {
+						return linter.TBR_ARL
+					} else {
+						return linter.RFC5280_ARL
+					}
+				} else {
+					if ic.tlsCapable {
+						return linter.TBR_CRL
+					} else {
+						return linter.RFC5280_CRL
+					}
+				}
+			}
+		}
+	}
+
+	return linter.RFC5280_CRL
+}
+
+func (ri *RequestInfo) detectRootCertificateProfile() linter.ProfileId {
+	// Look for this root certificate's capabilities in the CCADB CSV data.
+	if ic := caCertCapMap[sha256.Sum256(ri.decodedInput)]; ic != nil {
+		if ic.tlsEvCapable {
+			return linter.TEVG_ROOT_TLSSERVER
+		} else if ic.tlsCapable {
+			return linter.TBR_ROOT_TLSSERVER
+		} else if ic.smimeCapable {
+			return linter.SBR_ROOT_SMIME
+		} else if ic.codeSigningCapable {
+			return linter.CSBR_ROOT_CODESIGNING
+		}
+	}
+
+	// Root certificates typically don't contain EKUs or Certificate Policies, so assume the RFC5280 profile.
+	return linter.RFC5280_ROOT
+}
+
+func (ri *RequestInfo) detectSubordinateCertificateProfile() linter.ProfileId {
+	// CT is intended for the WebPKI, so the Precertificate Signing EKU implies TLS BR scope.
+	for _, eku := range ri.cert.UnknownExtKeyUsage {
+		if eku.Equal(oidEKU_PrecertificateSigning) {
+			return linter.TBR_SUBORDINATE_PRECERTSIGNING
+		}
+	}
+
+	// Determine the subordinate certificate profile based on CABForum certificate policy OIDs.
+	for _, p := range ri.cert.PolicyIdentifiers {
+		if p.Equal(oidPolicy_TLSServer_TBR_DV) || p.Equal(oidPolicy_TLSServer_TBR_OV) || p.Equal(oidPolicy_TLSServer_TBR_IV) {
+			return linter.TBR_SUBORDINATE_TLSSERVER
+		} else if p.Equal(oidPolicy_TLSServer_TEVG_EV) {
+			return linter.TEVG_SUBORDINATE_TLSSERVER
+		} else if len(p) >= 5 && p[0:5].Equal(oidPolicy_SMIME_SBR_arc) {
+			return linter.SBR_SUBORDINATE_SMIME
+		} else if p.Equal(oidPolicy_CodeSigning_CSBR_OV) || p.Equal(oidPolicy_CodeSigning_CSBR_EV) {
+			return linter.CSBR_SUBORDINATE_CODESIGNING
+		} else if p.Equal(oidPolicy_TimeStamping_CSBR) {
+			return linter.CSBR_SUBORDINATE_TIMESTAMPING
+		}
+	}
+
+	// Look for common EKUs in the certificate.
+	var hasAnyOrNoEKU, hasServerAuthEKU, hasEmailProtectionEKU, hasCodeSigningEKU, hasTimeStampingEKU bool
+	if len(ri.cert.ExtKeyUsage) == 0 {
+		if len(ri.cert.UnknownExtKeyUsage) == 0 {
+			hasAnyOrNoEKU = true
+		}
+	} else {
+		for _, eku := range ri.cert.ExtKeyUsage {
+			switch eku {
+			case x509.ExtKeyUsageAny:
+				hasAnyOrNoEKU = true
+			case x509.ExtKeyUsageServerAuth, x509.ExtKeyUsageMicrosoftServerGatedCrypto, x509.ExtKeyUsageNetscapeServerGatedCrypto:
+				hasServerAuthEKU = true
+			case x509.ExtKeyUsageEmailProtection:
+				hasEmailProtectionEKU = true
+			case x509.ExtKeyUsageCodeSigning, x509.ExtKeyUsageMicrosoftCommercialCodeSigning, x509.ExtKeyUsageMicrosoftKernelCodeSigning:
+				hasCodeSigningEKU = true
+			case x509.ExtKeyUsageTimeStamping:
+				hasTimeStampingEKU = true
+			}
+		}
+	}
+
+	// Use the Key Identifier from the certificate's AKI extension to lookup the issuer's capabilities in the CCADB data.
+	if keyIdentifier := getBase64AKI(ri.cert.Extensions); keyIdentifier != "" {
+		if ic := issuerCapMap[keyIdentifier]; ic != nil {
+			// Determine the subordinate certificate profile based on the issuer's capabilities and the certificate's EKUs.
+			if hasServerAuthEKU || hasAnyOrNoEKU {
+				if ic.tlsEvCapable {
+					return linter.TEVG_SUBORDINATE_TLSSERVER
+				} else if ic.tlsCapable {
+					return linter.TBR_SUBORDINATE_TLSSERVER
+				}
+			}
+			if (hasEmailProtectionEKU || hasAnyOrNoEKU) && ic.smimeCapable {
+				return linter.SBR_SUBORDINATE_SMIME
+			}
+			if (hasCodeSigningEKU || hasAnyOrNoEKU) && ic.codeSigningCapable {
+				return linter.CSBR_SUBORDINATE_CODESIGNING
+			}
+			if hasTimeStampingEKU { // The CCADB CSV data doesn't reveal timestamping capability, but the Timestamping EKU OID combined with presence in the CCADB is a strong indicator of CSBR scope.
+				return linter.CSBR_SUBORDINATE_TIMESTAMPING
+			}
+		}
+	}
+
+	return linter.RFC5280_SUBORDINATE
+}
+
+func (ri *RequestInfo) detectLeafCertificateProfile() linter.ProfileId {
+	// Determine if the certificate is a Precertificate.
 	isPrecertificate := false
 	for _, e := range ri.cert.Extensions {
 		if e.Id.Equal(oidExtension_PrecertificatePoison) {
@@ -166,8 +298,12 @@ func (ri *RequestInfo) detectLeafTLSServerProfile() linter.ProfileId {
 		}
 	}
 
+	// Determine if the certificate has ETSI profile characteristics.
 	isQualified, isEidasQualified, isPSD2 := getQualifiedStatementInfo(ri.cert.Extensions)
+
+	// Detect leaf profiles based on CABForum certificate policy OIDs.
 	for _, p := range ri.cert.PolicyIdentifiers {
+		// Handle TLS BR and related ETSI TLS leaf profiles.
 		if isPrecertificate {
 			if p.Equal(oidPolicy_TLSServer_TBR_DV) {
 				return linter.TBR_LEAF_TLSSERVER_DV_PRECERTIFICATE
@@ -229,167 +365,181 @@ func (ri *RequestInfo) detectLeafTLSServerProfile() linter.ProfileId {
 				}
 			}
 		}
-	}
 
-	isNaturalPerson := hasAnyNaturalPersonAttribute(ri.cert.Subject)
-	if isNaturalPerson {
-		if isPrecertificate {
-			if isEidasQualified {
-				return linter.ETSI_LEAF_TLSSERVER_QNCPWGENNATURALPERSONEIDAS_PRECERTIFICATE
-			} else if isQualified {
-				return linter.ETSI_LEAF_TLSSERVER_QNCPWGENNATURALPERSONNONEIDAS_PRECERTIFICATE
-			}
-		} else {
-			if isEidasQualified {
-				return linter.ETSI_LEAF_TLSSERVER_QNCPWGENNATURALPERSONEIDAS
-			} else if isQualified {
-				return linter.ETSI_LEAF_TLSSERVER_QNCPWGENNATURALPERSONNONEIDAS
-			}
-		}
-	} else {
-		if isPrecertificate {
-			if isEidasQualified {
-				return linter.ETSI_LEAF_TLSSERVER_QNCPWGENLEGALPERSONEIDAS_PRECERTIFICATE
-			} else if isQualified {
-				return linter.ETSI_LEAF_TLSSERVER_QNCPWGENLEGALPERSONNONEIDAS_PRECERTIFICATE
-			}
-		} else {
-			if isEidasQualified {
-				return linter.ETSI_LEAF_TLSSERVER_QNCPWGENLEGALPERSONEIDAS
-			} else if isQualified {
-				return linter.ETSI_LEAF_TLSSERVER_QNCPWGENLEGALPERSONNONEIDAS
-			}
-		}
-	}
-
-	return linter.RFC5280_LEAF_TLSSERVER
-}
-
-func (ri *RequestInfo) detectSubordinateTLSServerProfile() linter.ProfileId {
-	for _, p := range ri.cert.PolicyIdentifiers {
-		if p.Equal(oidPolicy_TLSServer_TBR_DV) || p.Equal(oidPolicy_TLSServer_TBR_OV) || p.Equal(oidPolicy_TLSServer_TBR_IV) {
-			return linter.TBR_SUBORDINATE_TLSSERVER
-		} else if p.Equal(oidPolicy_TLSServer_TEVG_EV) {
-			return linter.TEVG_SUBORDINATE_TLSSERVER
-		}
-	}
-	return linter.RFC5280_SUBORDINATE
-}
-
-func (ri *RequestInfo) detectLeafSMIMEProfile() linter.ProfileId {
-	for _, p := range ri.cert.PolicyIdentifiers {
-		if p.Equal(oidPolicy_SMIME_SBR_MV_LEGACY) { // Mailbox Validated.
-			return linter.SBR_LEAF_SMIME_MV_LEGACY
-		} else if p.Equal(oidPolicy_SMIME_SBR_MV_MULTIPURPOSE) {
-			return linter.SBR_LEAF_SMIME_MV_MULTIPURPOSE
-		} else if p.Equal(oidPolicy_SMIME_SBR_MV_STRICT) {
-			return linter.SBR_LEAF_SMIME_MV_STRICT
-		} else if p.Equal(oidPolicy_SMIME_SBR_OV_LEGACY) { // Organization Validated.
-			return linter.SBR_LEAF_SMIME_OV_LEGACY
-		} else if p.Equal(oidPolicy_SMIME_SBR_OV_MULTIPURPOSE) {
-			return linter.SBR_LEAF_SMIME_OV_MULTIPURPOSE
-		} else if p.Equal(oidPolicy_SMIME_SBR_OV_STRICT) {
-			return linter.SBR_LEAF_SMIME_OV_STRICT
-		} else if p.Equal(oidPolicy_SMIME_SBR_SV_LEGACY) { // Sponsor Validated.
-			return linter.SBR_LEAF_SMIME_SV_LEGACY
-		} else if p.Equal(oidPolicy_SMIME_SBR_SV_MULTIPURPOSE) {
-			return linter.SBR_LEAF_SMIME_SV_MULTIPURPOSE
-		} else if p.Equal(oidPolicy_SMIME_SBR_SV_STRICT) {
-			return linter.SBR_LEAF_SMIME_SV_STRICT
-		} else if p.Equal(oidPolicy_SMIME_SBR_IV_LEGACY) { // Individual Validated.
-			return linter.SBR_LEAF_SMIME_IV_LEGACY
-		} else if p.Equal(oidPolicy_SMIME_SBR_IV_MULTIPURPOSE) {
-			return linter.SBR_LEAF_SMIME_IV_MULTIPURPOSE
-		} else if p.Equal(oidPolicy_SMIME_SBR_IV_STRICT) {
-			return linter.SBR_LEAF_SMIME_IV_STRICT
-		}
-	}
-	return linter.RFC5280_LEAF_SMIME
-}
-
-func (ri *RequestInfo) detectSubordinateSMIMEProfile() linter.ProfileId {
-	for _, p := range ri.cert.PolicyIdentifiers {
+		// Handle S/MIME BR leaf profiles.
 		if len(p) >= 5 && p[0:5].Equal(oidPolicy_SMIME_SBR_arc) {
-			return linter.SBR_SUBORDINATE_SMIME
+			if p.Equal(oidPolicy_SMIME_SBR_MV_LEGACY) { // Mailbox Validated.
+				return linter.SBR_LEAF_SMIME_MV_LEGACY
+			} else if p.Equal(oidPolicy_SMIME_SBR_MV_MULTIPURPOSE) {
+				return linter.SBR_LEAF_SMIME_MV_MULTIPURPOSE
+			} else if p.Equal(oidPolicy_SMIME_SBR_MV_STRICT) {
+				return linter.SBR_LEAF_SMIME_MV_STRICT
+			} else if p.Equal(oidPolicy_SMIME_SBR_OV_LEGACY) { // Organization Validated.
+				return linter.SBR_LEAF_SMIME_OV_LEGACY
+			} else if p.Equal(oidPolicy_SMIME_SBR_OV_MULTIPURPOSE) {
+				return linter.SBR_LEAF_SMIME_OV_MULTIPURPOSE
+			} else if p.Equal(oidPolicy_SMIME_SBR_OV_STRICT) {
+				return linter.SBR_LEAF_SMIME_OV_STRICT
+			} else if p.Equal(oidPolicy_SMIME_SBR_SV_LEGACY) { // Sponsor Validated.
+				return linter.SBR_LEAF_SMIME_SV_LEGACY
+			} else if p.Equal(oidPolicy_SMIME_SBR_SV_MULTIPURPOSE) {
+				return linter.SBR_LEAF_SMIME_SV_MULTIPURPOSE
+			} else if p.Equal(oidPolicy_SMIME_SBR_SV_STRICT) {
+				return linter.SBR_LEAF_SMIME_SV_STRICT
+			} else if p.Equal(oidPolicy_SMIME_SBR_IV_LEGACY) { // Individual Validated.
+				return linter.SBR_LEAF_SMIME_IV_LEGACY
+			} else if p.Equal(oidPolicy_SMIME_SBR_IV_MULTIPURPOSE) {
+				return linter.SBR_LEAF_SMIME_IV_MULTIPURPOSE
+			} else if p.Equal(oidPolicy_SMIME_SBR_IV_STRICT) {
+				return linter.SBR_LEAF_SMIME_IV_STRICT
+			}
 		}
-	}
-	return linter.RFC5280_SUBORDINATE
-}
 
-func (ri *RequestInfo) detectLeafCodeSigningProfile() linter.ProfileId {
-	for _, p := range ri.cert.PolicyIdentifiers {
+		// Handle Code Signing BR leaf profiles.
 		if p.Equal(oidPolicy_CodeSigning_CSBR_OV) {
 			return linter.CSBR_LEAF_CODESIGNING_OV
 		} else if p.Equal(oidPolicy_CodeSigning_CSBR_EV) {
 			return linter.CSBR_LEAF_CODESIGNING_EV
-		}
-	}
-	return linter.RFC5280_LEAF_CODESIGNING
-}
-
-func (ri *RequestInfo) detectSubordinateCodeSigningProfile() linter.ProfileId {
-	for _, p := range ri.cert.PolicyIdentifiers {
-		if p.Equal(oidPolicy_CodeSigning_CSBR_OV) || p.Equal(oidPolicy_CodeSigning_CSBR_EV) {
-			return linter.CSBR_SUBORDINATE_CODESIGNING
-		}
-	}
-	return linter.RFC5280_SUBORDINATE
-}
-
-func (ri *RequestInfo) detectLeafTimeStampingProfile() linter.ProfileId {
-	for _, p := range ri.cert.PolicyIdentifiers {
-		if p.Equal(oidPolicy_TimeStamping_CSBR) {
+		} else if p.Equal(oidPolicy_TimeStamping_CSBR) {
 			return linter.CSBR_LEAF_TIMESTAMPING
 		}
 	}
-	return linter.RFC5280_LEAF_TIMESTAMPING
-}
 
-func (ri *RequestInfo) detectSubordinateTimeStampingProfile() linter.ProfileId {
-	for _, p := range ri.cert.PolicyIdentifiers {
-		if p.Equal(oidPolicy_TimeStamping_CSBR) {
-			return linter.CSBR_SUBORDINATE_TIMESTAMPING
+	// Look for common EKUs in the certificate.
+	var hasAnyOrNoEKU, hasServerAuthEKU, hasClientAuthEKU, hasEmailProtectionEKU, hasCodeSigningEKU, hasTimeStampingEKU, hasOCSPSigningEKU bool
+	if len(ri.cert.ExtKeyUsage) == 0 {
+		if len(ri.cert.UnknownExtKeyUsage) == 0 {
+			hasAnyOrNoEKU = true
+		}
+	} else {
+		for _, eku := range ri.cert.ExtKeyUsage {
+			switch eku {
+			case x509.ExtKeyUsageAny:
+				hasAnyOrNoEKU = true
+			case x509.ExtKeyUsageServerAuth, x509.ExtKeyUsageMicrosoftServerGatedCrypto, x509.ExtKeyUsageNetscapeServerGatedCrypto:
+				hasServerAuthEKU = true
+			case x509.ExtKeyUsageClientAuth:
+				hasClientAuthEKU = true
+			case x509.ExtKeyUsageEmailProtection:
+				hasEmailProtectionEKU = true
+			case x509.ExtKeyUsageCodeSigning, x509.ExtKeyUsageMicrosoftCommercialCodeSigning, x509.ExtKeyUsageMicrosoftKernelCodeSigning:
+				hasCodeSigningEKU = true
+			case x509.ExtKeyUsageTimeStamping:
+				hasTimeStampingEKU = true
+			case x509.ExtKeyUsageOCSPSigning:
+				hasOCSPSigningEKU = true
+			}
 		}
 	}
-	return linter.RFC5280_SUBORDINATE
-}
 
-type qcStatement struct {
-	StatementId asn1.ObjectIdentifier
-}
+	// Handle non-CABForum ETSI TLS leaf profiles.
+	isNaturalPerson := hasAnyNaturalPersonAttribute(ri.cert.Subject)
+	if hasServerAuthEKU {
+		if isNaturalPerson {
+			if isPrecertificate {
+				if isEidasQualified {
+					return linter.ETSI_LEAF_TLSSERVER_QNCPWGENNATURALPERSONEIDAS_PRECERTIFICATE
+				} else if isQualified {
+					return linter.ETSI_LEAF_TLSSERVER_QNCPWGENNATURALPERSONNONEIDAS_PRECERTIFICATE
+				}
+			} else {
+				if isEidasQualified {
+					return linter.ETSI_LEAF_TLSSERVER_QNCPWGENNATURALPERSONEIDAS
+				} else if isQualified {
+					return linter.ETSI_LEAF_TLSSERVER_QNCPWGENNATURALPERSONNONEIDAS
+				}
+			}
+		} else {
+			if isPrecertificate {
+				if isEidasQualified {
+					return linter.ETSI_LEAF_TLSSERVER_QNCPWGENLEGALPERSONEIDAS_PRECERTIFICATE
+				} else if isQualified {
+					return linter.ETSI_LEAF_TLSSERVER_QNCPWGENLEGALPERSONNONEIDAS_PRECERTIFICATE
+				}
+			} else {
+				if isEidasQualified {
+					return linter.ETSI_LEAF_TLSSERVER_QNCPWGENLEGALPERSONEIDAS
+				} else if isQualified {
+					return linter.ETSI_LEAF_TLSSERVER_QNCPWGENLEGALPERSONNONEIDAS
+				}
+			}
+		}
+	}
 
-func getQualifiedStatementInfo(extensions []pkix.Extension) (bool, bool, bool) {
-	var isQualified, isEidasQualified, isPSD2, hasQcCClegislation bool
-
-	for _, e := range extensions {
-		if e.Id.Equal(oidExtension_QCStatements) {
-			var qcStatements []qcStatement
-			if rest, err := asn1.Unmarshal(e.Value, &qcStatements); err == nil && len(rest) == 0 {
-				for _, s := range qcStatements {
-					if s.StatementId.Equal(oidQCStatement_etsiQcsQcCompliance) {
-						isQualified = true
-					} else if s.StatementId.Equal(oidQCStatement_etsiQcsQcCClegislation) {
-						hasQcCClegislation = true
-					} else if s.StatementId.Equal(oidQCStatement_etsiPsd2QcStatement) {
-						isPSD2 = true
+	// Use the Key Identifier in the certificate's AKI extension to lookup the issuer's capabilities in the CCADB data.
+	// This is useful to determine TLS BR and EVCS scope, since older versions of those documents did not require CABForum policy OIDs.
+	if keyIdentifier := getBase64AKI(ri.cert.Extensions); keyIdentifier != "" {
+		if ic := issuerCapMap[keyIdentifier]; ic != nil {
+			// Determine the leaf certificate profile based on the issuer's capabilities and the certificate's EKUs.
+			if hasServerAuthEKU || hasAnyOrNoEKU {
+				if ic.tlsEvCapable {
+					if isPrecertificate {
+						return linter.TEVG_LEAF_TLSSERVER_EV_PRECERTIFICATE
+					} else {
+						return linter.TEVG_LEAF_TLSSERVER_EV
+					}
+				} else if ic.tlsCapable {
+					if isNaturalPerson {
+						if isPrecertificate {
+							return linter.TBR_LEAF_TLSSERVER_IV_PRECERTIFICATE
+						} else {
+							return linter.TBR_LEAF_TLSSERVER_IV
+						}
+					} else if hasOrganizationNameAttribute(ri.cert.Subject) {
+						if isPrecertificate {
+							return linter.TBR_LEAF_TLSSERVER_OV_PRECERTIFICATE
+						} else {
+							return linter.TBR_LEAF_TLSSERVER_OV
+						}
+					} else {
+						if isPrecertificate {
+							return linter.TBR_LEAF_TLSSERVER_DV_PRECERTIFICATE
+						} else {
+							return linter.TBR_LEAF_TLSSERVER_DV
+						}
 					}
 				}
 			}
-			if isQualified && !hasQcCClegislation {
-				isEidasQualified = true
+			if hasOCSPSigningEKU && ic.tlsCapable {
+				return linter.TBR_LEAF_OCSPSIGNING
 			}
-			break
+			if (hasCodeSigningEKU || hasAnyOrNoEKU) && ic.codeSigningCapable {
+				if hasJurisdictionCountryNameAttribute(ri.cert.Subject) {
+					return linter.CSBR_LEAF_CODESIGNING_EV
+				} else if hasOrganizationNameAttribute(ri.cert.Subject) {
+					return linter.CSBR_LEAF_CODESIGNING_OV
+				}
+			}
+			if hasTimeStampingEKU { // The CCADB CSV data doesn't reveal timestamping capability, but the Timestamping EKU OID combined with the issuer's presence in the CCADB is a strong indicator of CSBR scope.
+				return linter.CSBR_LEAF_TIMESTAMPING
+			}
 		}
 	}
 
-	return isQualified, isEidasQualified, isPSD2
-}
+	// Use the certificate's EKUs to determine RFC5280 leaf profiles.
+	if hasServerAuthEKU {
+		return linter.RFC5280_LEAF_TLSSERVER
+	} else if hasEmailProtectionEKU {
+		return linter.RFC5280_LEAF_SMIME
+	} else if hasCodeSigningEKU {
+		return linter.RFC5280_LEAF_CODESIGNING
+	} else if hasTimeStampingEKU {
+		return linter.RFC5280_LEAF_TIMESTAMPING
+	} else if hasOCSPSigningEKU {
+		return linter.RFC5280_LEAF_OCSPSIGNING
+	}
 
-func hasAnyNaturalPersonAttribute(subject pkix.Name) bool {
-	for _, name := range subject.Names {
-		if name.Type.Equal(oidAttribute_givenName) || name.Type.Equal(oidAttribute_surname) || name.Type.Equal(oidAttribute_pseudonym) {
-			return true
+	// Detect Document Signing leaf profiles.
+	for _, eku2 := range ri.cert.UnknownExtKeyUsage {
+		if eku2.Equal(oidEKU_DocumentSigning) || eku2.Equal(oidEKU_MicrosoftDocumentSigning) || eku2.Equal(oidEKU_AdobeAuthenticDocumentsTrust) {
+			return linter.RFC5280_LEAF_DOCUMENTSIGNING
 		}
 	}
-	return false
+
+	// Detect "Client Authentication only" last, since this EKU is often combined with other EKUs.
+	if hasClientAuthEKU {
+		return linter.RFC5280_LEAF_TLSCLIENT
+	}
+
+	return linter.RFC5280_LEAF
 }
