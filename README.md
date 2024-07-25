@@ -31,7 +31,7 @@ Details:
 
 ## Why lint?
 
-CABForum Ballot [SC-75](https://github.com/cabforum/servercert/pull/527/files), adopted June 27th 2024, explains that...
+CABForum Ballot [SC-75](https://github.com/cabforum/servercert/pull/527/files#diff-e0ac1bd190515a4f2ec09139d395ef6a8c7e9e5b612957c1f5a2dea80c6a6cfeR1114), adopted June 27th 2024, explains that...
 
 > Due to the complexity involved in implementing Certificate Profiles that conform to these Requirements, it is considered best practice for the CA to implement a Linting process to test the technical conformity of each to-be-signed artifact prior to signing it.
 
