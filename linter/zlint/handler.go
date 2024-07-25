@@ -19,10 +19,11 @@ import (
 type Zlint struct{}
 
 var (
-	GitDescribeTagsAlways   string
-	defaultRegistry         lint.Registry
-	cabforumTLSLeafRegistry lint.Registry
-	notCabforumRegistry     lint.Registry
+	GitDescribeTagsAlways          string
+	defaultRegistry                lint.Registry
+	cabforumTLSSubordinateRegistry lint.Registry
+	cabforumTLSLeafRegistry        lint.Registry
+	notCabforumRegistry            lint.Registry
 )
 
 func init() {
@@ -38,8 +39,15 @@ func init() {
 
 	defaultRegistry = lint.GlobalRegistry()
 
-	// RFC5280's "SHOULD be present" for SKI in end-entity certificates is superseded by the TLS BRs' "NOT RECOMMENDED".
+	// RFC5280's "MUST mark this extension as critical" for Name Constraints in intermediate certificates is superseded by the TLS BRs' "MAY be marked non‐critical".
 	var err error
+	if cabforumTLSSubordinateRegistry, err = defaultRegistry.Filter(lint.FilterOptions{
+		ExcludeNames: []string{"e_ext_name_constraints_not_critical"},
+	}); err != nil {
+		logger.Logger.Fatal("Failed to configure filtered zlint registry for BR/EVG TLS Server subordinate certificates", zap.Error(err))
+	}
+
+	// RFC5280's "SHOULD be present" for SKI in end-entity certificates is superseded by the TLS BRs' "NOT RECOMMENDED".
 	if cabforumTLSLeafRegistry, err = defaultRegistry.Filter(lint.FilterOptions{
 		ExcludeNames: []string{"w_ext_subject_key_identifier_missing_sub_cert"},
 	}); err != nil {
@@ -131,6 +139,8 @@ func (l *Zlint) HandleRequest(lin *linter.LinterInstance, lreq *linter.LintingRe
 	var registry *lint.Registry
 	if slices.Contains(linter.TbrTevgLeafProfileIDs, lreq.ProfileId) {
 		registry = &cabforumTLSLeafRegistry
+	} else if slices.Contains(linter.TbrTevgCertificateProfileIDs, lreq.ProfileId) {
+		registry = &cabforumTLSSubordinateRegistry
 	} else if slices.Contains(linter.NonCabforumProfileIDs, lreq.ProfileId) {
 		registry = &notCabforumRegistry
 	} else {
