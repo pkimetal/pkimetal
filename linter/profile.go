@@ -155,7 +155,7 @@ var (
 		TBR_LEAF_TLSSERVER_OV_PRECERTIFICATE:             {Name: "tbr_leaf_tlsserver_ov_precertificate", Source: "TLS BRs", Description: "TLS Server Precertificate: Organization Validated"},
 		TBR_LEAF_TLSSERVER_IV:                            {Name: "tbr_leaf_tlsserver_iv", Source: "TLS BRs", Description: "TLS Server Certificate: Individual Validated"},
 		TBR_LEAF_TLSSERVER_IV_PRECERTIFICATE:             {Name: "tbr_leaf_tlsserver_iv_precertificate", Source: "TLS BRs", Description: "TLS Server Precertificate: Individual Validated"},
-		TBR_LEAF_OCSPSIGNING:                             {Name: "tbs_leaf_ocspsigning", Source: "TLS BRs", Description: "OCSP Signing Certificate"},
+		TBR_LEAF_OCSPSIGNING:                             {Name: "tbr_leaf_ocspsigning", Source: "TLS BRs", Description: "OCSP Signing Certificate"},
 		TBR_CRL:                                          {Name: "tbr_crl", Source: "TLS BRs", Description: "Certificate Revocation List"},
 		TBR_ARL:                                          {Name: "tbr_arl", Source: "TLS BRs", Description: "Authority Revocation List"},
 		// CABForum TLS Extended Validation Guidelines.
