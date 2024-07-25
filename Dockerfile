@@ -30,6 +30,7 @@ RUN git clone https://github.com/kroeckx/x509lint && \
 # Build pkimetal.
 WORKDIR /app
 COPY . .
+RUN git fetch --unshallow
 ENV GOPATH=/app
 RUN CGO_ENABLED=1 GOOS=linux go build -o pkimetal -ldflags " \
 	-X github.com/pkimetal/pkimetal/config.BuildTimestamp=`date --utc +%Y-%m-%dT%H:%M:%SZ` \
