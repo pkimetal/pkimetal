@@ -231,15 +231,11 @@ func APIWebpage(fhctx *fasthttp.RequestCtx, endpoint string) {
 			if profile.Source != "" {
 				response.WriteString(`[` + profile.Source + `] `)
 			}
-			if profile.Autodetectable {
-				response.WriteString(`*`)
-			}
 			response.WriteString(profile.Description + `</OPTION>`)
 		}
 	}
 	response.WriteString(`
           </SELECT>
-          <DIV>* = Autodetectable</DIV>
         </TD>
         <TD>
           <INPUT class="button" type="submit" value="` + endpoint + `">
