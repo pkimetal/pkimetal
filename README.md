@@ -37,38 +37,38 @@ CABForum Ballot [SC-75](https://github.com/cabforum/servercert/pull/527/files#di
 
 ## Why use multiple linters?
 
-Linters are not in competition with each other. Different linters cover different certificate types, and no linter today claims 100% coverage of all the rules coming from the various root program policies, CABForum requirements, and RFCs. Running multiple linters could well increase your total coverage. If a linter catches even a single issue that no other linter catches, then that linter has proven its worth. Linters, like all software, sometimes have bugs; but it's relatively unlikely that the same bug affects all the linters.
+Linters are not in competition with each other. Different linters have different capabilities, and no linter today claims 100% coverage of all the rules coming from the various root program policies, CABForum requirements, RFCs, etc. Running multiple linters will probably increase your total coverage. If a linter catches even a single issue that no other linter catches, then that linter has proven its worth. Linters, like all software, sometimes have bugs; but it's relatively unlikely that the same bug affects all the linters.
 
-In addition to certificate linters, there are other tools available that can extend your overall linting coverage. These special-purpose linters have a detailed focus on a particular requirement or subset of requirements.
+In addition to general-purpose linters for PKI artifacts (Certificates, CRLs, and OCSP responses), there are also special-purpose linters available that can extend your overall linting coverage with a detailed focus on a particular requirement or subset of requirements.
 
 ## Why use pkimetal?
 
 - Software integration: Linters have been developed in several different programming languages: Ruby (Certlint), C (x509lint), Go (ZLint), Python (pkilint). It's not always easy to integrate third-party code written in a different language into your own application. **pkimetal does this integration so that you don't have to**.
-- To-be-signed input: Certificate linters tend to only accept signed certificates as input, whereas pre-issuance linting is performed on a to-be-signed certificate prior to signing. Figuring out how to convert to-be-signed input into something that the linters can process is sufficiently non-obvious that CABForum Ballot SC-75 includes two suggested methods. **pkimetal accepts to-be-signed input and handles this conversion for you**.
+- To-be-signed input: Linters tend to only accept signed PKI artifacts as input, whereas pre-issuance certificate linting is performed on a to-be-signed certificate prior to signing. Figuring out how to convert to-be-signed input into something that the linters can process is sufficiently non-obvious that CABForum Ballot SC-75 includes two [suggested](https://github.com/cabforum/servercert/pull/527/files#diff-e0ac1bd190515a4f2ec09139d395ef6a8c7e9e5b612957c1f5a2dea80c6a6cfeR1120) [methods](https://github.com/cabforum/servercert/pull/527/files#diff-e0ac1bd190515a4f2ec09139d395ef6a8c7e9e5b612957c1f5a2dea80c6a6cfeR1121). **pkimetal accepts to-be-signed input and handles this conversion for you**.
 - Lint selection: Getting the correct linting result for any given input type requires calling the right subset of linters with the right options. **pkimetal takes care of this for you**.
-- Performance: Most of the available linters are designed to be run from the command line, linting one certificate each time. With some linters this can incur some pretty severe performance penalties: the overhead of starting up the programming language interpreter, and the overhead of initiating the linter functionality. In some cases it can take half a second to lint just one certificate, which would be a bottleneck for many CAs' certificate issuance rates. **pkimetal only incurs these performance penalties once; linting multiple certificates is up to 20x faster!**
+- Performance: Most of the available linters are designed to be run from the command line, linting one input file each time. With some linters, repeating this process for multiple files can incur some pretty severe performance penalties: the overhead of starting up the programming language interpreter each time, and the overhead of initiating the linter functionality each time. These overheads mean that it can take half a second to lint just one certificate, which would be a bottleneck for many CAs' certificate issuance rates. **pkimetal only incurs these performance penalties once; linting multiple certificates is up to 20x faster!**
 - Scalability: Even 20x faster might not be enough for some high-volume certificate issuers. **pkimetal can run multiple instances of most linters, taking advantage of multiple CPU cores**.
 
-Every WebPKI CA is now expected to implement pre-issuance linting. The availability of pkimetal ensures that no CA should struggle to meet this expectation.
+Every WebPKI CA is now expected to implement pre-issuance certificate linting. The availability of pkimetal ensures that no CA should struggle to meet this expectation.
 
 ## Supported linters
 
-Certificate linters:
-- [certlint](https://github.com/certlint/certlint)
-- [pkilint](https://github.com/digicert/pkilint)
-- [x509lint](https://github.com/kroeckx/x509lint)
-- [zlint](https://github.com/zmap/zlint)
+General-purpose linters:
+- [certlint](https://github.com/certlint/certlint): Certificate linter (CABForum TLS; RFC5280).
+- [pkilint](https://github.com/digicert/pkilint): Certificate, CRL, and OCSP response linter (CABForum TLS and S/MIME; ETSI EN 319 412 and TS 119 495; RFC5280).
+- [x509lint](https://github.com/kroeckx/x509lint): Certificate linter (CABForum TLS; RFC5280).
+- [zlint](https://github.com/zmap/zlint): Certificate and CRL linter (CABForum TLS, S/MIME, and Code Signing; ETSI EN 319 412 and TS 119 495; RFC5280).
 
 Special-purpose linters:
-- [dwklint](https://github.com/CVE-2008-0166/dwklint)
-- [ftfy](https://github.com/rspeer/python-ftfy)
+- [dwklint](https://github.com/CVE-2008-0166/dwklint): Detects Debian weak keys (CVE-2008-0166), as required by CABForum Ballot [SC-73](https://github.com/cabforum/servercert/pull/500/files#diff-e0ac1bd190515a4f2ec09139d395ef6a8c7e9e5b612957c1f5a2dea80c6a6cfeR1705).
+- [ftfy](https://github.com/rspeer/python-ftfy): Detects mojibake (character encoding mix-ups).
 
 ## Docker containers
 
-[Docker containers](https://github.com/pkimetal/pkimetal/pkgs/container/pkimetal) are pre-built automatically and published on the Github Container Repository (GHCR). Two different release cycles are provided:
+[Docker containers](https://github.com/orgs/pkimetal/packages?repo_name=pkimetal) are pre-built automatically and published on the Github Container Repository (GHCR). Two different release cycles are provided:
 
-- Stable releases: These have a "vX.X.X" tag on GHCR and are automatically built and published whenever a corresponding [pkimetal release](https://github.com/pkimetal/pkimetal/releases) is created. The most recent Stable release also receives the "latest" tag. Since Stable releases track versioned releases of each linter project (wherever possible), **only Stable releases are recommended for production usage**.
-- Development releases: These have a "YYYYMMDDHHMMSS" tag on GHCR and are automatically built and published whenever a corresponding [commit](https://github.com/pkimetal/pkimetal/commits/main/) is pushed to the "main" branch. Since Development releases also track the latest commits to the "main"/"master" branch of each linter project, they are NOT RECOMMENDED for production usage.
+- [Stable](https://github.com/pkimetal/pkimetal/pkgs/container/pkimetal) releases: These have a "vX.X.X" tag on GHCR and are automatically built and published whenever a corresponding [pkimetal release](https://github.com/pkimetal/pkimetal/releases) is created. The most recent Stable release also receives the "latest" tag. Since Stable releases track versioned releases of each linter project (wherever possible), **only Stable releases are recommended for production usage**.
+- [Development](https://github.com/pkimetal/pkimetal/pkgs/container/pkimetal-dev) releases: These have a "YYYYMMDDHHMMSS" tag on GHCR and are automatically built and published whenever a corresponding [commit](https://github.com/pkimetal/pkimetal/commits/main/) is pushed to the "main" branch. Since Development releases also track the latest commits to the "main"/"master" branch of each linter project, they are NOT RECOMMENDED for production usage.
 
 ## Public instances
 
