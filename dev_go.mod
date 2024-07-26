@@ -18,7 +18,7 @@ require (
 require (
 	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
-	github.com/certlint/certlint v1.7.5-0.20240719092827-81c559c808a1 // indirect
+	github.com/certlint/certlint v1.7.5-0.20240726095528-d35133e99958 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/digicert/pkilint v0.11.3 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
