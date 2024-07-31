@@ -65,3 +65,13 @@ jobs:
       if: env.dev_files_changed == 'true'
       run: |
           gh pr merge -d -m
+
+    - name: Trigger Dev Container Build
+      if: env.dev_files_changed == 'true'
+      run: |
+      curl -X POST \
+        -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+        -H "Accept: application/vnd.github.v3+json" \
+        https://api.github.com/repos/XolphinMartijn/pkimetal/actions/workflows/docker-dev.yml/dispatches \
+        -d '{"ref":"main"}'
+
