@@ -93,3 +93,5 @@ Please submit a pull request to update README.md if you are aware of another CA/
 pkimetal was created by [Rob Stradling](https://github.com/robstradling) at Sectigo, and the project is currently maintained at Sectigo by Rob Stradling and [Martijn Katerbarg](https://github.com/XolphinMartijn). It is hoped that other publicly-trusted CAs and ecosystem participants will benefit and collaborate on future development. :-)
 
 The "metal" suffix was chosen for its double-meaning: it's both an abbreviation of "meta-linter" and it conveys the idea that (meta-)linting strengthens the PKI!
+
+The project's [mascot](https://pkimet.al/mascot.jpg) is a cartoon lint roller pretending to be a brave knight, clad in armour (metal, obviously) to bravely fight the good fight of PKI policy compliance! Standing atop its vanquished foe (a pile of clothes, representing a marauding band of noncompliant TBSCertificates), it proudly displays the battle wounds (linter "findings") sustained during its noble quest. 😉
