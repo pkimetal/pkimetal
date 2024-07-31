@@ -11,7 +11,7 @@ At a glance:
 - [Supported linters](#supported-linters)
 - [Docker containers](#docker-containers)
 - [Public instances](#public-instances)
-- [Known users/integrations](#known-users-integrations)
+- [Known users/integrations](#known-usersintegrations)
 - [About this project](#about-this-project)
 
 Details:
