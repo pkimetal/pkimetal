@@ -11,6 +11,7 @@ At a glance:
 - [Supported linters](#supported-linters)
 - [Docker containers](#docker-containers)
 - [Public instances](#public-instances)
+- [Known users/integrations](#known-users-integrations)
 - [About this project](#about-this-project)
 
 Details:
@@ -78,6 +79,14 @@ Sectigo provides public instances of pkimetal that correspond to the two release
 - Development: https://dev.pkimet.al/
 
 These public instances are provided as-is, on a best effort basis. They are NOT RECOMMENDED for production usage by CAs, because (due to Ballot SC-75) they may be seen as Delegated Third Parties. Your own deployment of the [Docker container](#docker-containers) for the latest Stable release is the appropriate way to deploy pkimetal in a production CA environment.
+
+## Known users/integrations
+
+Here are some projects/CAs that are known to use or integrate with pkimetal:
+
+- [Sectigo (coming soon)](https://sectigo.com/), [crt.sh (coming soon)](https://crt.sh/), and the two [Public instances](#public-instances) listed above
+
+Please submit a pull request to update README.md if you are aware of another CA/project that uses or integrates with pkimetal.
 
 ## About this project
 
