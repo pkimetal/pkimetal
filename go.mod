@@ -9,8 +9,8 @@ require (
 	github.com/sergi/go-diff v1.3.1
 	github.com/spf13/viper v1.19.0
 	github.com/valyala/fasthttp v1.55.0
-	github.com/zmap/zcrypto v0.0.0-20240512203510-0fef58d9a9db
-	github.com/zmap/zlint/v3 v3.6.2
+	github.com/zmap/zcrypto v0.0.0-20240803002437-3a861682ac77
+	github.com/zmap/zlint/v3 v3.6.3
 	go.uber.org/automaxprocs v1.5.3
 	go.uber.org/zap v1.27.0
 )
@@ -47,7 +47,7 @@ require (
 	golang.org/x/crypto v0.25.0 // indirect
 	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56 // indirect
 	golang.org/x/net v0.27.0 // indirect
-	golang.org/x/sys v0.22.0 // indirect
+	golang.org/x/sys v0.23.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
