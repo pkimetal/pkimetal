@@ -77,8 +77,8 @@ github.com/prometheus/procfs v0.15.1 h1:YagwOFzUgYfKKHX6Dr+sHT7km/hxC76UB0leargg
 github.com/prometheus/procfs v0.15.1/go.mod h1:fB45yRUv8NstnjriLhBQLuOUt+WW4BsoGhij/e3PBqk=
 github.com/rogpeppe/go-internal v1.10.0 h1:TMyTOH3F/DB16zRVcYyreMH6GnZZrwQVAoYjRBZyWFQ=
 github.com/rogpeppe/go-internal v1.10.0/go.mod h1:UQnix2H7Ngw/k4C5ijL5+65zddjncjaFoBhdsK/akog=
-github.com/rspeer/python-ftfy v6.2.1-0.20240315223959-0e23caea29d4+incompatible h1:BWEkvDIQzWWoia4bwT/6Hd7dK8Pk607KbVaTXtlTkzg=
-github.com/rspeer/python-ftfy v6.2.1-0.20240315223959-0e23caea29d4+incompatible/go.mod h1:zsOk8ae9wRtMcr/G2tdFatY7frpxbD5vZmAqkMytoL4=
+github.com/rspeer/python-ftfy v6.2.1-0.20240805194603-e3aca4e04ddc+incompatible h1:G8oMIeBxwdhp8CgFQCsHIpD1fKrrDA1WdAkU3ej7iHE=
+github.com/rspeer/python-ftfy v6.2.1-0.20240805194603-e3aca4e04ddc+incompatible/go.mod h1:zsOk8ae9wRtMcr/G2tdFatY7frpxbD5vZmAqkMytoL4=
 github.com/sagikazarmark/locafero v0.6.0 h1:ON7AQg37yzcRPU69mt7gwhFEBwxI6P9T4Qu3N51bwOk=
 github.com/sagikazarmark/locafero v0.6.0/go.mod h1:77OmuIc6VTraTXKXIs/uvUxKGUXjE1GbemJYHqdNjX0=
 github.com/sagikazarmark/slog-shim v0.1.0 h1:diDBnUNK9N/354PgrxMywXnAwEr1QZcOr6gto+ugjYE=
