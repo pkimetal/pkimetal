@@ -117,19 +117,41 @@ func (l *Ftfy) HandleRequest(lin *linter.LinterInstance, lreq *linter.LintingReq
 		} else if ftfyOutput := lin.Stdout.Text(); ftfyInput != ftfyOutput {
 			// ftfy "fixed" one or more things that we haven't listed as false positives.
 			// Return finding(s).
-			field := ""
+			var deleted string
+			var changes [][2]string
 			for _, diff := range dmp.DiffMain(ftfyInput, ftfyOutput, false) {
 				switch diff.Type {
 				case diffmatchpatch.DiffDelete:
-					field = diff.Text
+					deleted = diff.Text
+					changes = append(changes, [2]string{deleted, ""})
 				case diffmatchpatch.DiffInsert:
-					lres = append(lres, linter.LintingResult{
-						Severity: linter.SEVERITY_WARNING,
-						Field:    fmt.Sprintf("'%s' (0x%s)", field, hex.EncodeToString(utils.S2B(field))),
-						Finding:  fmt.Sprintf("Should be '%s' (0x%s)", diff.Text, hex.EncodeToString(utils.S2B(diff.Text))),
-					})
-					field = ""
+					if deleted != "" {
+						changes[len(changes)-1][1] = diff.Text
+						deleted = ""
+					} else {
+						changes = append(changes, [2]string{"", diff.Text})
+					}
+				case diffmatchpatch.DiffEqual:
+					deleted = ""
 				}
+			}
+			for _, change := range changes {
+				var field, finding string
+				if change[0] == "" {
+					field = "Absent"
+				} else {
+					field = fmt.Sprintf("'%s' (0x%s)", change[0], hex.EncodeToString(utils.S2B(change[0])))
+				}
+				if change[1] == "" {
+					finding = "Should be absent"
+				} else {
+					finding = fmt.Sprintf("'%s' (0x%s)", change[1], hex.EncodeToString(utils.S2B(change[1])))
+				}
+				lres = append(lres, linter.LintingResult{
+					Severity: linter.SEVERITY_WARNING,
+					Field:    field,
+					Finding:  finding,
+				})
 			}
 		}
 	}
