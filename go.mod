@@ -2,6 +2,8 @@ module github.com/pkimetal/pkimetal
 
 go 1.21.6
 
+toolchain go1.22.6
+
 require (
 	github.com/CVE-2008-0166/dwklint v1.0.0
 	github.com/goccy/go-json v0.10.3
