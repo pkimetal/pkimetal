@@ -145,7 +145,7 @@ func (l *Ftfy) HandleRequest(lin *linter.LinterInstance, lreq *linter.LintingReq
 				if change[1] == "" {
 					finding = "Should be absent"
 				} else {
-					finding = fmt.Sprintf("'%s' (0x%s)", change[1], hex.EncodeToString(utils.S2B(change[1])))
+					finding = fmt.Sprintf("Should be '%s' (0x%s)", change[1], hex.EncodeToString(utils.S2B(change[1])))
 				}
 				lres = append(lres, linter.LintingResult{
 					Severity: linter.SEVERITY_WARNING,
