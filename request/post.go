@@ -165,6 +165,9 @@ func POST(fhctx *fasthttp.RequestCtx, path string) int {
 			})
 		}
 
+		// Add Cross-Origin Resource Sharing (CORS) response header.
+		fhctx.Response.Header.Set("Access-Control-Allow-Origin", "*")
+
 		// Send response.
 		switch responseFormat {
 		case config.RESPONSEFORMAT_HTML:
