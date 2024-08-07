@@ -11,6 +11,7 @@ At a glance:
 - [Supported linters](#supported-linters)
 - [Docker containers](#docker-containers)
 - [Public instances](#public-instances)
+- [Known users/integrations](#known-usersintegrations)
 - [About this project](#about-this-project)
 
 Details:
@@ -79,8 +80,18 @@ Sectigo provides public instances of pkimetal that correspond to the two release
 
 These public instances are provided as-is, on a best effort basis. They are NOT RECOMMENDED for production usage by CAs, because (due to Ballot SC-75) they may be seen as Delegated Third Parties. Your own deployment of the [Docker container](#docker-containers) for the latest Stable release is the appropriate way to deploy pkimetal in a production CA environment.
 
+## Known users/integrations
+
+Here are some projects/CAs that are known to use or integrate with pkimetal:
+
+- [Sectigo (coming soon)](https://sectigo.com/), [crt.sh (coming soon)](https://crt.sh/), and the two [Public instances](#public-instances) listed above
+
+Please submit a pull request to update README.md if you are aware of another CA/project that uses or integrates with pkimetal.
+
 ## About this project
 
 pkimetal was created by [Rob Stradling](https://github.com/robstradling) at Sectigo, and the project is currently maintained at Sectigo by Rob Stradling and [Martijn Katerbarg](https://github.com/XolphinMartijn). It is hoped that other publicly-trusted CAs and ecosystem participants will benefit and collaborate on future development. :-)
 
 The "metal" suffix was chosen for its double-meaning: it's both an abbreviation of "meta-linter" and it conveys the idea that (meta-)linting strengthens the PKI!
+
+The project's [mascot](https://pkimet.al/mascot.jpg) is a cartoon lint roller pretending to be a brave knight, clad in armour (metal, obviously) to bravely fight the good fight of PKI policy compliance! Standing atop its vanquished foe (a pile of clothes, representing a marauding band of noncompliant TBSCertificates), it proudly displays the battle wounds (linter "findings") sustained during its noble quest. 😉
