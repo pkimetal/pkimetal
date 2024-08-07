@@ -51,10 +51,7 @@ jobs:
       - name: Get the latest commit hash and timestamp
         id: vars
         run: |
-          COMMIT_HASH=$(git rev-parse --short HEAD)
-          COMMIT_TIMESTAMP=$(git show -s --format=%ct HEAD)
           CONTAINER_TIMESTAMP=$(date -u +'%Y%m%d%H%M%S')
-          echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
           echo "CONTAINER_TIMESTAMP=$CONTAINER_TIMESTAMP" >> $GITHUB_ENV
           
       # Build and push Docker image with Buildx
