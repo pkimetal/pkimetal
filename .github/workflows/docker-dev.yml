@@ -6,6 +6,9 @@ on:
     branches:
         - main
   workflow_dispatch:
+  release:
+    types: 
+      - published
       
 env:
   # Use docker.io for Docker Hub if empty
