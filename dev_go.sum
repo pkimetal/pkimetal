@@ -130,8 +130,8 @@ github.com/zmap/zcrypto v0.0.0-20201211161100-e54a5822fb7e/go.mod h1:aPM7r+JOkfL
 github.com/zmap/zcrypto v0.0.0-20240803002437-3a861682ac77 h1:DCz0McWRVJNICkHdu2XpETqeLvPtZXs315OZyUs1BDk=
 github.com/zmap/zcrypto v0.0.0-20240803002437-3a861682ac77/go.mod h1:aSvf+uTU222mUYq/KQj3oiEU7ajhCZe8RRSLHIoM4EM=
 github.com/zmap/zlint/v3 v3.0.0/go.mod h1:paGwFySdHIBEMJ61YjoqT4h7Ge+fdYG4sUQhnTb1lJ8=
-github.com/zmap/zlint/v3 v3.6.4-0.20240811160907-8eb670f6ab02 h1:fAnkQ0G8rkEnkMNfVbiWrbkp1AQOr7LbX+Qu99XmNAo=
-github.com/zmap/zlint/v3 v3.6.4-0.20240811160907-8eb670f6ab02/go.mod h1:KQLVUquVaO5YJDl5a4k/7RPIbIW2v66+sRoBPNZusI8=
+github.com/zmap/zlint/v3 v3.6.4-0.20240811191554-caa62acd5a7d h1:EV3tYm0NOttx8/0/NJ8Wwqmx5vUdg3tO8X0cVRZrBAg=
+github.com/zmap/zlint/v3 v3.6.4-0.20240811191554-caa62acd5a7d/go.mod h1:KQLVUquVaO5YJDl5a4k/7RPIbIW2v66+sRoBPNZusI8=
 go.uber.org/automaxprocs v1.5.3 h1:kWazyxZUrS3Gs4qUpbwo5kEIMGe/DAvi5Z4tl2NW4j8=
 go.uber.org/automaxprocs v1.5.3/go.mod h1:eRbA25aqJrxAbsLO0xy5jVwPt7FQnRgjW+efnwa1WM0=
 go.uber.org/goleak v1.3.0 h1:2K3zAYmnTNqV73imy9J1T3WC+gmCePx2hEGkimedGto=
