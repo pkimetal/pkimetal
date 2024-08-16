@@ -66,8 +66,9 @@ type LintingRequest struct {
 
 type LintingResult struct {
 	LinterName string
-	Field      string
 	Finding    string
+	Field      string
+	Code       string
 	Severity   SeverityLevel
 }
 

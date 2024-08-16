@@ -33,8 +33,9 @@ type RequestInfo struct {
 
 type LintResult struct {
 	Linter   string
-	Field    string `json:"Field,omitempty"`
 	Finding  string
+	Field    string `json:"Field,omitempty"`
+	Code     string `json:"Code,omitempty"`
 	Severity string
 }
 
@@ -142,8 +143,9 @@ func POST(fhctx *fasthttp.RequestCtx, path string) int {
 				if lres.Severity >= ri.minimumSeverity {
 					lrespFiltered = append(lrespFiltered, LintResult{
 						Linter:   lres.LinterName,
-						Field:    lres.Field,
 						Finding:  lres.Finding,
+						Field:    lres.Field,
+						Code:     lres.Code,
 						Severity: linter.SeverityString[lres.Severity],
 					})
 				}
@@ -231,6 +233,8 @@ func sendHTMLResponse(fhctx *fasthttp.RequestCtx, lrespFiltered []LintResult) in
 		  <TH>Linter</TH>
 		  <TH>Severity</TH>
 		  <TH>Finding</TH>
+		  <TH>Field</TH>
+		  <TH>Code</TH>
 		</TR>`)
 	if len(lrespFiltered) == 0 {
 		response.WriteString(`
@@ -258,11 +262,9 @@ func sendHTMLResponse(fhctx *fasthttp.RequestCtx, lrespFiltered []LintResult) in
 		<TR style="` + style + `">
 		  <TD>` + lres.Linter + `</TD>
 		  <TD>` + strings.ToUpper(lres.Severity) + `</TD>
-		  <TD>`)
-			if lres.Field != "" {
-				response.WriteString(`[` + lres.Field + `] `)
-			}
-			response.WriteString(lres.Finding + `</TD>
+		  <TD>` + lres.Finding + `</TD>
+		  <TD>` + lres.Field + `</TD>
+		  <TD>` + lres.Code + `</TD>
 		</TR>`)
 		}
 	}
@@ -306,7 +308,7 @@ func sendTEXTResponse(fhctx *fasthttp.RequestCtx, lrespFiltered []LintResult) in
 	for _, lres := range lrespFiltered {
 		finding := lres.Finding
 		if lres.Field != "" {
-			finding = lres.Field + ": " + finding
+			finding += " [" + lres.Field + "]"
 		}
 		response.WriteString(fmt.Sprintf("%s\t%s\t%s\n", lres.Linter, strings.ToUpper(lres.Severity), finding))
 	}
