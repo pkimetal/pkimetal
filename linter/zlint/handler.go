@@ -83,8 +83,10 @@ func lintCert(lreq *linter.LintingRequest, registry *lint.Registry) []linter.Lin
 	} else {
 		zlintResultSet := zlint.LintCertificateEx(cert, *registry)
 		for k, v := range zlintResultSet.Results {
+			certificateLint := defaultRegistry.CertificateLints().ByName(k)
 			lresult := linter.LintingResult{
-				Finding: defaultRegistry.CertificateLints().ByName(k).Description,
+				Finding: certificateLint.Description,
+				Code:    certificateLint.Name,
 			}
 			switch v.Status {
 			case lint.Notice:
@@ -114,8 +116,10 @@ func lintCRL(lreq *linter.LintingRequest, registry *lint.Registry) []linter.Lint
 	} else {
 		zlintResultSet := zlint.LintRevocationListEx(crl, *registry)
 		for k, v := range zlintResultSet.Results {
+			crlLint := defaultRegistry.RevocationListLints().ByName(k)
 			lresult := linter.LintingResult{
-				Finding: defaultRegistry.RevocationListLints().ByName(k).Description,
+				Finding: crlLint.Description,
+				Code:    crlLint.Name,
 			}
 			switch v.Status {
 			case lint.Notice:
