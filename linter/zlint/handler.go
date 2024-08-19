@@ -157,3 +157,7 @@ func (l *Zlint) HandleRequest(lin *linter.LinterInstance, lreq *linter.LintingRe
 		return lintCert(lreq, registry)
 	}
 }
+
+func (l *Zlint) ProcessResult(lresult linter.LintingResult) linter.LintingResult {
+	return lresult
+}

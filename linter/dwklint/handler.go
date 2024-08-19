@@ -68,3 +68,7 @@ func (l *Dwklint) HandleRequest(lin *linter.LinterInstance, lreq *linter.Linting
 	}
 	return []linter.LintingResult{lres}
 }
+
+func (l *Dwklint) ProcessResult(lresult linter.LintingResult) linter.LintingResult {
+	return lresult
+}

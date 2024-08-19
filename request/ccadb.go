@@ -45,9 +45,9 @@ func init() {
 	ccadbCsvData, err := os.ReadFile(CCADB_CSV_FILENAME)
 	if err != nil {
 		logger.Logger.Info(
-			"CCADB CSV file could not be read",
+			"CSV file could not be read",
 			zap.Error(err),
-			zap.String("ccadb_csv_filename", CCADB_CSV_FILENAME),
+			zap.String("csv_filename", CCADB_CSV_FILENAME),
 		)
 		return
 	}
@@ -61,15 +61,15 @@ func init() {
 	records, err := reader.ReadAll()
 	if err != nil {
 		logger.Logger.Error(
-			"CCADB CSV file could not be parsed",
+			"CSV file could not be parsed",
 			zap.Error(err),
-			zap.String("ccadb_csv_filename", CCADB_CSV_FILENAME),
+			zap.String("csv_filename", CCADB_CSV_FILENAME),
 		)
 		return
 	} else if len(records) == 0 {
 		logger.Logger.Error(
-			"CCADB CSV file is empty",
-			zap.String("ccadb_csv_filename", CCADB_CSV_FILENAME),
+			"CSV file is empty",
+			zap.String("csv_filename", CCADB_CSV_FILENAME),
 		)
 		return
 	}
@@ -103,8 +103,8 @@ func init() {
 	for _, v := range csvIdx {
 		if v == 0 {
 			logger.Logger.Error(
-				"CCADB CSV data is missing one or more expected headers",
-				zap.String("ccadb_csv_filename", CCADB_CSV_FILENAME),
+				"CSV data is missing one or more expected headers",
+				zap.String("csv_filename", CCADB_CSV_FILENAME),
 			)
 			return
 		}
@@ -114,9 +114,9 @@ func init() {
 	caCertCapMap = make(map[[sha256.Size]byte]*caCertCapabilities)
 	issuerCapMap = make(map[string]*caCertCapabilities)
 	for _, line := range records[1:] {
-		if len(line) < greatestIdx {
+		if len(line) <= greatestIdx {
 			logger.Logger.Warn(
-				"CCADB CSV data has a line that is missing one or more expected fields",
+				"CSV data has a line that is missing one or more expected fields",
 				zap.String("line", strings.Join(line, ",")),
 			)
 		}
@@ -132,7 +132,7 @@ func init() {
 		sha256Slice, err := hex.DecodeString(line[csvIdx[IDX_SHA256FINGERPRINT]])
 		if err != nil {
 			logger.Logger.Warn(
-				"CCADB CSV data contains an invalid hex string",
+				"CSV data contains an invalid hex string",
 				zap.String("value", line[csvIdx[IDX_SHA256FINGERPRINT]]),
 			)
 			continue

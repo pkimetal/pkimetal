@@ -63,6 +63,9 @@ RUN pipx install ftfy pkilint
 
 # pkimetal.
 WORKDIR /app
-RUN wget https://ccadb.my.salesforce-sites.com/ccadb/AllCertificateRecordsCSVFormatv2
+RUN wget https://ccadb.my.salesforce-sites.com/ccadb/AllCertificateRecordsCSVFormatv2 && \
+	wget -O finding_metadata.csv.smime https://raw.githubusercontent.com/digicert/pkilint/main/pkilint/cabf/smime/finding_metadata.csv && \
+	wget -O finding_metadata.csv.serverauth https://raw.githubusercontent.com/digicert/pkilint/main/pkilint/cabf/serverauth/finding_metadata.csv && \
+	wget -O finding_metadata.csv.etsi https://raw.githubusercontent.com/digicert/pkilint/main/pkilint/etsi/finding_metadata.csv
 COPY --from=build /app/pkimetal /app/pkimetal
 CMD ["/app/pkimetal"]

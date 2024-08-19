@@ -114,3 +114,7 @@ func (l *Certlint) HandleRequest(lin *linter.LinterInstance, lreq *linter.Lintin
 	// Not used.
 	return nil
 }
+
+func (l *Certlint) ProcessResult(lresult linter.LintingResult) linter.LintingResult {
+	return lresult
+}

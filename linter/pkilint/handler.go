@@ -25,6 +25,9 @@ func init() {
 		panic("pkilint: PythonDir must be set")
 	}
 
+	// Load pkilint's finding_metadata.csv files, if available.
+	loadFindingMetadata()
+
 	// Register pkilint.
 	(&linter.Linter{
 		Name:         "pkilint",
@@ -216,4 +219,12 @@ func (l *Pkilint) StopInstance(lin *linter.LinterInstance) {
 func (l *Pkilint) HandleRequest(lin *linter.LinterInstance, lreq *linter.LintingRequest, ctx context.Context) []linter.LintingResult {
 	// Not used.
 	return nil
+}
+
+func (l *Pkilint) ProcessResult(lresult linter.LintingResult) linter.LintingResult {
+	if fm, ok := findingMetadataMap[lresult.Code]; ok {
+		lresult.Finding = fm.description
+	}
+
+	return lresult
 }

@@ -27,6 +27,7 @@ type LinterInterface interface {
 	StartInstance() (useHandleRequest bool, directory, cmd string, args []string)
 	StopInstance(lin *LinterInstance)
 	HandleRequest(lin *LinterInstance, lreq *LintingRequest, ctx context.Context) []LintingResult
+	ProcessResult(lresult LintingResult) LintingResult
 }
 
 type Linter struct {
@@ -335,13 +336,14 @@ func (lin *LinterInstance) serverLoop(lif LinterInterface, ctx context.Context) 
 								for _, fd := range r.FindingDescriptions {
 									lresult := LintingResult{
 										LinterName: lin.Name,
-										Field:      r.NodePath,
 										Finding:    fd.Code,
+										Field:      r.NodePath,
+										Code:       fd.Code,
 										Severity:   Severity[strings.ToLower(fd.Severity)],
 									}
 
 									// Send this linting result to the response channel.
-									lreq.RespChannel <- lresult
+									lreq.RespChannel <- lif.ProcessResult(lresult)
 								}
 							}
 						}
