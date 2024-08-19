@@ -158,3 +158,7 @@ func (l *Ftfy) HandleRequest(lin *linter.LinterInstance, lreq *linter.LintingReq
 
 	return lres
 }
+
+func (l *Ftfy) ProcessResult(lresult linter.LintingResult) linter.LintingResult {
+	return lresult
+}

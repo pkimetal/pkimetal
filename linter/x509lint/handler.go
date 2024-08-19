@@ -101,3 +101,7 @@ func x509lintCheck(cert_der []byte, cert_type int) string {
 	defer C.free(unsafe.Pointer(messages))
 	return C.GoString(messages)
 }
+
+func (l *X509lint) ProcessResult(lresult linter.LintingResult) linter.LintingResult {
+	return lresult
+}
