@@ -62,7 +62,7 @@ func POST(fhctx *fasthttp.RequestCtx, path string) int {
 	ctxWithDeadline, cancel := context.WithDeadline(context.Background(), fhctx.Time().Add(time.Duration(config.Config.Server.RequestTimeout)))
 	defer cancel()
 
-	doneChan := make(chan int)
+	doneChan := make(chan int, 1)
 	go func() {
 		var ri RequestInfo
 		var err error

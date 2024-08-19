@@ -20,7 +20,7 @@ func readyz(ctx *fasthttp.RequestCtx) int {
 	ctxWithDeadline, cancel := context.WithDeadline(context.Background(), ctx.Time().Add(time.Duration(config.Config.Server.ReadyzTimeout)))
 	defer cancel()
 
-	doneChan := make(chan int)
+	doneChan := make(chan int, 1)
 	go func() {
 		statusCode := fasthttp.StatusOK
 		if !health.IsReady(ctx) {

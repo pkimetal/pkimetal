@@ -29,7 +29,7 @@ func metrics(ctx *fasthttp.RequestCtx) int {
 	ctxWithDeadline, cancel := context.WithDeadline(context.Background(), ctx.Time().Add(time.Duration(config.Config.Server.MetricsTimeout)))
 	defer cancel()
 
-	doneChan := make(chan int)
+	doneChan := make(chan int, 1)
 	go func() {
 		getFastHTTPMetrics()
 		prometheusHandler(ctx)
