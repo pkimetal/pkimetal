@@ -113,7 +113,7 @@ func FrontPage(fhctx *fasthttp.RequestCtx) {
   <TABLE>
     <TR>
       <TD style="text-align:center;vertical-align:middle"><A href="//` + linter.GetPackagePath() + `/releases" target="_blank"><DIV class="title">` + linter.PKIMETAL_NAME + ` ` + linter.VersionString(config.PkimetalVersion) + `</DIV></A></TD>
-      <TD><A href="//` + linter.GetPackagePath() + `" target="_blank"><IMG src="/mascot.jpg" width="100" height="100"></A></TD>
+      <TD style="padding-left:50px"><A href="//` + linter.GetPackagePath() + `" target="_blank"><IMG src="/mascot.jpg" width="100" height="100"></A></TD>
     </TR>
     <TR>
       <TD>
@@ -133,6 +133,7 @@ func FrontPage(fhctx *fasthttp.RequestCtx) {
           <LI><A href="/` + ENDPOINTSTRING_PROFILES + `">` + ENDPOINTSTRING_PROFILES + `</A> - List all available profiles</LI>
         </UL>
       </TD>
+      <TD style="vertical-align:bottom;padding-left:50px">` + availableLinters() + builtAt() + `<BR></TD>
     </TR>
   </TABLE>
   <BR><BR><BR>` + copyright() + `
@@ -239,23 +240,7 @@ func APIWebpage(fhctx *fasthttp.RequestCtx, endpoint string) {
         </TD>
         <TD>
           <INPUT class="button" type="submit" value="` + endpoint + `">
-          <BR><BR><BR>Available Linters:<DIV style="font-size:10pt;font-style:normal">`)
-	for _, l := range linter.Linters {
-		response.WriteString(`
-          `)
-		if l.NumInstances <= 0 {
-			response.WriteString(`<S style="color:#888888">`)
-		}
-		response.WriteString(`<A href="` + l.Url + `">` + l.Name + `</A> ` + linter.VersionString(l.Version))
-		if l.NumInstances <= 0 {
-			response.WriteString(`</S>`)
-		}
-		response.WriteString(`<BR>`)
-	}
-	response.WriteString(`
-          </DIV>
-          <BR>Built at:
-          <DIV style="font-size:8pt;font-style:normal">` + config.BuildTimestamp + `</DIV>
+          <BR><BR><BR>` + availableLinters() + builtAt() + `
         </TD>
       </TR>
     </TABLE>
@@ -269,4 +254,25 @@ func APIWebpage(fhctx *fasthttp.RequestCtx, endpoint string) {
 	fhctx.SetBodyString(response.String())
 	fhctx.SetContentType("text/html")
 	fhctx.SetStatusCode(fasthttp.StatusOK)
+}
+
+func availableLinters() string {
+	var al strings.Builder
+	al.WriteString(`Available Linters:<DIV style="font-size:10pt;font-style:normal">`)
+	for _, l := range linter.Linters {
+		if l.NumInstances <= 0 {
+			al.WriteString(`<S style="color:#888888">`)
+		}
+		al.WriteString(`<A href="` + l.Url + `">` + l.Name + `</A> ` + linter.VersionString(l.Version))
+		if l.NumInstances <= 0 {
+			al.WriteString(`</S>`)
+		}
+		al.WriteString(`<BR>`)
+	}
+	al.WriteString(`</DIV>`)
+	return al.String()
+}
+
+func builtAt() string {
+	return `<BR>Built at:<DIV style="font-size:8pt;font-style:normal">` + config.BuildTimestamp + `</DIV>`
 }
