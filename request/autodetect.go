@@ -1,6 +1,7 @@
 package request
 
 import (
+	"bytes"
 	"crypto/sha256"
 	"crypto/x509"
 	"crypto/x509/pkix"
@@ -132,6 +133,31 @@ func hasJurisdictionCountryNameAttribute(subject pkix.Name) bool {
 	return false
 }
 
+func isRootCertificate(cert *x509.Certificate) bool {
+	if cert.Version >= 3 && (!cert.BasicConstraintsValid || !cert.IsCA) {
+		return false
+	} else if cert.CheckSignatureFrom(cert) == nil {
+		return true
+	} else if !hasUnsupportedSignatureAlgorithm(cert) {
+		return false
+	} else if !bytes.Equal(cert.RawSubject, cert.RawIssuer) {
+		return false
+	} else if cert.Version >= 3 && !bytes.Equal(cert.AuthorityKeyId, cert.SubjectKeyId) {
+		return false
+	} else {
+		return true
+	}
+}
+
+func hasUnsupportedSignatureAlgorithm(cert *x509.Certificate) bool {
+	switch cert.SignatureAlgorithm {
+	case x509.MD2WithRSA, x509.MD5WithRSA, x509.SHA1WithRSA, x509.DSAWithSHA1, x509.DSAWithSHA256, x509.ECDSAWithSHA1:
+		return true
+	default:
+		return false
+	}
+}
+
 func (ri *RequestInfo) GetProfile(profileName string) bool {
 	// Determine the Profile ID (default = auto-detect).
 	if profileName == "" {
@@ -157,12 +183,10 @@ func (ri *RequestInfo) GetProfile(profileName string) bool {
 		case ENDPOINT_LINTOCSP, ENDPOINT_LINTTBSOCSP:
 			ri.profileId = linter.RFC6960_OCSPRESPONSE
 		case ENDPOINT_LINTCERT, ENDPOINT_LINTTBSCERT:
-			if ri.cert.BasicConstraintsValid && ri.cert.IsCA {
-				if ri.cert.CheckSignatureFrom(ri.cert) == nil {
-					ri.profileId = ri.detectRootCertificateProfile()
-				} else {
-					ri.profileId = ri.detectSubordinateCertificateProfile()
-				}
+			if isRootCertificate(ri.cert) {
+				ri.profileId = ri.detectRootCertificateProfile()
+			} else if ri.cert.BasicConstraintsValid && ri.cert.IsCA {
+				ri.profileId = ri.detectSubordinateCertificateProfile()
 			} else {
 				ri.profileId = ri.detectLeafCertificateProfile()
 			}
