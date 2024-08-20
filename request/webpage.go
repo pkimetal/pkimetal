@@ -182,7 +182,7 @@ func APIWebpage(fhctx *fasthttp.RequestCtx, endpoint string) {
 		inputType = `To-be-signed OCSP Response`
 	}
 	response.WriteString(inputType + ` (PEM/Base64):
-          <BR><TEXTAREA name="b64input" cols="70" rows="18" autofocus autoCorrect="off" autoCapitalize="off" spellCheck="false"></TEXTAREA>
+          <BR><TEXTAREA name="b64input" cols="72" rows="18" autofocus autoCorrect="off" autoCapitalize="off" spellCheck="false"></TEXTAREA>
         </TD>
         <TD>Response Format:
           <BR><SELECT name="format" size="3" style="overflow:hidden">
