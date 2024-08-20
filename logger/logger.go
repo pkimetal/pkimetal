@@ -2,7 +2,10 @@ package logger
 
 import (
 	"math"
+	"strings"
 	"time"
+
+	"github.com/pkimetal/pkimetal/utils"
 
 	"github.com/valyala/fasthttp"
 
@@ -57,42 +60,53 @@ func SetDetails(fhctx *fasthttp.RequestCtx, level zapcore.Level, msg string, err
 	}
 }
 
-func LogRequest(ctx *fasthttp.RequestCtx) {
+func getRealClientIP(fhctx *fasthttp.RequestCtx) string {
+	remoteAddr := strings.SplitN(fhctx.RemoteAddr().String(), ":", 2)
+	if realIP := fhctx.Request.Header.Peek("X-Real-IP"); len(realIP) > 0 {
+		remoteAddr[0] = utils.B2S(realIP)
+	} else if xff := fhctx.Request.Header.Peek("X-Forwarded-For"); len(xff) > 0 {
+		ipAddress := strings.Split(utils.B2S(xff), ",")
+		remoteAddr[0] = strings.TrimSpace(ipAddress[len(ipAddress)-1])
+	}
+	return remoteAddr[0]
+}
+
+func LogRequest(fhctx *fasthttp.RequestCtx) {
 	// Add common logging details.
 	zf := []zap.Field{
-		zap.String("client_ip", ctx.RemoteIP().String()),
-		zap.ByteString("http_method", ctx.Method()),
-		zap.Int("http_status", ctx.Response.StatusCode()),
-		zap.ByteString("protocol", ctx.Request.Header.Protocol()),
-		zap.ByteString("raw_path", ctx.RequestURI()),
-		zap.Int("response_body_size", len(ctx.Response.Body())),
-		zap.Duration("time_taken_ns", time.Since(ctx.Time())),
+		zap.String("client_ip", getRealClientIP(fhctx)),
+		zap.ByteString("http_method", fhctx.Method()),
+		zap.Int("http_status", fhctx.Response.StatusCode()),
+		zap.ByteString("protocol", fhctx.Request.Header.Protocol()),
+		zap.ByteString("raw_path", fhctx.RequestURI()),
+		zap.Int("response_body_size", len(fhctx.Response.Body())),
+		zap.Duration("time_taken_ns", time.Since(fhctx.Time())),
 	}
 
 	// Add further optional logging details.
-	if e := ctx.UserValue("error"); e != nil {
+	if e := fhctx.UserValue("error"); e != nil {
 		zf = append(zf, zap.Error(e.(error)))
 	}
-	if ct := ctx.Request.Header.ContentType(); len(ct) > 0 {
+	if ct := fhctx.Request.Header.ContentType(); len(ct) > 0 {
 		zf = append(zf, zap.ByteString("request_content_type", ct))
 	}
-	if ua := ctx.Request.Header.UserAgent(); len(ua) > 0 {
+	if ua := fhctx.Request.Header.UserAgent(); len(ua) > 0 {
 		zf = append(zf, zap.ByteString("user_agent", ua))
 	}
 
 	// Add application-specific details.
-	if f := ctx.UserValue("zap_fields"); f != nil {
+	if f := fhctx.UserValue("zap_fields"); f != nil {
 		zf = append(zf, f.([]zapcore.Field)...)
 	}
 
 	// Get the error level and message.
 	level := zap.ErrorLevel
-	if l := ctx.UserValue("level"); l != nil {
+	if l := fhctx.UserValue("level"); l != nil {
 		level = l.(zapcore.Level)
 	}
 
 	msg := ""
-	if m := ctx.UserValue("msg"); m != nil {
+	if m := fhctx.UserValue("msg"); m != nil {
 		msg = m.(string)
 	}
 
