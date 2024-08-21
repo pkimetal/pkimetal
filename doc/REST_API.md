@@ -32,7 +32,7 @@ The minimum `severity` must be one of the following options:
 - bug
 - fatal
 
-The "meta" severity level includes informational "findings" added by pkimetal itself. The other security levels are used for the findings of the various linters.
+The "meta" severity level includes informational "findings" added by pkimetal itself. The other severity levels are used for the findings of the various linters.
 
 ## POST endpoints
 
