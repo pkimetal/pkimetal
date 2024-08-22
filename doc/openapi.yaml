@@ -1,0 +1,217 @@
+openapi: 3.0.0
+info:
+  title: pkimetal API
+  description: PKI Meta-Linter
+  version: 1.0.0
+
+servers:
+  - url: https://pkimet.al/
+    description: Stable API server
+  - url: https://dev.pkimet.al/
+    description: Development API server
+  - url: http://localhost:8080/
+    description: Local API server
+
+paths:
+  /lintcert:
+    post:
+      summary: Lints a X.509 certificate
+      requestBody:
+        $ref: '#/components/requestBodies/LintRequestBody'
+      responses:
+        '200':
+          $ref: '#/components/responses/200LintingSuccessful'
+  /linttbscert:
+    post:
+      summary: Creates and lints a X.509 certificate from the specified TBSCertificate
+      requestBody:
+        $ref: '#/components/requestBodies/LintRequestBody'
+      responses:
+        '200':
+          $ref: '#/components/responses/200LintingSuccessful'
+  
+  /lintcrl:
+    post:
+      summary: Lints a X.509 certificate revocation list (CRL)
+      requestBody:
+        $ref: '#/components/requestBodies/LintRequestBody'
+      responses:
+        '200':
+          $ref: '#/components/responses/200LintingSuccessful'
+  /linttbscrl:
+    post:
+      summary: Creates and lints a X.509 certificate revocation list (CRL) from the specified TBSCertList
+      requestBody:
+        $ref: '#/components/requestBodies/LintRequestBody'
+      responses:
+        '200':
+          $ref: '#/components/responses/200LintingSuccessful'
+
+  /lintocsp:
+    post:
+      summary: Lints an OCSP response
+      requestBody:
+        $ref: '#/components/requestBodies/LintRequestBody'
+      responses:
+        '200':
+          $ref: '#/components/responses/200LintingSuccessful'
+  /linttbsocsp:
+    post:
+      summary: Creates and lints an OCSP response from the specified ResponseData
+      requestBody:
+        $ref: '#/components/requestBodies/LintRequestBody'
+      responses:
+        '200':
+          $ref: '#/components/responses/200LintingSuccessful'
+          
+  /profiles:
+    get:
+      summary: Retrieves the profiles available for linting
+      responses:
+        '200':
+          description: A list of profiles available for linting
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LintProfile'
+                  
+  /linters:
+    get:
+      summary: Retrieves the linters available for linting
+      responses:
+        '200':
+          description: A list of linters available for linting
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Linter'
+
+components:
+  requestBodies:
+    LintRequestBody:
+      description: The parameters for the linting request
+      required: true
+      content:
+        application/x-www-form-urlencoded:
+          schema:
+            $ref: '#/components/schemas/LintRequest'
+
+  responses:
+    200LintingSuccessful:
+      description: The response for the specified linting request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/LintResponse'
+        text/html:
+          schema:
+            type: string
+        text/plain:
+          schema:
+            type: string
+
+  schemas:
+    FindingSeverity:
+      type: string
+      enum:
+        - meta
+        - debug
+        - info
+        - notice
+        - warning
+        - error
+        - bug
+        - fatal
+      description: The severity of a linter finding
+
+    ResponseFormat:
+      type: string
+      enum:
+        - json
+        - html
+        - text
+      description: The response format
+      default: json
+
+    LintRequest:
+      type: object
+      required:
+        - b64input
+      properties:
+        b64input:
+          type: string
+          description: The Base64 or PEM-encoded input
+        format:
+          $ref: '#/components/schemas/ResponseFormat'
+        profile:
+          type: string
+          description: The name of a profile
+          default: autodetect
+        severity:
+          $ref: '#/components/schemas/FindingSeverity'
+
+    LintResponse:
+        type: array
+        items:
+          $ref: '#/components/schemas/LintFinding'
+
+    LintFinding:
+      type: object
+      required:
+        - Linter
+        - Finding
+        - Severity
+      properties:
+        Linter:
+          type: string
+          description: The name of the linter that reported the finding
+        Finding:
+          type: string
+          description: A textual description of the finding
+        Severity:
+          $ref: '#/components/schemas/FindingSeverity'
+        Code:
+          type: string
+          description: A unique identifier for the finding
+        Field:
+          type: string
+          description: The field within the document that is applicable to the finding
+
+    LintProfile:
+      type: object
+      required:
+        - Name
+        - Description
+      properties:
+        Name:
+          type: string
+          description: The name of the profile
+        Description:
+          type: string
+          description: A textual description of the profile
+
+    Linter:
+      type: object
+      required:
+        - Name
+        - Instances
+        - Version
+        - Url
+      properties:
+        Name:
+          type: string
+          description: The name of the linter
+        Instances:
+          type: integer
+          description: The number of instances of the linter that are currently running
+        Version:
+          type: string
+          description: The version number of the linter
+        Url:
+          type: string
+          format: uri
+          description: The home page for the linter project
