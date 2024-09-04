@@ -43,7 +43,7 @@ RUN pipx install poetry && \
 # Build pkilint wheel.
 WORKDIR /usr/local/pkilint
 COPY linter/pkilint/pyproject.toml .
-RUN poetry bundle venv --python=/usr/bin/python3 --only=main /app/pkilint -vvv
+RUN poetry bundle venv --python=/usr/bin/python3 --only=main /app/pkilint
 
 # Clone and prepare x509lint.
 WORKDIR /app/linter/x509lint
