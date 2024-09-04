@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pkilint"
-version = "0.11.1"
+version = "0.11.4"
 description = "A framework for verifying PKI structures"
 authors = ["DigiCert, Inc. <corey.bonnell@digicert.com>"]
 license = "MIT"
@@ -11,6 +11,7 @@ readme = "README.md"
 python = ">=3.9,<4"
 pyasn1 = ">=0.6.0"
 pyasn1-alt-modules = ">=0.4.3"
+pyasn1-fasder = ">=0.1.2"
 cryptography = ">=39"
 iso3166 = ">=2.1.1"
 # version is pinned due to https://github.com/python-validators/validators/issues/346

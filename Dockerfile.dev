@@ -10,7 +10,12 @@ RUN apk add --no-cache --update \
 	# ftfy and pkilint.
 	pipx \
 	# x509lint.
-	openssl-dev
+	openssl-dev curl gcc musl-dev
+
+# Build & install rust + cargo
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+RUN . "$HOME/.cargo/env"
 
 # Clone all of the linter repositories (except x509lint).
 WORKDIR /usr/local
@@ -36,7 +41,7 @@ RUN pipx install poetry && \
 # Build pkilint wheel.
 WORKDIR /usr/local/pkilint
 COPY linter/pkilint/pyproject.toml .
-RUN poetry bundle venv --python=/usr/bin/python3 --only=main /app/pkilint
+RUN poetry bundle venv --python=/usr/bin/python3 --only=main /app/pkilint -vvv
 
 # Clone and prepare x509lint.
 WORKDIR /app/linter/x509lint
@@ -72,7 +77,13 @@ RUN apk add --no-cache --update \
 	# certlint.
 	ruby \
 	# pkilint and ftfy.
-	pipx python3
+	pipx python3 curl gcc musl-dev
+
+# Build & install rust + cargo
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+RUN . "$HOME/.cargo/env"
+
 
 # Install certlint.
 COPY --from=build /usr/local/certlint /usr/local/certlint
