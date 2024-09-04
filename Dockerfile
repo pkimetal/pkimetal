@@ -8,7 +8,14 @@ RUN apk add --no-cache --update \
 	# certlint.
 	ruby ruby-dev \
 	# x509lint.
-	openssl-dev
+	openssl-dev \
+    # pkilint.
+    curl gcc musl-dev
+
+# Build & install rust + cargo
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+RUN . "$HOME/.cargo/env"
 
 # Clone dwk_blocklists (used by dwklint).
 WORKDIR /usr/local
@@ -48,7 +55,12 @@ RUN apk add --no-cache --update \
 	# Certlint.
 	ruby \
 	# pkilint and ftfy.
-	pipx python3
+	pipx python3 curl gcc musl-dev
+
+# Build & install rust + cargo
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+RUN . "$HOME/.cargo/env"
 
 # Install certlint.
 COPY --from=build /usr/local/certlint /usr/local/certlint
