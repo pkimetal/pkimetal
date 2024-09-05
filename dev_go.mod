@@ -7,7 +7,7 @@ toolchain go1.23.0
 require (
 	github.com/CVE-2008-0166/dwklint v1.0.0
 	github.com/goccy/go-json v0.10.3
-	github.com/prometheus/client_golang v1.20.2
+	github.com/prometheus/client_golang v1.20.3
 	github.com/sergi/go-diff v1.3.1
 	github.com/spf13/viper v1.19.0
 	github.com/valyala/fasthttp v1.55.0
@@ -33,7 +33,7 @@ require (
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.3 // indirect
 	github.com/prometheus/client_model v0.6.1 // indirect
-	github.com/prometheus/common v0.58.0 // indirect
+	github.com/prometheus/common v0.59.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
 	github.com/rspeer/python-ftfy v6.2.3+incompatible // indirect
 	github.com/sagikazarmark/locafero v0.6.0 // indirect
