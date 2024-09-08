@@ -12,7 +12,7 @@ require (
 	github.com/spf13/viper v1.19.0
 	github.com/valyala/fasthttp v1.55.0
 	github.com/zmap/zcrypto v0.0.0-20240803002437-3a861682ac77
-	github.com/zmap/zlint/v3 v3.6.4-0.20240811191554-caa62acd5a7d
+	github.com/zmap/zlint/v3 v3.6.4-0.20240908160358-372cdc66ed0f
 	go.uber.org/automaxprocs v1.5.3
 	go.uber.org/zap v1.27.0
 )
