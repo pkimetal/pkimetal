@@ -2,7 +2,7 @@ module github.com/pkimetal/pkimetal
 
 go 1.22.0
 
-toolchain go1.23.0
+toolchain go1.23.1
 
 require (
 	github.com/CVE-2008-0166/dwklint v1.0.0
