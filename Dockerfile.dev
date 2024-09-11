@@ -77,7 +77,7 @@ RUN apk add --no-cache --update \
 	# certlint.
 	ruby \
 	# pkilint and ftfy.
-	pipx python3
+	python3
 
 # Install certlint.
 COPY --from=build /usr/local/certlint /usr/local/certlint

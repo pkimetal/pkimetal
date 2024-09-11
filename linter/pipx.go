@@ -12,8 +12,8 @@ import (
 
 var pipxLocalVenvsDir string
 
-func init() {
-	// Get the pipv virtual environment path from the output of "pipx environment".
+func getLocalVenvsDir() {
+	// Get the pipx virtual environment path from the output of "pipx environment".
 	cmd := exec.Command("pipx", "environment", "-V", "PIPX_LOCAL_VENVS")
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
@@ -32,6 +32,9 @@ func init() {
 
 func GetPackageDetailsFromPipx(packageName, directory string) (string, string) {
 	// Extract the package version and determine the Python directory from the output of "pipx list".
+	if pipxLocalVenvsDir == "" {
+		getLocalVenvsDir()
+	}
 	packageVersion := NOT_INSTALLED
 	cmd := exec.Command("pipx", "list")
 	if stdout, err := cmd.StdoutPipe(); err != nil {
