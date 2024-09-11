@@ -22,7 +22,7 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/certlint/certlint v1.7.5 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
-	github.com/digicert/pkilint v0.11.4 // indirect
+	github.com/digicert/pkilint v0.11.5-0.20240911192506-99eb6c0c771e // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/klauspost/compress v1.17.9 // indirect
