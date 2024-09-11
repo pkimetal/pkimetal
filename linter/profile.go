@@ -229,8 +229,8 @@ var (
 		ETSI_LEAF_NCPLEGALPERSON:                                         {Name: "etsi_leaf_ncplegalperson", Source: "EN 319 412", Description: "ETSI Electronic Seal Certificate: Legal Person "},
 	}
 
-	AllProfilesOrdered                                                                                                                                                                                                       []Profile
-	CrlProfileIDs, OcspProfileIDs, RootProfileIDs, SubordinateProfileIDs, SbrLeafProfileIDs, TbrTevgLeafProfileIDs, TbrTevgCertificateProfileIDs, NonCabforumProfileIDs, NonCertificateProfileIDs, EtsiCertificateProfileIDs []ProfileId
+	AllProfilesOrdered                                                                                                                                                                                                                                        []Profile
+	CrlProfileIDs, OcspProfileIDs, RootProfileIDs, SubordinateProfileIDs, SbrLeafProfileIDs, TbrTevgLeafProfileIDs, TbrTevgCertificateProfileIDs, NonTbrTevgCertificateProfileIDs, NonCabforumProfileIDs, NonCertificateProfileIDs, EtsiCertificateProfileIDs []ProfileId
 )
 
 func init() {
@@ -271,6 +271,13 @@ func init() {
 
 	// Third pass.  NonCertificateProfileIDs requires CrlProfileIDs and OcspProfileIDs to be populated first, and intersects with other lists.
 	NonCertificateProfileIDs = append(CrlProfileIDs, OcspProfileIDs...)
+
+	// Fourth pass.  NonTbrTevgCertificateProfileIDs requires TbrTevgCertificateProfileIDs to be populated first.
+	for k := range AllProfiles {
+		if !slices.Contains(TbrTevgCertificateProfileIDs, k) {
+			NonTbrTevgCertificateProfileIDs = append(NonTbrTevgCertificateProfileIDs, k)
+		}
+	}
 }
 
 func ProfileIDList(list []ProfileId) string {

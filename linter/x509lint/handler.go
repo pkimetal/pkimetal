@@ -36,7 +36,7 @@ func init() {
 		Name:         "x509lint",
 		Version:      GitDescribeTagsAlways,
 		Url:          "https://github.com/kroeckx/x509lint",
-		Unsupported:  linter.NonCertificateProfileIDs,
+		Unsupported:  linter.NonTbrTevgCertificateProfileIDs,
 		NumInstances: config.Config.Linter.X509lint.NumGoroutines,
 		Interface:    func() linter.LinterInterface { return &X509lint{} },
 	}).Register()
