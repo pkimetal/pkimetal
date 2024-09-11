@@ -7,28 +7,51 @@ RUN apk add --no-cache --update \
 	gcc git g++ make \
 	# certlint.
 	ruby ruby-dev \
+	# ftfy and pkilint.
+	pipx \
+	# pkilint (for pyasn1-fasder).
+	rustup \
 	# x509lint.
-	openssl-dev \
-    # pkilint.
-    curl gcc musl-dev
+	openssl-dev
 
-# Build & install rust + cargo
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
-ENV PATH="/root/.cargo/bin:${PATH}"
-RUN . "$HOME/.cargo/env"
-
-# Clone dwk_blocklists (used by dwklint).
+# Clone all of the linter repositories (except x509lint).
 WORKDIR /usr/local
-RUN git clone https://github.com/CVE-2008-0166/dwk_blocklists && \
-# Clone and build certlint (most recent tag).
-	git clone https://github.com/certlint/certlint
+RUN git clone https://github.com/certlint/certlint && \
+	git clone https://github.com/CVE-2008-0166/dwklint && \
+	git clone https://github.com/CVE-2008-0166/dwk_blocklists && \
+	git clone https://github.com/digicert/pkilint && \
+	git clone https://github.com/rspeer/python-ftfy && \
+	git clone https://github.com/zmap/zlint
+
+# Build certlint (most recent tag).
 WORKDIR /usr/local/certlint
 RUN git checkout $(git describe --tags $(git rev-list --tags --max-count=1))
 WORKDIR /usr/local/certlint/ext
 RUN ruby extconf.rb && \
 	make
 
-# Clone and prepare x509lint (no tags, so most recent commit).
+# Checkout dwklint (most recent tag).
+WORKDIR /usr/local/dwklint
+RUN git checkout $(git describe --tags $(git rev-list --tags --max-count=1))
+
+# Build ftfy wheel (most recent tag).
+WORKDIR /usr/local/python-ftfy
+ENV PATH="/root/.local/bin:${PATH}"
+RUN git checkout $(git describe --tags $(git rev-list --tags --max-count=1)) && \
+	pipx install poetry && \
+	pipx inject poetry poetry-plugin-bundle && \
+	poetry bundle venv --python=/usr/bin/python3 --only=main /app/ftfy
+
+# Install rust + cargo using rustup (for pyasn1-fasder).
+ENV PATH="/root/.cargo/bin:${PATH}"
+RUN rustup-init -y && . "$HOME/.cargo/env"
+# Build pkilint wheel (most recent tag).
+WORKDIR /usr/local/pkilint
+COPY linter/pkilint/pyproject.toml .
+RUN git checkout $(git describe --tags $(git rev-list --tags --max-count=1)) && \
+	poetry bundle venv --python=/usr/bin/python3 --only=main /app/pkilint
+
+# Clone and prepare x509lint (most recent commit, because there are no tags).
 WORKDIR /app/linter/x509lint
 RUN git clone https://github.com/kroeckx/x509lint && \
 	cd x509lint && \
@@ -44,7 +67,14 @@ RUN CGO_ENABLED=1 GOOS=linux go build -o pkimetal -ldflags " \
 	-X github.com/pkimetal/pkimetal/config.PkimetalVersion=`git describe --tags --always` \
 	-X github.com/pkimetal/pkimetal/linter/certlint.GitDescribeTagsAlways=`cd /usr/local/certlint && git describe --tags --always` \
 	-X github.com/pkimetal/pkimetal/linter/certlint.RubyDir=/usr/local/certlint \
-	-X github.com/pkimetal/pkimetal/linter/x509lint.GitDescribeTagsAlways=`cd /app/linter/x509lint/x509lint && git describe --tags --always`" /app/.
+	-X github.com/pkimetal/pkimetal/linter/dwklint.GitDescribeTagsAlways=`cd /usr/local/dwklint && git describe --tags --always` \
+	-X github.com/pkimetal/pkimetal/linter/dwklint.BlocklistDir=/usr/local/dwk_blocklists \
+	-X github.com/pkimetal/pkimetal/linter/ftfy.GitDescribeTagsAlways=`cd /usr/local/python-ftfy && git describe --tags --always` \
+	-X github.com/pkimetal/pkimetal/linter/ftfy.PythonDir=`find /app/ftfy/lib/python*/site-packages -maxdepth 0` \
+	-X github.com/pkimetal/pkimetal/linter/pkilint.GitDescribeTagsAlways=`cd /usr/local/pkilint && git describe --tags --always` \
+	-X github.com/pkimetal/pkimetal/linter/pkilint.PythonDir=`find /app/pkilint/lib/python*/site-packages -maxdepth 0` \
+	-X github.com/pkimetal/pkimetal/linter/x509lint.GitDescribeTagsAlways=`cd /app/linter/x509lint/x509lint && git describe --tags --always` \
+	-X github.com/pkimetal/pkimetal/linter/zlint.GitDescribeTagsAlways=`cd /usr/local/zlint && git describe --tags --always`" /app/.
 
 
 # RUNTIME.
@@ -52,15 +82,10 @@ FROM alpine:edge AS runtime
 
 # Install runtime dependencies.
 RUN apk add --no-cache --update \
-	# Certlint.
+	# certlint.
 	ruby \
 	# pkilint and ftfy.
-	pipx python3 curl gcc musl-dev
-
-# Build & install rust + cargo
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
-ENV PATH="/root/.cargo/bin:${PATH}"
-RUN . "$HOME/.cargo/env"
+	python3
 
 # Install certlint.
 COPY --from=build /usr/local/certlint /usr/local/certlint
@@ -69,9 +94,11 @@ RUN gem install public_suffix simpleidn
 # Copy dwk_blocklists.
 COPY --from=build /usr/local/dwk_blocklists /usr/local/dwk_blocklists
 
-# Install ftfy and pkilint (most recent releases).
-ENV PYTHONUNBUFFERED=1
-RUN pipx install ftfy pkilint
+# Install ftfy.
+COPY --from=build /app/ftfy /app/ftfy
+
+# Install pkilint.
+COPY --from=build /app/pkilint /app/pkilint
 
 # pkimetal.
 WORKDIR /app
