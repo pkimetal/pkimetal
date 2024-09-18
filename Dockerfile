@@ -21,6 +21,7 @@ RUN git clone https://github.com/certlint/certlint && \
 	git clone https://github.com/CVE-2008-0166/dwk_blocklists && \
 	git clone https://github.com/digicert/pkilint && \
 	git clone https://github.com/rspeer/python-ftfy && \
+	git clone https://github.com/titanous/rocacheck && \
 	git clone https://github.com/zmap/zlint
 
 # Build certlint (most recent tag).
@@ -32,6 +33,10 @@ RUN ruby extconf.rb && \
 
 # Checkout dwklint (most recent tag).
 WORKDIR /usr/local/dwklint
+RUN git checkout $(git describe --tags $(git rev-list --tags --max-count=1))
+
+# Checkout rocacheck (most recent tag).
+WORKDIR /usr/local/rocacheck
 RUN git checkout $(git describe --tags $(git rev-list --tags --max-count=1))
 
 # Build ftfy wheel (most recent tag).
@@ -73,6 +78,7 @@ RUN CGO_ENABLED=1 GOOS=linux go build -o pkimetal -ldflags " \
 	-X github.com/pkimetal/pkimetal/linter/ftfy.PythonDir=`find /app/ftfy/lib/python*/site-packages -maxdepth 0` \
 	-X github.com/pkimetal/pkimetal/linter/pkilint.GitDescribeTagsAlways=`cd /usr/local/pkilint && git describe --tags --always` \
 	-X github.com/pkimetal/pkimetal/linter/pkilint.PythonDir=`find /app/pkilint/lib/python*/site-packages -maxdepth 0` \
+	-X github.com/pkimetal/pkimetal/linter/rocacheck.GitDescribeTagsAlways=`cd /usr/local/rocacheck && git describe --tags --always` \
 	-X github.com/pkimetal/pkimetal/linter/x509lint.GitDescribeTagsAlways=`cd /app/linter/x509lint/x509lint && git describe --tags --always` \
 	-X github.com/pkimetal/pkimetal/linter/zlint.GitDescribeTagsAlways=`cd /usr/local/zlint && git describe --tags --always`" /app/.
 
