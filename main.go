@@ -16,8 +16,10 @@ import (
 	_ "github.com/pkimetal/pkimetal/linter/certlint"
 	_ "github.com/pkimetal/pkimetal/linter/ftfy"
 	_ "github.com/pkimetal/pkimetal/linter/pkilint"
+
 	// Internal:
 	_ "github.com/pkimetal/pkimetal/linter/dwklint"
+	_ "github.com/pkimetal/pkimetal/linter/rocacheck"
 	_ "github.com/pkimetal/pkimetal/linter/x509lint"
 	_ "github.com/pkimetal/pkimetal/linter/zlint"
 )

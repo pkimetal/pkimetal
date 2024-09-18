@@ -47,6 +47,9 @@ type config struct {
 			NumProcesses int    `mapstructure:"numProcesses"`
 			PythonDir    string `mapstructure:"pythonDir"`
 		}
+		Rocacheck struct {
+			NumGoroutines int `mapstructure:"numGoroutines"`
+		}
 		X509lint struct {
 			NumGoroutines int `mapstructure:"numGoroutines"`
 		}
@@ -188,6 +191,7 @@ func initViper() error {
 	viper.SetDefault("linter.ftfy.pythonDir", "autodetect")
 	viper.SetDefault("linter.pkilint.numProcesses", 1)
 	viper.SetDefault("linter.pkilint.pythonDir", "autodetect")
+	viper.SetDefault("linter.rocacheck.numGoroutines", 1)
 	viper.SetDefault("linter.x509lint.numGoroutines", 1)
 	viper.SetDefault("linter.zlint.numGoroutines", 1)
 	viper.SetDefault("response.defaultFormat", "json")
