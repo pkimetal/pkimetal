@@ -21,7 +21,7 @@ import "C"
 
 type X509lint struct{}
 
-var GitDescribeTagsAlways string
+var Version string
 
 func init() {
 	// x509lint is run in-process via CGO.  Since it stores linter request state in global variables, multiple backends cannot be supported.
@@ -34,7 +34,7 @@ func init() {
 	// Register x509lint.
 	(&linter.Linter{
 		Name:         "x509lint",
-		Version:      GitDescribeTagsAlways,
+		Version:      Version,
 		Url:          "https://github.com/kroeckx/x509lint",
 		Unsupported:  linter.NonTbrTevgCertificateProfileIDs,
 		NumInstances: config.Config.Linter.X509lint.NumGoroutines,

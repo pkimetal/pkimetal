@@ -10,15 +10,14 @@ import (
 
 type Pkilint struct{}
 
-var GitDescribeTagsAlways, PythonDir string
+var Version, PythonDir string
 
 func init() {
 	// Get pkilint package details, either embedded during the build process or from pipx; if requested in the config, autodetect the site-packages directory.
-	var pkilintVersion string
-	if GitDescribeTagsAlways != "" {
-		pkilintVersion, config.Config.Linter.Pkilint.PythonDir = GitDescribeTagsAlways, PythonDir
+	if Version != "" {
+		config.Config.Linter.Pkilint.PythonDir = PythonDir
 	} else {
-		pkilintVersion, config.Config.Linter.Pkilint.PythonDir = linter.GetPackageDetailsFromPipx("pkilint", config.Config.Linter.Pkilint.PythonDir)
+		Version, config.Config.Linter.Pkilint.PythonDir = linter.GetPackageDetailsFromPipx("pkilint", config.Config.Linter.Pkilint.PythonDir)
 	}
 	switch config.Config.Linter.Pkilint.PythonDir {
 	case "", "autodetect":
@@ -31,7 +30,7 @@ func init() {
 	// Register pkilint.
 	(&linter.Linter{
 		Name:         "pkilint",
-		Version:      pkilintVersion,
+		Version:      Version,
 		Url:          "https://github.com/digicert/pkilint",
 		Unsupported:  nil,
 		NumInstances: config.Config.Linter.Pkilint.NumProcesses,

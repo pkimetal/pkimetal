@@ -14,7 +14,7 @@ import (
 
 type Certlint struct{}
 
-var GitDescribeTagsAlways, RubyDir string
+var Version, RubyDir string
 
 func init() {
 	// Determine certlint installation directory.
@@ -24,15 +24,14 @@ func init() {
 		}
 	}
 	// Get certlint version, either embedded during the build process or with the help of the Ruby interpreter.
-	certlintVersion := GitDescribeTagsAlways
-	if certlintVersion == "" {
-		certlintVersion = getCertlintVersion()
+	if Version == "" {
+		Version = getCertlintVersion()
 	}
 
 	// Register certlint.
 	(&linter.Linter{
 		Name:         "certlint",
-		Version:      certlintVersion,
+		Version:      Version,
 		Url:          "https://github.com/certlint/certlint",
 		Unsupported:  linter.NonCertificateProfileIDs,
 		NumInstances: config.Config.Linter.Certlint.NumProcesses,

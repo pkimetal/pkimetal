@@ -19,7 +19,6 @@ import (
 type Zlint struct{}
 
 var (
-	GitDescribeTagsAlways          string
 	defaultRegistry                lint.Registry
 	cabforumTLSSubordinateRegistry lint.Registry
 	cabforumTLSLeafRegistry        lint.Registry
@@ -30,7 +29,7 @@ func init() {
 	// Register zlint.
 	(&linter.Linter{
 		Name:         "zlint",
-		Version:      linter.GetPackageVersionOrGitDescribeTagsAlways("github.com/zmap/zlint", GitDescribeTagsAlways),
+		Version:      linter.GetPackageVersion("github.com/zmap/zlint"),
 		Url:          "https://github.com/zmap/zlint",
 		Unsupported:  linter.OcspProfileIDs,
 		NumInstances: config.Config.Linter.Zlint.NumGoroutines,
