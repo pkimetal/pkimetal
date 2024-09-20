@@ -12,13 +12,11 @@ import (
 
 type Rocacheck struct{}
 
-var GitDescribeTagsAlways, BlocklistDir string
-
 func init() {
 	// Register rocacheck.
 	(&linter.Linter{
 		Name:         "rocacheck",
-		Version:      linter.GetPackageVersionOrGitDescribeTagsAlways("github.com/titanous/rocacheck", GitDescribeTagsAlways),
+		Version:      linter.GetPackageVersion("github.com/titanous/rocacheck"),
 		Url:          "https://github.com/titanous/rocacheck",
 		Unsupported:  linter.NonCertificateProfileIDs,
 		NumInstances: config.Config.Linter.Rocacheck.NumGoroutines,

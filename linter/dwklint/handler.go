@@ -11,7 +11,7 @@ import (
 
 type Dwklint struct{}
 
-var GitDescribeTagsAlways, BlocklistDir string
+var BlocklistDir string
 
 func init() {
 	// Determine blocklist directory.
@@ -28,7 +28,7 @@ func init() {
 	// Register dwklint.
 	(&linter.Linter{
 		Name:         "dwklint",
-		Version:      linter.GetPackageVersionOrGitDescribeTagsAlways("github.com/CVE-2008-0166/dwklint", GitDescribeTagsAlways),
+		Version:      linter.GetPackageVersion("github.com/CVE-2008-0166/dwklint"),
 		Url:          "https://github.com/CVE-2008-0166/dwklint",
 		Unsupported:  linter.NonCertificateProfileIDs,
 		NumInstances: config.Config.Linter.Dwklint.NumGoroutines,

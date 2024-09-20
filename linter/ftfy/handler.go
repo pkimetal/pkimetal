@@ -16,16 +16,15 @@ import (
 
 type Ftfy struct{}
 
-var GitDescribeTagsAlways, PythonDir string
+var Version, PythonDir string
 var dmp *diffmatchpatch.DiffMatchPatch = diffmatchpatch.New()
 
 func init() {
 	// Get ftfy package details, either embedded during the build process or from pipx; if requested in the config, autodetect the site-packages directory.
-	var ftfyVersion string
-	if GitDescribeTagsAlways != "" {
-		ftfyVersion, config.Config.Linter.Ftfy.PythonDir = GitDescribeTagsAlways, PythonDir
+	if Version != "" {
+		config.Config.Linter.Ftfy.PythonDir = PythonDir
 	} else {
-		ftfyVersion, config.Config.Linter.Ftfy.PythonDir = linter.GetPackageDetailsFromPipx("ftfy", config.Config.Linter.Ftfy.PythonDir)
+		Version, config.Config.Linter.Ftfy.PythonDir = linter.GetPackageDetailsFromPipx("ftfy", config.Config.Linter.Ftfy.PythonDir)
 	}
 	switch config.Config.Linter.Ftfy.PythonDir {
 	case "", "autodetect":
@@ -35,7 +34,7 @@ func init() {
 	// Register ftfy.
 	(&linter.Linter{
 		Name:         "ftfy",
-		Version:      ftfyVersion,
+		Version:      Version,
 		Url:          "https://github.com/rspeer/python-ftfy",
 		Unsupported:  linter.NonCertificateProfileIDs,
 		NumInstances: config.Config.Linter.Ftfy.NumProcesses,
