@@ -1,5 +1,6 @@
 # BUILD.
 FROM docker.io/library/golang:1.23.1-alpine AS build
+ARG gomodfile
 
 # Install build dependencies.
 RUN apk add --no-cache --update \
@@ -24,16 +25,16 @@ RUN git fetch --unshallow | echo && \
 	# Fetch repositories.
 	mkdir /usr/local/build && \
 	mkdir /usr/local/pkimetal && \
-	go get github.com/certlint/certlint && \
-	cp -R $(go list -m -f '{{.Dir}}' github.com/certlint/certlint) /usr/local/pkimetal/certlint/ && \
-	go get github.com/CVE-2008-0166/dwk_blocklists && \
-	cp -R $(go list -m -f '{{.Dir}}' github.com/CVE-2008-0166/dwk_blocklists) /usr/local/pkimetal/dwk_blocklists/ && \
-	go get github.com/rspeer/python-ftfy && \
-	cp -R $(go list -m -f '{{.Dir}}' github.com/rspeer/python-ftfy) /usr/local/build/ftfy/ && \
-	go get github.com/digicert/pkilint && \
-	cp -R $(go list -m -f '{{.Dir}}' github.com/digicert/pkilint) /usr/local/build/pkilint/ && \
-	go get github.com/kroeckx/x509lint && \
-	cp -R $(go list -m -f '{{.Dir}}' github.com/kroeckx/x509lint) /usr/local/build/x509lint/ && \
+	go get -modfile=$gomodfile github.com/certlint/certlint && \
+	cp -R $(go list -modfile=$gomodfile -m -f '{{.Dir}}' github.com/certlint/certlint) /usr/local/pkimetal/certlint/ && \
+	go get -modfile=$gomodfile github.com/CVE-2008-0166/dwk_blocklists && \
+	cp -R $(go list -modfile=$gomodfile -m -f '{{.Dir}}' github.com/CVE-2008-0166/dwk_blocklists) /usr/local/pkimetal/dwk_blocklists/ && \
+	go get -modfile=$gomodfile github.com/rspeer/python-ftfy && \
+	cp -R $(go list -modfile=$gomodfile -m -f '{{.Dir}}' github.com/rspeer/python-ftfy) /usr/local/build/ftfy/ && \
+	go get -modfile=$gomodfile github.com/digicert/pkilint && \
+	cp -R $(go list -modfile=$gomodfile -m -f '{{.Dir}}' github.com/digicert/pkilint) /usr/local/build/pkilint/ && \
+	go get -modfile=$gomodfile github.com/kroeckx/x509lint && \
+	cp -R $(go list -modfile=$gomodfile -m -f '{{.Dir}}' github.com/kroeckx/x509lint) /usr/local/build/x509lint/ && \
 	wget https://ccadb.my.salesforce-sites.com/ccadb/AllCertificateRecordsCSVFormatv2 && \
 	# Build certlint.
 	cd /usr/local/pkimetal/certlint/ext && \
@@ -59,17 +60,17 @@ RUN git fetch --unshallow | echo && \
 	cp asn1_time.c asn1_time.h checks.c checks.h messages.c messages.h /app/linter/x509lint && \
 	# Build pkimetal.
 	cd /app && \
-	CGO_ENABLED=1 GOOS=linux go build -o pkimetal -ldflags " \
+	CGO_ENABLED=1 GOOS=linux go build -modfile=$gomodfile -o pkimetal -ldflags " \
 	-X github.com/pkimetal/pkimetal/config.BuildTimestamp=`date --utc +%Y-%m-%dT%H:%M:%SZ` \
 	-X github.com/pkimetal/pkimetal/config.PkimetalVersion=`git describe --tags --always` \
-	-X github.com/pkimetal/pkimetal/linter/certlint.Version=`go list -m -f '{{.Version}}' github.com/certlint/certlint | sed 's/+incompatible//g'` \
+	-X github.com/pkimetal/pkimetal/linter/certlint.Version=`go list -modfile=$gomodfile -m -f '{{.Version}}' github.com/certlint/certlint | sed 's/+incompatible//g'` \
 	-X github.com/pkimetal/pkimetal/linter/certlint.RubyDir=/usr/local/pkimetal/certlint \
 	-X github.com/pkimetal/pkimetal/linter/dwklint.BlocklistDir=/usr/local/pkimetal/dwk_blocklists \
-	-X github.com/pkimetal/pkimetal/linter/ftfy.Version=`go list -m -f '{{.Version}}' github.com/rspeer/python-ftfy | sed 's/+incompatible//g'` \
+	-X github.com/pkimetal/pkimetal/linter/ftfy.Version=`go list -modfile=$gomodfile -m -f '{{.Version}}' github.com/rspeer/python-ftfy | sed 's/+incompatible//g'` \
 	-X github.com/pkimetal/pkimetal/linter/ftfy.PythonDir=`find /usr/local/pkimetal/ftfy/lib/python*/site-packages -maxdepth 0` \
-	-X github.com/pkimetal/pkimetal/linter/pkilint.Version=`go list -m -f '{{.Version}}' github.com/digicert/pkilint | sed 's/+incompatible//g'` \
+	-X github.com/pkimetal/pkimetal/linter/pkilint.Version=`go list -modfile=$gomodfile -m -f '{{.Version}}' github.com/digicert/pkilint | sed 's/+incompatible//g'` \
 	-X github.com/pkimetal/pkimetal/linter/pkilint.PythonDir=`find /usr/local/pkimetal/pkilint/lib/python*/site-packages -maxdepth 0` \
-	-X github.com/pkimetal/pkimetal/linter/x509lint.Version=`go list -m -f '{{.Version}}' github.com/kroeckx/x509lint | sed 's/+incompatible//g'`" /app/.
+	-X github.com/pkimetal/pkimetal/linter/x509lint.Version=`go list -modfile=$gomodfile -m -f '{{.Version}}' github.com/kroeckx/x509lint | sed 's/+incompatible//g'`" /app/.
 
 
 # RUNTIME.
