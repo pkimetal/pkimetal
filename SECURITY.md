@@ -6,7 +6,7 @@ The following versions of pkimetal are currently being supported with security u
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 1.0.x   | :white_check_mark: |
+| 1.x.y   | :white_check_mark: |
 
 ## Reporting a Vulnerability
 
