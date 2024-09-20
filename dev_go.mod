@@ -19,6 +19,7 @@ require (
 )
 
 require (
+	github.com/CVE-2008-0166/dwk_blocklists v0.0.0-20240918200223-e5977e07ee34 // indirect
 	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/certlint/certlint v1.7.5 // indirect
