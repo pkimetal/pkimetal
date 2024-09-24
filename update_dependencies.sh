@@ -5,6 +5,7 @@ go get -u
 go mod tidy
 
 # Add other non-Go dependencies, which "go mod tidy" will have removed.
+go get github.com/badkeys/badkeys
 go get github.com/certlint/certlint
 go get github.com/CVE-2008-0166/dwk_blocklists
 go get github.com/rspeer/python-ftfy

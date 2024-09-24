@@ -25,6 +25,8 @@ RUN git fetch --unshallow | echo && \
 	# Fetch repositories.
 	mkdir /usr/local/build && \
 	mkdir /usr/local/pkimetal && \
+	go get -modfile=$gomodfile github.com/badkeys/badkeys && \
+	cp -R $(go list -modfile=$gomodfile -m -f '{{.Dir}}' github.com/badkeys/badkeys) /usr/local/build/badkeys/ && \
 	go get -modfile=$gomodfile github.com/certlint/certlint && \
 	cp -R $(go list -modfile=$gomodfile -m -f '{{.Dir}}' github.com/certlint/certlint) /usr/local/pkimetal/certlint/ && \
 	go get -modfile=$gomodfile github.com/CVE-2008-0166/dwk_blocklists && \
@@ -36,14 +38,20 @@ RUN git fetch --unshallow | echo && \
 	go get -modfile=$gomodfile github.com/kroeckx/x509lint && \
 	cp -R $(go list -modfile=$gomodfile -m -f '{{.Dir}}' github.com/kroeckx/x509lint) /usr/local/build/x509lint/ && \
 	wget https://ccadb.my.salesforce-sites.com/ccadb/AllCertificateRecordsCSVFormatv2 && \
+	# Install poetry (for building Python-based linters).
+	pipx install poetry && \
+	pipx inject poetry poetry-plugin-bundle && \
+	# Build badkeys.
+	cd /usr/local/build/badkeys && \
+	cp /app/linter/badkeys/pyproject.toml . && \
+	poetry bundle venv --python=/usr/bin/python3 --only=main /usr/local/pkimetal/badkeys && \
+	cp badkeys-cli /usr/local/pkimetal/badkeys/bin && \
 	# Build certlint.
 	cd /usr/local/pkimetal/certlint/ext && \
 	ruby extconf.rb && \
 	make && \
 	# Build ftfy wheel.
 	cd /usr/local/build/ftfy && \
-	pipx install poetry && \
-	pipx inject poetry poetry-plugin-bundle && \
 	poetry bundle venv --python=/usr/bin/python3 --only=main /usr/local/pkimetal/ftfy && \
 	# Install rust + cargo using rustup (for pyasn1-fasder).
 	rustup-init -y && \
@@ -63,6 +71,8 @@ RUN git fetch --unshallow | echo && \
 	CGO_ENABLED=1 GOOS=linux go build -modfile=$gomodfile -o pkimetal -ldflags " \
 	-X github.com/pkimetal/pkimetal/config.BuildTimestamp=`date --utc +%Y-%m-%dT%H:%M:%SZ` \
 	-X github.com/pkimetal/pkimetal/config.PkimetalVersion=`git describe --tags --always` \
+	-X github.com/pkimetal/pkimetal/linter/badkeys.Version=`go list -modfile=$gomodfile -m -f '{{.Version}}' github.com/badkeys/badkeys | sed 's/+incompatible//g'` \
+	-X github.com/pkimetal/pkimetal/linter/badkeys.PythonDir=`find /usr/local/pkimetal/badkeys/lib/python*/site-packages -maxdepth 0` \
 	-X github.com/pkimetal/pkimetal/linter/certlint.Version=`go list -modfile=$gomodfile -m -f '{{.Version}}' github.com/certlint/certlint | sed 's/+incompatible//g'` \
 	-X github.com/pkimetal/pkimetal/linter/certlint.RubyDir=/usr/local/pkimetal/certlint \
 	-X github.com/pkimetal/pkimetal/linter/dwklint.BlocklistDir=/usr/local/pkimetal/dwk_blocklists \
@@ -83,7 +93,10 @@ RUN apk add --no-cache --update \
 	python3 \
 	# certlint.
 	ruby && \
-	gem install public_suffix simpleidn
+	gem install public_suffix simpleidn && \
+	# badkeys.
+	cd /usr/local/pkimetal/badkeys/bin && \
+	./python3 badkeys-cli --update-bl
 
 # Install pkimetal.
 WORKDIR /app

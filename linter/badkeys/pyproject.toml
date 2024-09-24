@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "badkeys"
+version = "0.0.12"
+description = "Check cryptographic keys for known weaknesses"
+authors = ["Hanno Böck"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.9,<4"
+gmpy2 = ">=2.2.1"
+cryptography = ">=43.0.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
