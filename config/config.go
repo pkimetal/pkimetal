@@ -31,7 +31,11 @@ type config struct {
 	}
 	Linter struct {
 		MaxQueueSize int `mapstructure:"maxQueueSize"`
-		Certlint     struct {
+		Badkeys      struct {
+			NumProcesses int    `mapstructure:"numProcesses"`
+			PythonDir    string `mapstructure:"pythonDir"`
+		}
+		Certlint struct {
 			NumProcesses int `mapstructure:"numProcesses"`
 			RubyDir      string
 		}
@@ -183,6 +187,8 @@ func initViper() error {
 	viper.SetDefault("server.rememberBusyTimeout", 5*time.Second)
 	viper.SetDefault("server.metricsTimeout", 8*time.Second)
 	viper.SetDefault("linter.maxQueueSize", 8192)
+	viper.SetDefault("linter.badkeys.numProcesses", 1)
+	viper.SetDefault("linter.badkeys.pythonDir", "autodetect")
 	viper.SetDefault("linter.certlint.numProcesses", 1)
 	viper.SetDefault("linter.certlint.rubyDir", "autodetect")
 	viper.SetDefault("linter.dwklint.numGoroutines", 1)
