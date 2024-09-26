@@ -57,7 +57,10 @@ def printresults(key):
 		sub = ""
 		if "subtest" in result:
 			sub = f"/{result['subtest']}"
-		print(f"E: {check}{sub} vulnerability")
+		if sub.startswith(tuple(["/unusual_keysize", "/exponent_"])):
+			print(f"I: {check}{sub}")
+		else:
+			print(f"E: {check}{sub} vulnerability")
 
 profile_id = -1
 pem_data = ""
