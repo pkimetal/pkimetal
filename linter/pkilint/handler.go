@@ -149,7 +149,7 @@ crl_doc_validators[` + fmt.Sprintf("%d", linter.RFC5280_CRL) + `] = crl.create_p
 )
 crl_doc_validators[` + fmt.Sprintf("%d", linter.TBR_CRL) + `] = crl.create_pkix_crl_validator_container(
 	[pkix.create_attribute_decoder(name.ATTRIBUTE_TYPE_MAPPINGS), pkix.create_extension_decoder(extension.EXTENSION_MAPPINGS)],
-	[crl.create_issuer_validator_container([]), crl.create_validity_validator_container([cabf_crl.create_validity_period_validator(crl.CertificateRevocationListType.CRL)]), crl.create_extensions_validator_container([]), cabf_crl.create_reason_code_validator(crl.CertificateRevocationListType.CRL)]
+	[crl.create_issuer_validator_container([]), crl.create_validity_validator_container([cabf_crl.create_validity_period_validator(crl.CertificateRevocationListType.CRL)]), crl.create_extensions_validator_container([]), cabf_crl.CabfCrlReasonCodeAllowlistValidator(crl.CertificateRevocationListType.CRL)]
 )
 crl_doc_validators[` + fmt.Sprintf("%d", linter.RFC5280_ARL) + `] = crl.create_pkix_crl_validator_container(
 	[pkix.create_attribute_decoder(name.ATTRIBUTE_TYPE_MAPPINGS), pkix.create_extension_decoder(extension.EXTENSION_MAPPINGS)],
@@ -157,7 +157,7 @@ crl_doc_validators[` + fmt.Sprintf("%d", linter.RFC5280_ARL) + `] = crl.create_p
 )
 crl_doc_validators[` + fmt.Sprintf("%d", linter.TBR_ARL) + `] = crl.create_pkix_crl_validator_container(
 	[pkix.create_attribute_decoder(name.ATTRIBUTE_TYPE_MAPPINGS), pkix.create_extension_decoder(extension.EXTENSION_MAPPINGS)],
-	[crl.create_issuer_validator_container([]), crl.create_validity_validator_container([cabf_crl.create_validity_period_validator(crl.CertificateRevocationListType.ARL)]), crl.create_extensions_validator_container([]), cabf_crl.create_reason_code_validator(crl.CertificateRevocationListType.ARL)]
+	[crl.create_issuer_validator_container([]), crl.create_validity_validator_container([cabf_crl.create_validity_period_validator(crl.CertificateRevocationListType.ARL)]), crl.create_extensions_validator_container([]), cabf_crl.CabfCrlReasonCodeAllowlistValidator(crl.CertificateRevocationListType.ARL)]
 )
 
 def lint_crl(pem_data, crl_profile_id):
