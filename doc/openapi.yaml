@@ -20,7 +20,7 @@ paths:
         $ref: '#/components/requestBodies/LintRequestBody'
       responses:
         '200':
-          $ref: '#/components/responses/200LintingSuccessful'
+          $ref: '#/components/responses/LintingSuccessful'
   /linttbscert:
     post:
       summary: Creates and lints a X.509 certificate from the specified TBSCertificate
@@ -28,7 +28,7 @@ paths:
         $ref: '#/components/requestBodies/LintRequestBody'
       responses:
         '200':
-          $ref: '#/components/responses/200LintingSuccessful'
+          $ref: '#/components/responses/LintingSuccessful'
   
   /lintcrl:
     post:
@@ -37,7 +37,7 @@ paths:
         $ref: '#/components/requestBodies/LintRequestBody'
       responses:
         '200':
-          $ref: '#/components/responses/200LintingSuccessful'
+          $ref: '#/components/responses/LintingSuccessful'
   /linttbscrl:
     post:
       summary: Creates and lints a X.509 certificate revocation list (CRL) from the specified TBSCertList
@@ -45,7 +45,7 @@ paths:
         $ref: '#/components/requestBodies/LintRequestBody'
       responses:
         '200':
-          $ref: '#/components/responses/200LintingSuccessful'
+          $ref: '#/components/responses/LintingSuccessful'
 
   /lintocsp:
     post:
@@ -54,7 +54,7 @@ paths:
         $ref: '#/components/requestBodies/LintRequestBody'
       responses:
         '200':
-          $ref: '#/components/responses/200LintingSuccessful'
+          $ref: '#/components/responses/LintingSuccessful'
   /linttbsocsp:
     post:
       summary: Creates and lints an OCSP response from the specified ResponseData
@@ -62,7 +62,7 @@ paths:
         $ref: '#/components/requestBodies/LintRequestBody'
       responses:
         '200':
-          $ref: '#/components/responses/200LintingSuccessful'
+          $ref: '#/components/responses/LintingSuccessful'
           
   /profiles:
     get:
@@ -101,7 +101,7 @@ components:
             $ref: '#/components/schemas/LintRequest'
 
   responses:
-    200LintingSuccessful:
+    LintingSuccessful:
       description: The response for the specified linting request
       content:
         application/json:
