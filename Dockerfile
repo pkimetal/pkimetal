@@ -21,7 +21,7 @@ ENV PATH="/root/.local/bin:/root/.cargo/bin:${PATH}"
 # Build dependencies.
 WORKDIR /app
 COPY . .
-RUN git fetch --unshallow | echo && \
+RUN git fetch --depth=2147483647 && \
 	# Fetch repositories.
 	mkdir /usr/local/build && \
 	mkdir /usr/local/pkimetal && \
