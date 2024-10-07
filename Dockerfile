@@ -95,8 +95,10 @@ RUN apk add --no-cache --update \
 	ruby && \
 	gem install public_suffix simpleidn && \
 	# badkeys.
-	cd /usr/local/pkimetal/badkeys/bin && \
-	./python3 badkeys-cli --update-bl
+	adduser -D pkimetal
+USER pkimetal:pkimetal
+WORKDIR /usr/local/pkimetal/badkeys/bin
+RUN ./python3 badkeys-cli --update-bl
 
 # Install pkimetal.
 WORKDIR /app
