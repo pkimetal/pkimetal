@@ -8,7 +8,7 @@ RUN apk add --no-cache --update \
 	gcc git g++ make \
 	# certlint.
 	ruby ruby-dev \
-	# ftfy and pkilint.
+	# badkeys, ftfy, and pkilint.
 	pipx \
 	# pkilint (for pyasn1-fasder).
 	rustup \
@@ -52,6 +52,8 @@ RUN git fetch --depth=2147483647 && \
 	make && \
 	# Build ftfy wheel.
 	cd /usr/local/build/ftfy && \
+	cp /app/linter/ftfy/pyproject.toml . && \
+	poetry lock --no-update && \
 	poetry bundle venv --python=/usr/bin/python3 --only=main /usr/local/pkimetal/ftfy && \
 	# Install rust + cargo using rustup (for pyasn1-fasder).
 	rustup-init -y && \
