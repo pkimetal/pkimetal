@@ -38,7 +38,7 @@ require (
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.60.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
-	github.com/rspeer/python-ftfy v6.2.4-0.20241008062002-2be964726819+incompatible // indirect
+	github.com/rspeer/python-ftfy v6.2.4-0.20241008151340-dbb7ec3fe1ad+incompatible // indirect
 	github.com/sagikazarmark/locafero v0.6.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
