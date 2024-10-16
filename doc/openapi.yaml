@@ -5,11 +5,11 @@ info:
   version: 1.0.0
 
 servers:
-  - url: https://pkimet.al/
+  - url: https://pkimet.al
     description: Stable API server
-  - url: https://dev.pkimet.al/
+  - url: https://dev.pkimet.al
     description: Development API server
-  - url: http://localhost:8080/
+  - url: http://localhost:8080
     description: Local API server
 
 paths:
