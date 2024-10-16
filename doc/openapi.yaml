@@ -23,7 +23,7 @@ paths:
   /lintcert:
     post:
       operationId: lintcert
-      summary: Lints a X.509 certificate
+      description: Lints a X.509 certificate
       requestBody:
         $ref: '#/components/requestBodies/LintRequestBody'
       responses:
@@ -32,7 +32,7 @@ paths:
   /linttbscert:
     post:
       operationId: linttbscert
-      summary: Creates and lints a X.509 certificate from the specified TBSCertificate
+      description: Creates and lints a X.509 certificate from the specified TBSCertificate
       requestBody:
         $ref: '#/components/requestBodies/LintRequestBody'
       responses:
@@ -42,7 +42,7 @@ paths:
   /lintcrl:
     post:
       operationId: lintcrl
-      summary: Lints a X.509 certificate revocation list (CRL)
+      description: Lints a X.509 certificate revocation list (CRL)
       requestBody:
         $ref: '#/components/requestBodies/LintRequestBody'
       responses:
@@ -51,7 +51,7 @@ paths:
   /linttbscrl:
     post:
       operationId: linttbscrl
-      summary: Creates and lints a X.509 certificate revocation list (CRL) from the specified TBSCertList
+      description: Creates and lints a X.509 certificate revocation list (CRL) from the specified TBSCertList
       requestBody:
         $ref: '#/components/requestBodies/LintRequestBody'
       responses:
@@ -61,7 +61,7 @@ paths:
   /lintocsp:
     post:
       operationId: lintocsp
-      summary: Lints an OCSP response
+      description: Lints an OCSP response
       requestBody:
         $ref: '#/components/requestBodies/LintRequestBody'
       responses:
@@ -70,7 +70,7 @@ paths:
   /linttbsocsp:
     post:
       operationId: linttbsocsp
-      summary: Creates and lints an OCSP response from the specified ResponseData
+      description: Creates and lints an OCSP response from the specified ResponseData
       requestBody:
         $ref: '#/components/requestBodies/LintRequestBody'
       responses:
@@ -80,7 +80,7 @@ paths:
   /profiles:
     get:
       operationId: profiles
-      summary: Retrieves the profiles available for linting
+      description: Retrieves the profiles available for linting
       responses:
         '200':
           description: A list of profiles available for linting
@@ -94,7 +94,7 @@ paths:
   /linters:
     get:
       operationId: linters
-      summary: Retrieves the linters available for linting
+      description: Retrieves the linters available for linting
       responses:
         '200':
           description: A list of linters available for linting
