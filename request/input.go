@@ -3,6 +3,7 @@ package request
 import (
 	"encoding/base64"
 	"fmt"
+	"strings"
 
 	"github.com/pkimetal/pkimetal/utils"
 
@@ -28,7 +29,7 @@ var input = map[Endpoint]string{
 }
 
 func (ri *RequestInfo) GetInput(fhctx *fasthttp.RequestCtx) error {
-	switch utils.B2S(fhctx.Request.Header.ContentType()) {
+	switch strings.SplitN(utils.B2S(fhctx.Request.Header.ContentType()), ";", 2)[0] {
 	case "application/x-www-form-urlencoded":
 		args := fhctx.PostArgs()
 		if i, ok := input[ri.endpoint]; ok {
