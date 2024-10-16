@@ -22,6 +22,7 @@ servers:
 paths:
   /lintcert:
     post:
+      operationId: lintcert
       summary: Lints a X.509 certificate
       requestBody:
         $ref: '#/components/requestBodies/LintRequestBody'
@@ -30,6 +31,7 @@ paths:
           $ref: '#/components/responses/LintingSuccessful'
   /linttbscert:
     post:
+      operationId: linttbscert
       summary: Creates and lints a X.509 certificate from the specified TBSCertificate
       requestBody:
         $ref: '#/components/requestBodies/LintRequestBody'
@@ -39,6 +41,7 @@ paths:
   
   /lintcrl:
     post:
+      operationId: lintcrl
       summary: Lints a X.509 certificate revocation list (CRL)
       requestBody:
         $ref: '#/components/requestBodies/LintRequestBody'
@@ -47,6 +50,7 @@ paths:
           $ref: '#/components/responses/LintingSuccessful'
   /linttbscrl:
     post:
+      operationId: linttbscrl
       summary: Creates and lints a X.509 certificate revocation list (CRL) from the specified TBSCertList
       requestBody:
         $ref: '#/components/requestBodies/LintRequestBody'
@@ -56,6 +60,7 @@ paths:
 
   /lintocsp:
     post:
+      operationId: lintocsp
       summary: Lints an OCSP response
       requestBody:
         $ref: '#/components/requestBodies/LintRequestBody'
@@ -64,6 +69,7 @@ paths:
           $ref: '#/components/responses/LintingSuccessful'
   /linttbsocsp:
     post:
+      operationId: linttbsocsp
       summary: Creates and lints an OCSP response from the specified ResponseData
       requestBody:
         $ref: '#/components/requestBodies/LintRequestBody'
@@ -73,6 +79,7 @@ paths:
           
   /profiles:
     get:
+      operationId: profiles
       summary: Retrieves the profiles available for linting
       responses:
         '200':
@@ -86,6 +93,7 @@ paths:
                   
   /linters:
     get:
+      operationId: linters
       summary: Retrieves the linters available for linting
       responses:
         '200':
