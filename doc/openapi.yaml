@@ -6,6 +6,9 @@ info:
     name: Rob Stradling
     email: rob@sectigo.com
     url: https://github.com/pkimetal/pkimetal/blob/main/README.md#about-this-project
+  license:
+    name: GNU General Public License v3.0 or later
+    url: https://spdx.org/licenses/GPL-3.0-or-later.html
   version: 1.0.0
 
 servers:
