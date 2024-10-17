@@ -1,5 +1,11 @@
 # pkimetal: REST API Documentation
 
+## OpenAPI
+
+An [OpenAPI](https://swagger.io/specification/) definition for pkimetal is provided by [openapi.yaml](/doc/openapi.yaml).
+
+This powers the Stoplight workspace at https://pkimetal.stoplight.io/docs/pkimetal/68a341c676710-pkimetal-api.
+
 ## POST parameters
 
 The HTTP POST API endpoints all accept the following common parameters:
