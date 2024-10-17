@@ -24,6 +24,8 @@ paths:
     post:
       operationId: lintcert
       description: Lints a X.509 certificate
+      tags:
+        - cert
       requestBody:
         $ref: '#/components/requestBodies/LintRequestBody'
       responses:
@@ -33,6 +35,8 @@ paths:
     post:
       operationId: linttbscert
       description: Creates and lints a X.509 certificate from the specified TBSCertificate
+      tags:
+        - cert
       requestBody:
         $ref: '#/components/requestBodies/LintRequestBody'
       responses:
@@ -43,6 +47,8 @@ paths:
     post:
       operationId: lintcrl
       description: Lints a X.509 certificate revocation list (CRL)
+      tags:
+        - crl
       requestBody:
         $ref: '#/components/requestBodies/LintRequestBody'
       responses:
@@ -52,6 +58,8 @@ paths:
     post:
       operationId: linttbscrl
       description: Creates and lints a X.509 certificate revocation list (CRL) from the specified TBSCertList
+      tags:
+        - crl
       requestBody:
         $ref: '#/components/requestBodies/LintRequestBody'
       responses:
@@ -62,6 +70,8 @@ paths:
     post:
       operationId: lintocsp
       description: Lints an OCSP response
+      tags:
+        - ocsp
       requestBody:
         $ref: '#/components/requestBodies/LintRequestBody'
       responses:
@@ -71,6 +81,8 @@ paths:
     post:
       operationId: linttbsocsp
       description: Creates and lints an OCSP response from the specified ResponseData
+      tags:
+        - ocsp
       requestBody:
         $ref: '#/components/requestBodies/LintRequestBody'
       responses:
@@ -81,6 +93,8 @@ paths:
     get:
       operationId: profiles
       description: Retrieves the profiles available for linting
+      tags:
+        - meta
       responses:
         '200':
           description: A list of profiles available for linting
@@ -95,6 +109,8 @@ paths:
     get:
       operationId: linters
       description: Retrieves the linters available for linting
+      tags:
+        - meta
       responses:
         '200':
           description: A list of linters available for linting
@@ -230,3 +246,13 @@ components:
           type: string
           format: uri
           description: The home page for the linter project
+
+tags:
+  - name: cert
+    description: Operations related to X.509 certificates
+  - name: crl
+    description: Operations related to X.509 certificate revocation lists (CRLs)
+  - name: meta
+    description: Operations related to pkimetal itself
+  - name: ocsp
+    description: Operations related to OCSP responses
