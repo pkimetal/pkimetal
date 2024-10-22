@@ -16,11 +16,22 @@ import (
 
 type Pwnedkeys struct{}
 
+type PwnedkeysTransport struct {
+	http.RoundTripper
+}
+
+func (pt *PwnedkeysTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	req.Header.Set("User-Agent", linter.PKIMETAL_NAME)
+	req.Header.Set("Accept", "application/pkcs10")
+	return pt.RoundTripper.RoundTrip(req)
+}
+
 var httpClient http.Client
 
 func init() {
 	httpClient = http.Client{
-		Timeout: config.Config.Linter.Pwnedkeys.HTTPTimeout,
+		Timeout:   config.Config.Linter.Pwnedkeys.HTTPTimeout,
+		Transport: &PwnedkeysTransport{RoundTripper: http.DefaultTransport},
 	}
 
 	// Register pwnedkeys.
@@ -54,8 +65,6 @@ func (l *Pwnedkeys) HandleRequest(lin *linter.LinterInstance, lreq *linter.Linti
 		return lres
 	}
 
-	httpRequest.Header.Set("User-Agent", linter.PKIMETAL_NAME)
-	httpRequest.Header.Set("Accept", "application/pkcs10")
 	var httpResponse *http.Response
 	if httpResponse, err = httpClient.Do(httpRequest); err != nil {
 		if os.IsTimeout(err) {
