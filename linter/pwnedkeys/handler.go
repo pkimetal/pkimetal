@@ -93,7 +93,7 @@ func (l *Pwnedkeys) HandleRequest(lin *linter.LinterInstance, lreq *linter.Linti
 						Severity: linter.SEVERITY_ERROR,
 						Finding:  "Public key is pwned",
 					})
-					break
+					return lres
 				}
 			}
 		}
