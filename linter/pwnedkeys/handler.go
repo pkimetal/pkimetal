@@ -46,7 +46,7 @@ func (l *Pwnedkeys) HandleRequest(lin *linter.LinterInstance, lreq *linter.Linti
 	var httpRequest *http.Request
 	var err error
 	s := sha256.Sum256(lreq.Cert.RawSubjectPublicKeyInfo)
-	if httpRequest, err = http.NewRequest(http.MethodGet, fmt.Sprintf("https://v1.pwnedkeys.com/%s", hex.EncodeToString(s[:])), nil); err != nil {
+	if httpRequest, err = http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("https://v1.pwnedkeys.com/%s", hex.EncodeToString(s[:])), nil); err != nil {
 		lres = append(lres, linter.LintingResult{
 			Severity: linter.Severity[config.Config.Linter.Pwnedkeys.APIErrorSeverity],
 			Finding:  err.Error(),
