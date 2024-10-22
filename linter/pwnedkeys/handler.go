@@ -51,60 +51,63 @@ func (l *Pwnedkeys) HandleRequest(lin *linter.LinterInstance, lreq *linter.Linti
 			Severity: linter.Severity[config.Config.Linter.Pwnedkeys.APIErrorSeverity],
 			Finding:  err.Error(),
 		})
-	} else {
-		httpRequest.Header.Set("User-Agent", linter.PKIMETAL_NAME)
-		httpRequest.Header.Set("Accept", "application/pkcs10")
-		var httpResponse *http.Response
-		if httpResponse, err = httpClient.Do(httpRequest); err != nil {
-			if os.IsTimeout(err) {
-				lres = append(lres, linter.LintingResult{
-					Severity: linter.Severity[config.Config.Linter.Pwnedkeys.TimeoutSeverity],
-					Finding:  "API request timed out",
-				})
-			} else {
-				lres = append(lres, linter.LintingResult{
-					Severity: linter.Severity[config.Config.Linter.Pwnedkeys.APIErrorSeverity],
-					Finding:  err.Error(),
-				})
-			}
+		return lres
+	}
+
+	httpRequest.Header.Set("User-Agent", linter.PKIMETAL_NAME)
+	httpRequest.Header.Set("Accept", "application/pkcs10")
+	var httpResponse *http.Response
+	if httpResponse, err = httpClient.Do(httpRequest); err != nil {
+		if os.IsTimeout(err) {
+			lres = append(lres, linter.LintingResult{
+				Severity: linter.Severity[config.Config.Linter.Pwnedkeys.TimeoutSeverity],
+				Finding:  "API request timed out",
+			})
 		} else {
-			defer httpResponse.Body.Close()
-			switch httpResponse.StatusCode {
-			case http.StatusOK:
-				var body []byte
-				var req *x509.CertificateRequest
-				if body, err = io.ReadAll(httpResponse.Body); err == nil {
-					if req, err = x509.ParseCertificateRequest(body); err == nil {
-						if err = req.CheckSignature(); err == nil {
-							lres = append(lres, linter.LintingResult{
-								Severity: linter.SEVERITY_ERROR,
-								Finding:  "Public key is pwned",
-							})
-							break
-						}
-					}
+			lres = append(lres, linter.LintingResult{
+				Severity: linter.Severity[config.Config.Linter.Pwnedkeys.APIErrorSeverity],
+				Finding:  err.Error(),
+			})
+		}
+		return lres
+	}
+
+	defer httpResponse.Body.Close()
+	switch httpResponse.StatusCode {
+	case http.StatusOK:
+		var body []byte
+		var req *x509.CertificateRequest
+		if body, err = io.ReadAll(httpResponse.Body); err == nil {
+			if req, err = x509.ParseCertificateRequest(body); err == nil {
+				if err = req.CheckSignature(); err == nil {
+					lres = append(lres, linter.LintingResult{
+						Severity: linter.SEVERITY_ERROR,
+						Finding:  "Public key is pwned",
+					})
+					break
 				}
-				lres = append(lres, linter.LintingResult{
-					Severity: linter.Severity[config.Config.Linter.Pwnedkeys.APIErrorSeverity],
-					Finding:  err.Error(),
-				})
-			case http.StatusNotFound:
-				lres = append(lres, linter.LintingResult{
-					Severity: linter.SEVERITY_INFO,
-					Finding:  "Public Key is not pwned",
-				})
-			case http.StatusTooManyRequests:
-				lres = append(lres, linter.LintingResult{
-					Severity: linter.Severity[config.Config.Linter.Pwnedkeys.RateLimitSeverity],
-					Finding:  "API request was rate limited",
-				})
-			default:
-				lres = append(lres, linter.LintingResult{
-					Severity: linter.Severity[config.Config.Linter.Pwnedkeys.APIErrorSeverity],
-				})
 			}
 		}
+		lres = append(lres, linter.LintingResult{
+			Severity: linter.Severity[config.Config.Linter.Pwnedkeys.APIErrorSeverity],
+			Finding:  err.Error(),
+		})
+	case http.StatusNotFound:
+		lres = append(lres, linter.LintingResult{
+			Severity: linter.SEVERITY_INFO,
+			Finding:  "Public Key is not pwned",
+		})
+	case http.StatusTooManyRequests:
+		lres = append(lres, linter.LintingResult{
+			Severity: linter.Severity[config.Config.Linter.Pwnedkeys.RateLimitSeverity],
+			Finding:  "API request was rate limited",
+		})
+	default:
+		lres = append(lres, linter.LintingResult{
+			Severity: linter.Severity[config.Config.Linter.Pwnedkeys.APIErrorSeverity],
+		})
 	}
+
 	return lres
 }
 
