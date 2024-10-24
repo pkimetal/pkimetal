@@ -51,6 +51,13 @@ type config struct {
 			NumProcesses int    `mapstructure:"numProcesses"`
 			PythonDir    string `mapstructure:"pythonDir"`
 		}
+		Pwnedkeys struct {
+			NumGoroutines     int           `mapstructure:"numGoroutines"`
+			APIErrorSeverity  string        `mapstructure:"apiErrorSeverity"`
+			RateLimitSeverity string        `mapstructure:"rateLimitSeverity"`
+			TimeoutSeverity   string        `mapstructure:"timeoutSeverity"`
+			HTTPTimeout       time.Duration `mapstructure:"httpTimeout"`
+		}
 		Rocacheck struct {
 			NumGoroutines int `mapstructure:"numGoroutines"`
 		}
@@ -197,6 +204,11 @@ func initViper() error {
 	viper.SetDefault("linter.ftfy.pythonDir", "autodetect")
 	viper.SetDefault("linter.pkilint.numProcesses", 1)
 	viper.SetDefault("linter.pkilint.pythonDir", "autodetect")
+	viper.SetDefault("linter.pwnedkeys.numGoroutines", 1)
+	viper.SetDefault("linter.pwnedkeys.apiErrorSeverity", "notice")
+	viper.SetDefault("linter.pwnedkeys.rateLimitSeverity", "notice")
+	viper.SetDefault("linter.pwnedkeys.timeoutSeverity", "notice")
+	viper.SetDefault("linter.pwnedkeys.httpTimeout", 5*time.Second)
 	viper.SetDefault("linter.rocacheck.numGoroutines", 1)
 	viper.SetDefault("linter.x509lint.numGoroutines", 1)
 	viper.SetDefault("linter.zlint.numGoroutines", 1)
