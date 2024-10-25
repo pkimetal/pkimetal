@@ -205,7 +205,7 @@ func initViper() error {
 	viper.SetDefault("linter.pkilint.numProcesses", 1)
 	viper.SetDefault("linter.pkilint.pythonDir", "autodetect")
 	viper.SetDefault("linter.pwnedkeys.numGoroutines", 0)
-	viper.SetDefault("linter.pwnedkeys.apiErrorSeverity", "notice")
+	viper.SetDefault("linter.pwnedkeys.apiErrorSeverity", "bug")
 	viper.SetDefault("linter.pwnedkeys.rateLimitSeverity", "notice")
 	viper.SetDefault("linter.pwnedkeys.timeoutSeverity", "notice")
 	viper.SetDefault("linter.pwnedkeys.httpTimeout", 5*time.Second)
