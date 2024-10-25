@@ -9,6 +9,9 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strconv"
+	"sync"
+	"time"
 
 	"github.com/pkimetal/pkimetal/config"
 	"github.com/pkimetal/pkimetal/linter"
@@ -27,6 +30,7 @@ func (pt *PwnedkeysTransport) RoundTrip(req *http.Request) (*http.Response, erro
 }
 
 var httpClient http.Client
+var retryAfterMutex sync.RWMutex
 
 func init() {
 	httpClient = http.Client{
@@ -65,6 +69,7 @@ func (l *Pwnedkeys) HandleRequest(lin *linter.LinterInstance, lreq *linter.Linti
 		return lres
 	}
 
+	retryAfterMutex.RLock()
 	var httpResponse *http.Response
 	if httpResponse, err = httpClient.Do(httpRequest); err != nil {
 		if os.IsTimeout(err) {
@@ -80,6 +85,7 @@ func (l *Pwnedkeys) HandleRequest(lin *linter.LinterInstance, lreq *linter.Linti
 		}
 		return lres
 	}
+	retryAfterMutex.RUnlock()
 
 	defer httpResponse.Body.Close()
 	switch httpResponse.StatusCode {
@@ -107,6 +113,7 @@ func (l *Pwnedkeys) HandleRequest(lin *linter.LinterInstance, lreq *linter.Linti
 			Finding:  "Public Key is not pwned",
 		})
 	case http.StatusTooManyRequests:
+		go respectRetryAfter(httpResponse.Header.Get("Retry-After"))
 		lres = append(lres, linter.LintingResult{
 			Severity: linter.Severity[config.Config.Linter.Pwnedkeys.RateLimitSeverity],
 			Finding:  "API request was rate limited",
@@ -122,4 +129,17 @@ func (l *Pwnedkeys) HandleRequest(lin *linter.LinterInstance, lreq *linter.Linti
 
 func (l *Pwnedkeys) ProcessResult(lresult linter.LintingResult) linter.LintingResult {
 	return lresult
+}
+
+func respectRetryAfter(retryAfter string) {
+	if retryAfter != "" {
+		retryAfterMutex.Lock()
+		defer retryAfterMutex.Unlock()
+
+		if i, err := strconv.Atoi(retryAfter); err == nil {
+			time.Sleep(time.Second * time.Duration(i))
+		} else if t, err := time.Parse(time.RFC1123, retryAfter); err == nil {
+			time.Sleep(t.Sub(time.Now()))
+		}
+	}
 }
