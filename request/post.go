@@ -183,7 +183,7 @@ func POST(fhctx *fasthttp.RequestCtx, path string) int {
 		doneChan <- 0
 	}()
 
-	return health.CompleteRequest(doneChan, ctxWithDeadline)
+	return health.CompleteRequest(ctxWithDeadline, doneChan)
 }
 
 func paramS(fhctx *fasthttp.RequestCtx, name string) string {

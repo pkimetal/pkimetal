@@ -215,7 +215,7 @@ except KeyboardInterrupt:
 func (l *Pkilint) StopInstance(lin *linter.LinterInstance) {
 }
 
-func (l *Pkilint) HandleRequest(lin *linter.LinterInstance, lreq *linter.LintingRequest, ctx context.Context) []linter.LintingResult {
+func (l *Pkilint) HandleRequest(ctx context.Context, lin *linter.LinterInstance, lreq *linter.LintingRequest) []linter.LintingResult {
 	// Not used.
 	return nil
 }

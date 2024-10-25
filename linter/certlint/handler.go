@@ -109,7 +109,7 @@ end
 func (l *Certlint) StopInstance(lin *linter.LinterInstance) {
 }
 
-func (l *Certlint) HandleRequest(lin *linter.LinterInstance, lreq *linter.LintingRequest, ctx context.Context) []linter.LintingResult {
+func (l *Certlint) HandleRequest(ctx context.Context, lin *linter.LinterInstance, lreq *linter.LintingRequest) []linter.LintingResult {
 	// Not used.
 	return nil
 }
