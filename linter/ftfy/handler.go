@@ -78,7 +78,7 @@ func removePrintableASCIIExceptSemicolon(r rune) rune {
 	}
 }
 
-func (l *Ftfy) HandleRequest(lin *linter.LinterInstance, lreq *linter.LintingRequest, ctx context.Context) []linter.LintingResult {
+func (l *Ftfy) HandleRequest(ctx context.Context, lin *linter.LinterInstance, lreq *linter.LintingRequest) []linter.LintingResult {
 	var lres []linter.LintingResult
 
 	// Produce a one-line string that concatenates everything that we want ftfy to check.  (Subject.String() does some conversion and so is unsuitable for this purpose).

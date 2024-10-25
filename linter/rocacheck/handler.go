@@ -31,7 +31,7 @@ func (l *Rocacheck) StartInstance() (useHandleRequest bool, directory, cmd strin
 func (l *Rocacheck) StopInstance(lin *linter.LinterInstance) {
 }
 
-func (l *Rocacheck) HandleRequest(lin *linter.LinterInstance, lreq *linter.LintingRequest, ctx context.Context) []linter.LintingResult {
+func (l *Rocacheck) HandleRequest(ctx context.Context, lin *linter.LinterInstance, lreq *linter.LintingRequest) []linter.LintingResult {
 	lres := linter.LintingResult{
 		Severity: linter.SEVERITY_INFO,
 		Finding:  "Public Key is not a ROCA weak key",

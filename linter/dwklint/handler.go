@@ -43,7 +43,7 @@ func (l *Dwklint) StartInstance() (useHandleRequest bool, directory, cmd string,
 func (l *Dwklint) StopInstance(lin *linter.LinterInstance) {
 }
 
-func (l *Dwklint) HandleRequest(lin *linter.LinterInstance, lreq *linter.LintingRequest, ctx context.Context) []linter.LintingResult {
+func (l *Dwklint) HandleRequest(ctx context.Context, lin *linter.LinterInstance, lreq *linter.LintingRequest) []linter.LintingResult {
 	var lres linter.LintingResult
 	dwkStatus := dwklint.HasDebianWeakKey(lreq.Cert)
 	switch dwkStatus {

@@ -63,7 +63,7 @@ func x509lintCertType(profileId linter.ProfileId) int {
 	}
 }
 
-func (l *X509lint) HandleRequest(lin *linter.LinterInstance, lreq *linter.LintingRequest, ctx context.Context) []linter.LintingResult {
+func (l *X509lint) HandleRequest(ctx context.Context, lin *linter.LinterInstance, lreq *linter.LintingRequest) []linter.LintingResult {
 	var lres []linter.LintingResult
 	if results := strings.Trim(x509lintCheck(lreq.DecodedInput, x509lintCertType(lreq.ProfileId)), "\n"); results != "" {
 		for _, result := range strings.Split(results, "\n") {

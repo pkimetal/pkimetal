@@ -56,7 +56,7 @@ func (l *Pwnedkeys) StartInstance() (useHandleRequest bool, directory, cmd strin
 func (l *Pwnedkeys) StopInstance(lin *linter.LinterInstance) {
 }
 
-func (l *Pwnedkeys) HandleRequest(lin *linter.LinterInstance, lreq *linter.LintingRequest, ctx context.Context) []linter.LintingResult {
+func (l *Pwnedkeys) HandleRequest(ctx context.Context, lin *linter.LinterInstance, lreq *linter.LintingRequest) []linter.LintingResult {
 	var lres []linter.LintingResult
 	var httpRequest *http.Request
 	var err error

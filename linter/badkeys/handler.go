@@ -84,7 +84,7 @@ except KeyboardInterrupt:
 func (l *Badkeys) StopInstance(lin *linter.LinterInstance) {
 }
 
-func (l *Badkeys) HandleRequest(lin *linter.LinterInstance, lreq *linter.LintingRequest, ctx context.Context) []linter.LintingResult {
+func (l *Badkeys) HandleRequest(ctx context.Context, lin *linter.LinterInstance, lreq *linter.LintingRequest) []linter.LintingResult {
 	// Not used.
 	return nil
 }

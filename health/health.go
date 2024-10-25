@@ -33,7 +33,7 @@ func UpdateLatestTimestamps(nonErrorTimestamp *time.Time, errorTimestamp *time.T
 	timestampMutex.Unlock()
 }
 
-func CompleteRequest(doneChan chan int, ctxWithDeadline context.Context) int {
+func CompleteRequest(ctxWithDeadline context.Context, doneChan chan int) int {
 	select {
 	case reqStatus := <-doneChan: // Request completed.
 		return reqStatus

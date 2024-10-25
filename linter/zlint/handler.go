@@ -138,7 +138,7 @@ func lintCRL(lreq *linter.LintingRequest, registry *lint.Registry) []linter.Lint
 	return lres
 }
 
-func (l *Zlint) HandleRequest(lin *linter.LinterInstance, lreq *linter.LintingRequest, ctx context.Context) []linter.LintingResult {
+func (l *Zlint) HandleRequest(ctx context.Context, lin *linter.LinterInstance, lreq *linter.LintingRequest) []linter.LintingResult {
 	var registry *lint.Registry
 	if slices.Contains(linter.TbrTevgLeafProfileIDs, lreq.ProfileId) {
 		registry = &cabforumTLSLeafRegistry

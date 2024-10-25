@@ -26,7 +26,7 @@ import (
 type LinterInterface interface {
 	StartInstance() (useHandleRequest bool, directory, cmd string, args []string)
 	StopInstance(lin *LinterInstance)
-	HandleRequest(lin *LinterInstance, lreq *LintingRequest, ctx context.Context) []LintingResult
+	HandleRequest(ctx context.Context, lin *LinterInstance, lreq *LintingRequest) []LintingResult
 	ProcessResult(lresult LintingResult) LintingResult
 }
 
@@ -149,7 +149,7 @@ func StartLinters(ctx context.Context) {
 
 			// Run the linter server loop.
 			ShutdownWG.Add(1)
-			go lin.serverLoop(lif, ctx)
+			go lin.serverLoop(ctx, lif)
 		}
 	}
 }
@@ -251,7 +251,7 @@ func (lin *LinterInstance) stopInstance_external() {
 	}
 }
 
-func (lin *LinterInstance) serverLoop(lif LinterInterface, ctx context.Context) {
+func (lin *LinterInstance) serverLoop(ctx context.Context, lif LinterInterface) {
 	for {
 		select {
 		case lreq := <-lin.ReqChannel: // Multiple backends can share the same request channel, but only one backend will receive each request.
@@ -264,7 +264,7 @@ func (lin *LinterInstance) serverLoop(lif LinterInterface, ctx context.Context) 
 
 			if lin.useHandleRequest {
 				// Process this linting request in-process.
-				for _, lres := range lif.HandleRequest(lin, &lreq, ctx) {
+				for _, lres := range lif.HandleRequest(ctx, lin, &lreq) {
 					lres.LinterName = lin.Name
 					lreq.RespChannel <- lres
 				}
