@@ -21,7 +21,7 @@ require (
 require (
 	github.com/CVE-2008-0166/dwk_blocklists v0.0.0-20240918200223-e5977e07ee34 // indirect
 	github.com/andybalholm/brotli v1.1.1 // indirect
-	github.com/badkeys/badkeys v0.0.13-0.20241025070649-0fa297d5b148 // indirect
+	github.com/badkeys/badkeys v0.0.13-0.20241027102414-e1a8a0995982 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/certlint/certlint v1.7.5 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
