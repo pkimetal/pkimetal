@@ -117,8 +117,8 @@ github.com/titanous/rocacheck v0.0.0-20171023193734-afe73141d399 h1:e/5i7d4oYZ+C
 github.com/titanous/rocacheck v0.0.0-20171023193734-afe73141d399/go.mod h1:LdwHTNJT99C5fTAzDz0ud328OgXz+gierycbcIx2fRs=
 github.com/valyala/bytebufferpool v1.0.0 h1:GqA5TC/0021Y/b9FG4Oi9Mr3q7XYx6KllzawFIhcdPw=
 github.com/valyala/bytebufferpool v1.0.0/go.mod h1:6bBcMArwyJ5K/AmCkWv1jt77kVWyCJ6HpOuEn7z0Csc=
-github.com/valyala/fasthttp v1.56.0 h1:bEZdJev/6LCBlpdORfrLu/WOZXXxvrUQSiyniuaoW8U=
-github.com/valyala/fasthttp v1.56.0/go.mod h1:sReBt3XZVnudxuLOx4J/fMrJVorWRiWY2koQKgABiVI=
+github.com/valyala/fasthttp v1.57.0 h1:Xw8SjWGEP/+wAAgyy5XTvgrWlOD1+TxbbvNADYCm1Tg=
+github.com/valyala/fasthttp v1.57.0/go.mod h1:h6ZBaPRlzpZ6O3H5t2gEk1Qi33+TmLvfwgLLp0t9CpE=
 github.com/weppos/publicsuffix-go v0.13.0/go.mod h1:z3LCPQ38eedDQSwmsSRW4Y7t2L8Ln16JPQ02lHAdn5k=
 github.com/weppos/publicsuffix-go v0.40.2 h1:LlnoSH0Eqbsi3ReXZWBKCK5lHyzf3sc1JEHH1cnlfho=
 github.com/weppos/publicsuffix-go v0.40.2/go.mod h1:XsLZnULC3EJ1Gvk9GVjuCTZ8QUu9ufE4TZpOizDShko=
@@ -134,8 +134,8 @@ github.com/zmap/zcrypto v0.0.0-20201211161100-e54a5822fb7e/go.mod h1:aPM7r+JOkfL
 github.com/zmap/zcrypto v0.0.0-20240803002437-3a861682ac77 h1:DCz0McWRVJNICkHdu2XpETqeLvPtZXs315OZyUs1BDk=
 github.com/zmap/zcrypto v0.0.0-20240803002437-3a861682ac77/go.mod h1:aSvf+uTU222mUYq/KQj3oiEU7ajhCZe8RRSLHIoM4EM=
 github.com/zmap/zlint/v3 v3.0.0/go.mod h1:paGwFySdHIBEMJ61YjoqT4h7Ge+fdYG4sUQhnTb1lJ8=
-github.com/zmap/zlint/v3 v3.6.5-0.20241026155926-d0dc117e775e h1:7b9csnhWFE27C2J2aNDhJKccs7BI0am4jDsL4+T8AWo=
-github.com/zmap/zlint/v3 v3.6.5-0.20241026155926-d0dc117e775e/go.mod h1:KQLVUquVaO5YJDl5a4k/7RPIbIW2v66+sRoBPNZusI8=
+github.com/zmap/zlint/v3 v3.6.5-0.20241028180759-4b55d49bb925 h1:zCNxB2uec0DcB7t/dm0jXFxeNY0UD9s15dpNUIkBDP4=
+github.com/zmap/zlint/v3 v3.6.5-0.20241028180759-4b55d49bb925/go.mod h1:KQLVUquVaO5YJDl5a4k/7RPIbIW2v66+sRoBPNZusI8=
 go.uber.org/automaxprocs v1.6.0 h1:O3y2/QNTOdbF+e/dpXNNW7Rx2hZ4sTIPyybbxyNqTUs=
 go.uber.org/automaxprocs v1.6.0/go.mod h1:ifeIMSnPZuznNm6jmdzmU3/bfk01Fe2fotchwEFJ8r8=
 go.uber.org/goleak v1.3.0 h1:2K3zAYmnTNqV73imy9J1T3WC+gmCePx2hEGkimedGto=
