@@ -12,6 +12,7 @@ type Profile struct {
 	Name        string
 	Source      string
 	Description string
+	Linters     []*string
 }
 
 const (
@@ -234,11 +235,6 @@ var (
 )
 
 func init() {
-	AllProfilesOrdered = make([]Profile, len(AllProfiles))
-	for i := 0; i < len(AllProfiles); i++ {
-		AllProfilesOrdered[i] = AllProfiles[ProfileId(i)]
-	}
-
 	// First pass.  Populate lists that don't intersect with other lists.
 	for k, v := range AllProfiles {
 		if strings.HasSuffix(v.Name, "_crl") || strings.HasSuffix(v.Name, "_arl") {
@@ -286,4 +282,20 @@ func ProfileIDList(list []ProfileId) string {
 		s.WriteString(fmt.Sprintf(",%d", id))
 	}
 	return s.String()[1:]
+}
+
+func registerLinterWithProfiles(linter *Linter) {
+	for id, profile := range AllProfiles {
+		if !slices.Contains(linter.Unsupported, id) {
+			profile.Linters = append(profile.Linters, &linter.Name)
+			AllProfiles[id] = profile
+		}
+	}
+}
+
+func generateOrderedListOfProfiles() {
+	AllProfilesOrdered = make([]Profile, len(AllProfiles))
+	for i := 0; i < len(AllProfiles); i++ {
+		AllProfilesOrdered[i] = AllProfiles[ProfileId(i)]
+	}
 }

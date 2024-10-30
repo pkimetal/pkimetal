@@ -95,6 +95,7 @@ func (l *Linter) Register() {
 			zap.String("name", l.Name),
 			zap.String("version", l.Version),
 		)
+		registerLinterWithProfiles(l)
 		l.ReqChannel = make(chan LintingRequest, config.Config.Linter.MaxQueueSize)
 
 		// Preconfigure this linter's instances.
@@ -130,6 +131,8 @@ func (l *Linter) Register() {
 }
 
 func StartLinters(ctx context.Context) {
+	generateOrderedListOfProfiles()
+
 	for _, lin := range linterInstances {
 		if lif := lin.Interface(); lif != nil {
 			logger.Logger.Info(

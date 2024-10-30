@@ -9,7 +9,7 @@ info:
   license:
     name: GNU General Public License v3.0 or later
     url: https://spdx.org/licenses/GPL-3.0-or-later.html
-  version: 1.0.1
+  version: 1.0.2
 
 servers:
   - url: https://pkimet.al
@@ -232,6 +232,14 @@ components:
         Description:
           type: string
           description: A textual description of the profile
+        Source:
+          type: string
+          description: The document in which the profile is defined
+        Linters:
+          type: array
+          items:
+            type: string
+          description: The linters that handle this profile
 
     Linter:
       type: object
