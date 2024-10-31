@@ -26,7 +26,7 @@ require (
 	github.com/certlint/certlint v1.7.5 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/digicert/pkilint v0.12.3 // indirect
-	github.com/fsnotify/fsnotify v1.7.0 // indirect
+	github.com/fsnotify/fsnotify v1.8.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/klauspost/compress v1.17.11 // indirect
 	github.com/kroeckx/x509lint v0.0.0-20210110132446-e2d7fe9b9a48 // indirect
