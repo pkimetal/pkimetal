@@ -103,6 +103,7 @@ def lint_cabf_serverauth_cert(profile_id, pem_data):
 # lint_etsi_cert:
 ` + etsi_profile_dictionary + `
 etsi_profile_ids = {` + linter.ProfileIDList(linter.EtsiCertificateProfileIDs) + `}
+etsi_non_browser_profile_ids = {` + linter.ProfileIDList(linter.EtsiNonBrowserCertificateProfileIDs) + `}
 etsi_doc_validators = {}
 etsi_finding_filters = {}
 
@@ -111,11 +112,13 @@ def init_etsi_validators_and_filters():
 		etsi_doc_validators[ct] = certificate.create_pkix_certificate_validator_container(etsi.create_decoding_validators(ct), etsi.create_validators(ct))
 		etsi_finding_filters[ct] = etsi.create_etsi_finding_filters(ct)
 
-def lint_etsi_cert(profile_id, pem_data):
+def lint_etsi_cert(profile_id, report_all, pem_data):
 	try:
 		cert = loader.load_pem_certificate(pem_data, "")
 		certificate_type = etsi_profile_dictionary.get(profile_id, etsi.determine_certificate_type(cert))
-		results, _ = finding_filter.filter_results(etsi_finding_filters[certificate_type], etsi_doc_validators[certificate_type].validate(cert.root))
+		results = etsi_doc_validators[certificate_type].validate(cert.root)
+		if not report_all:
+			results, _ = finding_filter.filter_results(etsi_finding_filters[certificate_type], results)
 		return ReportGeneratorJson(results, validation.ValidationFindingSeverity.DEBUG).generate()
 	except Exception as e:
 		return "F: Exception: " + str(e)
@@ -187,6 +190,7 @@ pem_data = ""
 try:
 	init_smime_validators()
 	init_serverauth_validators_and_filters()
+	init_etsi_validators_and_filters()
 	for line in stdin:
 		if profile_id == -1:
 			profile_id = int(line.strip())
@@ -194,7 +198,9 @@ try:
 			pem_data = pem_data + line.strip() + "\n"
 
 		if "END CERTIFICATE" in line or "END X509 CRL" in line or "END OCSP RESPONSE" in line:
-			if profile_id in sbr_profile_ids:
+			if profile_id in etsi_profile_ids:
+				print(lint_etsi_cert(profile_id, profile_id not in etsi_non_browser_profile_ids, pem_data))
+			elif profile_id in sbr_profile_ids:
 				print(lint_cabf_smime_cert(profile_id, pem_data))
 			elif profile_id in tbr_tevg_profile_ids:
 				print(lint_cabf_serverauth_cert(profile_id, pem_data))

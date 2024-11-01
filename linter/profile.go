@@ -230,8 +230,11 @@ var (
 		ETSI_LEAF_NCPLEGALPERSON:                                         {Name: "etsi_leaf_ncplegalperson", Source: "EN 319 412", Description: "ETSI Electronic Seal Certificate: Legal Person "},
 	}
 
-	AllProfilesOrdered                                                                                                                                                                                                                                        []Profile
-	CrlProfileIDs, OcspProfileIDs, RootProfileIDs, SubordinateProfileIDs, SbrLeafProfileIDs, TbrTevgLeafProfileIDs, TbrTevgCertificateProfileIDs, NonTbrTevgCertificateProfileIDs, NonCabforumProfileIDs, NonCertificateProfileIDs, EtsiCertificateProfileIDs []ProfileId
+	AllProfilesOrdered                                                               []Profile
+	CrlProfileIDs, OcspProfileIDs, RootProfileIDs, SubordinateProfileIDs             []ProfileId
+	SbrLeafProfileIDs, TbrTevgLeafProfileIDs, TbrTevgCertificateProfileIDs           []ProfileId
+	NonTbrTevgCertificateProfileIDs, NonCabforumProfileIDs, NonCertificateProfileIDs []ProfileId
+	EtsiCertificateProfileIDs, EtsiNonBrowserCertificateProfileIDs                   []ProfileId
 )
 
 func init() {
@@ -262,6 +265,9 @@ func init() {
 
 		if strings.HasPrefix(v.Name, "etsi_") {
 			EtsiCertificateProfileIDs = append(EtsiCertificateProfileIDs, k)
+			if strings.Contains(v.Name, "nonbrowser") {
+				EtsiNonBrowserCertificateProfileIDs = append(EtsiNonBrowserCertificateProfileIDs, k)
+			}
 		}
 	}
 
