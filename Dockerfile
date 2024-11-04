@@ -29,8 +29,8 @@ RUN git fetch --depth=2147483647 && \
 	cp -R $(go list -modfile=$gomodfile -m -f '{{.Dir}}' github.com/badkeys/badkeys) /usr/local/build/badkeys/ && \
 	go get -modfile=$gomodfile github.com/certlint/certlint && \
 	cp -R $(go list -modfile=$gomodfile -m -f '{{.Dir}}' github.com/certlint/certlint) /usr/local/pkimetal/certlint/ && \
-	go get -modfile=$gomodfile github.com/CVE-2008-0166/dwk_blocklists && \
-	cp -R $(go list -modfile=$gomodfile -m -f '{{.Dir}}' github.com/CVE-2008-0166/dwk_blocklists) /usr/local/pkimetal/dwk_blocklists/ && \
+	go get -modfile=$gomodfile github.com/CVE-2008-0166/dwk_blocklists_sqlite3 && \
+	cp -R $(go list -modfile=$gomodfile -m -f '{{.Dir}}' github.com/CVE-2008-0166/dwk_blocklists_sqlite3) /usr/local/pkimetal/dwk_blocklists_sqlite3/ && \
 	go get -modfile=$gomodfile github.com/rspeer/python-ftfy && \
 	cp -R $(go list -modfile=$gomodfile -m -f '{{.Dir}}' github.com/rspeer/python-ftfy) /usr/local/build/ftfy/ && \
 	go get -modfile=$gomodfile github.com/digicert/pkilint && \
@@ -77,7 +77,7 @@ RUN git fetch --depth=2147483647 && \
 	-X github.com/pkimetal/pkimetal/linter/badkeys.PythonDir=`find /usr/local/pkimetal/badkeys/lib/python*/site-packages -maxdepth 0` \
 	-X github.com/pkimetal/pkimetal/linter/certlint.Version=`go list -modfile=$gomodfile -m -f '{{.Version}}' github.com/certlint/certlint | sed 's/+incompatible//g'` \
 	-X github.com/pkimetal/pkimetal/linter/certlint.RubyDir=/usr/local/pkimetal/certlint \
-	-X github.com/pkimetal/pkimetal/linter/dwklint.BlocklistDir=/usr/local/pkimetal/dwk_blocklists \
+	-X github.com/pkimetal/pkimetal/linter/dwklint.BlocklistDBPath=/usr/local/pkimetal/dwk_blocklists_sqlite3/dwk_blocklists.sqlite3 \
 	-X github.com/pkimetal/pkimetal/linter/ftfy.Version=`go list -modfile=$gomodfile -m -f '{{.Version}}' github.com/rspeer/python-ftfy | sed 's/+incompatible//g'` \
 	-X github.com/pkimetal/pkimetal/linter/ftfy.PythonDir=`find /usr/local/pkimetal/ftfy/lib/python*/site-packages -maxdepth 0` \
 	-X github.com/pkimetal/pkimetal/linter/pkilint.Version=`go list -modfile=$gomodfile -m -f '{{.Version}}' github.com/digicert/pkilint | sed 's/+incompatible//g'` \
