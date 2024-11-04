@@ -6,29 +6,27 @@ import (
 	"github.com/pkimetal/pkimetal/config"
 	"github.com/pkimetal/pkimetal/linter"
 
-	"github.com/CVE-2008-0166/dwklint"
+	dwklint "github.com/CVE-2008-0166/dwklint/v2"
 )
 
 type Dwklint struct{}
 
-var BlocklistDir string
+var BlocklistDBPath string
 
 func init() {
-	// Determine blocklist directory.
-	if config.Config.Linter.Dwklint.BlocklistDir == "autodetect" {
-		if config.Config.Linter.Dwklint.BlocklistDir = BlocklistDir; BlocklistDir == "" {
-			config.Config.Linter.Dwklint.BlocklistDir = "/usr/local/dwk_blocklists"
-		}
-	}
-	// Load blocklists.
-	if err := dwklint.LoadBlocklists(config.Config.Linter.Dwklint.BlocklistDir); err != nil {
-		panic(err)
+	// dwklint's database connection can only be used by one goroutine at time, so multiple backends cannot be supported.
+	switch config.Config.Linter.Dwklint.NumGoroutines {
+	case 0:
+	case 1:
+		dwklint.OpenBlocklistDatabase(config.Config.Linter.Dwklint.BlocklistDBPath)
+	default:
+		panic("dwklint: numGoroutines must be 0 or 1")
 	}
 
 	// Register dwklint.
 	(&linter.Linter{
 		Name:         "dwklint",
-		Version:      linter.GetPackageVersion("github.com/CVE-2008-0166/dwklint"),
+		Version:      linter.GetPackageVersion("github.com/CVE-2008-0166/dwklint/v2"),
 		Url:          "https://github.com/CVE-2008-0166/dwklint",
 		Unsupported:  linter.NonCertificateProfileIDs,
 		NumInstances: config.Config.Linter.Dwklint.NumGoroutines,
@@ -41,6 +39,9 @@ func (l *Dwklint) StartInstance() (useHandleRequest bool, directory, cmd string,
 }
 
 func (l *Dwklint) StopInstance(lin *linter.LinterInstance) {
+	if lin.NumInstances > 0 {
+		dwklint.CloseBlocklistDatabase()
+	}
 }
 
 func (l *Dwklint) HandleRequest(ctx context.Context, lin *linter.LinterInstance, lreq *linter.LintingRequest) []linter.LintingResult {
