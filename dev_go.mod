@@ -5,7 +5,7 @@ go 1.22.0
 toolchain go1.23.2
 
 require (
-	github.com/CVE-2008-0166/dwklint v1.0.0
+	github.com/CVE-2008-0166/dwklint v1.0.1-0.20241104150604-cdb1d3305e90
 	github.com/goccy/go-json v0.10.3
 	github.com/prometheus/client_golang v1.20.5
 	github.com/sergi/go-diff v1.3.1
