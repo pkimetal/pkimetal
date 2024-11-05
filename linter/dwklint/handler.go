@@ -14,11 +14,18 @@ type Dwklint struct{}
 var BlocklistDBPath string
 
 func init() {
+	if config.Config.Linter.Dwklint.BlocklistDBPath != "" {
+		BlocklistDBPath = config.Config.Linter.Dwklint.BlocklistDBPath
+	}
+
 	// dwklint's database connection can only be used by one goroutine at time, so multiple backends cannot be supported.
 	switch config.Config.Linter.Dwklint.NumGoroutines {
 	case 0:
 	case 1:
-		dwklint.OpenBlocklistDatabase(config.Config.Linter.Dwklint.BlocklistDBPath)
+		if BlocklistDBPath == "" {
+			panic("dwklint: blocklistDBPath must be set")
+		}
+		dwklint.OpenBlocklistDatabase(BlocklistDBPath)
 	default:
 		panic("dwklint: numGoroutines must be 0 or 1")
 	}
