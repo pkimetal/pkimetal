@@ -24,8 +24,9 @@ func init() {
 	case 1:
 		if BlocklistDBPath == "" {
 			panic("dwklint: blocklistDBPath must be set")
+		} else if err := dwklint.OpenBlocklistDatabase(BlocklistDBPath); err != nil {
+			panic("dwklint: " + err.Error())
 		}
-		dwklint.OpenBlocklistDatabase(BlocklistDBPath)
 	default:
 		panic("dwklint: numGoroutines must be 0 or 1")
 	}
