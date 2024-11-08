@@ -31,6 +31,7 @@ func (pt *PwnedkeysTransport) RoundTrip(req *http.Request) (*http.Response, erro
 
 var httpClient http.Client
 var retryAfterMutex sync.RWMutex
+var retryAfter time.Time
 
 func init() {
 	httpClient = http.Client{
@@ -70,6 +71,16 @@ func (l *Pwnedkeys) HandleRequest(ctx context.Context, lin *linter.LinterInstanc
 	}
 
 	retryAfterMutex.RLock()
+	currentlyRateLimited := retryAfter.After(time.Now())
+	retryAfterMutex.RUnlock()
+	if currentlyRateLimited {
+		lres = append(lres, linter.LintingResult{
+			Severity: linter.Severity[config.Config.Linter.Pwnedkeys.RateLimitSeverity],
+			Finding:  "API requests are currently rate limited",
+		})
+		return lres
+	}
+
 	var httpResponse *http.Response
 	if httpResponse, err = httpClient.Do(httpRequest); err != nil {
 		if os.IsTimeout(err) {
@@ -85,7 +96,6 @@ func (l *Pwnedkeys) HandleRequest(ctx context.Context, lin *linter.LinterInstanc
 		}
 		return lres
 	}
-	retryAfterMutex.RUnlock()
 
 	defer httpResponse.Body.Close()
 	switch httpResponse.StatusCode {
@@ -113,7 +123,7 @@ func (l *Pwnedkeys) HandleRequest(ctx context.Context, lin *linter.LinterInstanc
 			Finding:  "Public Key is not pwned",
 		})
 	case http.StatusTooManyRequests:
-		go respectRetryAfter(httpResponse.Header.Get("Retry-After"))
+		respectRetryAfter(httpResponse.Header.Get("Retry-After"))
 		lres = append(lres, linter.LintingResult{
 			Severity: linter.Severity[config.Config.Linter.Pwnedkeys.RateLimitSeverity],
 			Finding:  "API request was rate limited",
@@ -131,15 +141,19 @@ func (l *Pwnedkeys) ProcessResult(lresult linter.LintingResult) linter.LintingRe
 	return lresult
 }
 
-func respectRetryAfter(retryAfter string) {
-	if retryAfter != "" {
-		retryAfterMutex.Lock()
-		defer retryAfterMutex.Unlock()
-
-		if i, err := strconv.Atoi(retryAfter); err == nil {
-			time.Sleep(time.Second * time.Duration(i))
-		} else if t, err := time.Parse(time.RFC1123, retryAfter); err == nil {
-			time.Sleep(t.Sub(time.Now()))
+func respectRetryAfter(retryAfterHeader string) {
+	if retryAfterHeader != "" {
+		var ra time.Time
+		if i, err := strconv.Atoi(retryAfterHeader); err == nil {
+			ra = time.Now().Add(time.Second * time.Duration(i))
+		} else if ra, err = time.Parse(time.RFC1123, retryAfterHeader); err != nil {
+			return
 		}
+
+		retryAfterMutex.Lock()
+		if ra.After(retryAfter) {
+			retryAfter = ra
+		}
+		retryAfterMutex.Unlock()
 	}
 }
