@@ -205,7 +205,7 @@ func APIWebpage(fhctx *fasthttp.RequestCtx, endpoint string) {
       </TR>
       <TR>
         <TD>Profile:
-          <BR><SELECT name="profile" size="13">`)
+          <BR><SELECT name="profile" size="15">`)
 	for id, profile := range linter.AllProfilesOrdered {
 		isShown := false
 		switch endpoint {
