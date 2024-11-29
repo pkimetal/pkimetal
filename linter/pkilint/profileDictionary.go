@@ -9,8 +9,10 @@ import (
 var serverauth_profile_dictionary = fmt.Sprintf(`serverauth_profile_dictionary = {
 	# CABForum TLS Baseline Requirements.
 	%d: serverauth_constants.CertificateType.ROOT_CA,
-	%d: serverauth_constants.CertificateType.EXTERNAL_CROSS_CA,
 	%d: serverauth_constants.CertificateType.INTERNAL_CROSS_CA,
+	%d: serverauth_constants.CertificateType.INTERNAL-SUBSCRIBER-ISSUING-CROSS-CA,
+	%d: serverauth_constants.CertificateType.EXTERNAL_CROSS_CA,
+	%d: serverauth_constants.CertificateType.EXTERNAL-SUBSCRIBER-ISSUING-CROSS-CA,
 	%d: serverauth_constants.CertificateType.INTERNAL_UNCONSTRAINED_TLS_CA,
 	%d: serverauth_constants.CertificateType.INTERNAL_CONSTRAINED_TLS_CA,
 	%d: serverauth_constants.CertificateType.EXTERNAL_UNCONSTRAINED_TLS_CA,
@@ -30,7 +32,7 @@ var serverauth_profile_dictionary = fmt.Sprintf(`serverauth_profile_dictionary =
 	%d: serverauth_constants.CertificateType.EXTERNAL_CONSTRAINED_EV_TLS_CA
 }`,
 	linter.TBR_ROOT_TLSSERVER,
-	linter.TBR_CROSS_TLSSERVER, linter.TBR_CROSS_UNRESTRICTED,
+	linter.TBR_CROSS_INTERNAL, linter.TBR_CROSS_INTERNAL_SUBSCRIBERISSUING, linter.TBR_CROSS_EXTERNAL, linter.TBR_CROSS_EXTERNAL_SUBSCRIBERISSUING,
 	linter.TBR_SUBORDINATE_TLSSERVER_INTERNAL_UNCONSTRAINED, linter.TBR_SUBORDINATE_TLSSERVER_INTERNAL_CONSTRAINED,
 	linter.TBR_SUBORDINATE_TLSSERVER_EXTERNAL_UNCONSTRAINED, linter.TBR_SUBORDINATE_TLSSERVER_EXTERNAL_CONSTRAINED,
 	linter.TBR_SUBORDINATE_PRECERTSIGNING,

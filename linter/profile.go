@@ -34,8 +34,10 @@ const (
 	RFC6960_OCSPRESPONSE
 	// CABForum TLS Baseline Requirements.
 	TBR_ROOT_TLSSERVER
-	TBR_CROSS_TLSSERVER
-	TBR_CROSS_UNRESTRICTED
+	TBR_CROSS_INTERNAL
+	TBR_CROSS_INTERNAL_SUBSCRIBERISSUING
+	TBR_CROSS_EXTERNAL
+	TBR_CROSS_EXTERNAL_SUBSCRIBERISSUING
 	TBR_SUBORDINATE_TLSSERVER
 	TBR_SUBORDINATE_TLSSERVER_INTERNAL_UNCONSTRAINED
 	TBR_SUBORDINATE_TLSSERVER_INTERNAL_CONSTRAINED
@@ -142,8 +144,10 @@ var (
 		RFC6960_OCSPRESPONSE: {Name: "rfc6960_ocspresponse", Source: "RFC6960", Description: "OCSP Response"},
 		// CABForum TLS Baseline Requirements.
 		TBR_ROOT_TLSSERVER:                               {Name: "tbr_root_tlsserver", Source: "TLS BRs", Description: "TLS Server Root CA Certificate"},
-		TBR_CROSS_TLSSERVER:                              {Name: "tbr_cross_tlsserver", Source: "TLS BRs", Description: "TLS Server Cross-Certified Subordinate CA Certificate"},
-		TBR_CROSS_UNRESTRICTED:                           {Name: "tbr_cross_unrestricted", Source: "TLS BRs", Description: "Unrestricted TLS Server Cross-Certified Subordinate CA Certificate"},
+		TBR_CROSS_INTERNAL:                               {Name: "tbr_cross_internal", Source: "TLS BRs", Description: "Internal TLS Server Cross-Certified Root CA Certificate"},
+		TBR_CROSS_INTERNAL_SUBSCRIBERISSUING:             {Name: "tbr_cross_internal_subscriberissuing", Source: "TLS BRs", Description: "Internal TLS Server Cross-Certified Subordinate CA Certificate"},
+		TBR_CROSS_EXTERNAL:                               {Name: "tbr_cross_external", Source: "TLS BRs", Description: "External TLS Server Cross-Certified Root CA Certificate"},
+		TBR_CROSS_EXTERNAL_SUBSCRIBERISSUING:             {Name: "tbr_cross_external_subscriberissuing", Source: "TLS BRs", Description: "External TLS Server Cross-Certified Subordinate CA Certificate"},
 		TBR_SUBORDINATE_TLSSERVER:                        {Name: "tbr_subordinate_tlsserver", Source: "TLS BRs", Description: "TLS Server Subordinate CA Certificate"},
 		TBR_SUBORDINATE_TLSSERVER_INTERNAL_UNCONSTRAINED: {Name: "tbr_subordinate_tlsserver_internal_unconstrained", Source: "TLS BRs", Description: "Unconstrained Internal TLS Server Subordinate CA Certificate"},
 		TBR_SUBORDINATE_TLSSERVER_INTERNAL_CONSTRAINED:   {Name: "tbr_subordinate_tlsserver_internal_constrained", Source: "TLS BRs", Description: "Constrained Internal TLS Server Subordinate CA Certificate"},
