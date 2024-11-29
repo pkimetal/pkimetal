@@ -10,9 +10,9 @@ var serverauth_profile_dictionary = fmt.Sprintf(`serverauth_profile_dictionary =
 	# CABForum TLS Baseline Requirements.
 	%d: serverauth_constants.CertificateType.ROOT_CA,
 	%d: serverauth_constants.CertificateType.INTERNAL_CROSS_CA,
-	%d: serverauth_constants.CertificateType.INTERNAL-SUBSCRIBER-ISSUING-CROSS-CA,
+	%d: serverauth_constants.CertificateType.INTERNAL_SUBSCRIBER_ISSUING_CROSS_CA,
 	%d: serverauth_constants.CertificateType.EXTERNAL_CROSS_CA,
-	%d: serverauth_constants.CertificateType.EXTERNAL-SUBSCRIBER-ISSUING-CROSS-CA,
+	%d: serverauth_constants.CertificateType.EXTERNAL_SUBSCRIBER_ISSUING_CROSS_CA,
 	%d: serverauth_constants.CertificateType.INTERNAL_UNCONSTRAINED_TLS_CA,
 	%d: serverauth_constants.CertificateType.INTERNAL_CONSTRAINED_TLS_CA,
 	%d: serverauth_constants.CertificateType.EXTERNAL_UNCONSTRAINED_TLS_CA,
