@@ -8,6 +8,7 @@ import (
 	"io"
 	"os/exec"
 	"runtime/debug"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -44,6 +45,8 @@ type Linter struct {
 	Interface             func() LinterInterface
 }
 
+type LinterSlice []*Linter
+
 type LinterInstance struct {
 	*Linter
 	instanceNumber int
@@ -74,7 +77,7 @@ type LintingResult struct {
 }
 
 var (
-	Linters         []*Linter
+	Linters         LinterSlice
 	linterInstances []*LinterInstance
 	ShutdownWG      sync.WaitGroup
 )
@@ -130,8 +133,23 @@ func (l *Linter) Register() {
 	}
 }
 
+func (slice LinterSlice) Len() int {
+    return len(slice)
+}
+
+func (slice LinterSlice) Less(i, j int) bool {
+	return strings.Compare(slice[i].Name, slice[j].Name) < 0
+}
+
+func (slice LinterSlice) Swap(i, j int) {
+    slice[i], slice[j] = slice[j], slice[i]
+}
+
 func StartLinters(ctx context.Context) {
 	generateOrderedListOfProfiles()
+
+	// Sort the linters by name.
+	sort.Sort(Linters)
 
 	for _, lin := range linterInstances {
 		if lif := lin.Interface(); lif != nil {
