@@ -38,7 +38,7 @@ require (
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.3 // indirect
 	github.com/prometheus/client_model v0.6.1 // indirect
-	github.com/prometheus/common v0.60.1 // indirect
+	github.com/prometheus/common v0.61.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/rspeer/python-ftfy v6.3.2-0.20241030210025-74dd0452b482+incompatible // indirect
@@ -52,9 +52,9 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/weppos/publicsuffix-go v0.40.3-0.20241121092442-c6cbe8e9f6f1 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/crypto v0.29.0 // indirect
-	golang.org/x/exp v0.0.0-20241108190413-2d47ceb2692f // indirect
-	golang.org/x/net v0.31.0 // indirect
+	golang.org/x/crypto v0.30.0 // indirect
+	golang.org/x/exp v0.0.0-20241204233417-43b7b7cde48d // indirect
+	golang.org/x/net v0.32.0 // indirect
 	golang.org/x/sys v0.28.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
 	google.golang.org/protobuf v1.35.2 // indirect
