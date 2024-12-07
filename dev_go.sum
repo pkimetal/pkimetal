@@ -6,8 +6,8 @@ github.com/CVE-2008-0166/dwklint/v2 v2.0.1/go.mod h1:NW2bWvZKsZooTfoLt7fo4ZZ7rGL
 github.com/ProtonMail/go-crypto v0.0.0-20230217124315-7d5c6f04bbb8/go.mod h1:I0gYDMZ6Z5GRU7l58bNFSkPTFN6Yl12dsUlAZ8xy98g=
 github.com/andybalholm/brotli v1.1.1 h1:PR2pgnyFznKEugtsUo0xLdDop5SKXd5Qf5ysW+7XdTA=
 github.com/andybalholm/brotli v1.1.1/go.mod h1:05ib4cKhjx3OQYUY22hTVd34Bc8upXjOLL2rKwwZBoA=
-github.com/badkeys/badkeys v0.0.13-0.20241202155631-6cc836c2571a h1:OGdcUze2XLqUKl/YMgnauezuV57Kigywji0n+0f61Z4=
-github.com/badkeys/badkeys v0.0.13-0.20241202155631-6cc836c2571a/go.mod h1:mnRAMRGxK03ObNuLiSQhBdufzeuyO/pasHMsYjUU8S8=
+github.com/badkeys/badkeys v0.0.13-0.20241207183357-e9f95ec29bb6 h1:hRYBY0G35WZzP1oW4XA05n0zGZlMsktPX5z36EU9s2U=
+github.com/badkeys/badkeys v0.0.13-0.20241207183357-e9f95ec29bb6/go.mod h1:mnRAMRGxK03ObNuLiSQhBdufzeuyO/pasHMsYjUU8S8=
 github.com/beorn7/perks v1.0.1 h1:VlbKKnNfV8bJzeqoa4cOKqO6bYr3WgKZxO8Z16+hsOM=
 github.com/beorn7/perks v1.0.1/go.mod h1:G2ZrVWU2WbWT9wwq4/hrbKbnv/1ERSJQ0ibhJ6rlkpw=
 github.com/bwesterb/go-ristretto v1.2.0/go.mod h1:fUIoIZaG73pV5biE2Blr2xEzDoMj7NFEuV9ekS419A0=
