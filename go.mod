@@ -4,7 +4,7 @@ go 1.23.3
 
 require (
 	github.com/CVE-2008-0166/dwklint/v2 v2.0.1
-	github.com/goccy/go-json v0.10.3
+	github.com/goccy/go-json v0.10.4
 	github.com/prometheus/client_golang v1.20.5
 	github.com/sergi/go-diff v1.3.1
 	github.com/spf13/viper v1.19.0
@@ -52,7 +52,7 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/weppos/publicsuffix-go v0.40.3-0.20241121092442-c6cbe8e9f6f1 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/crypto v0.30.0 // indirect
+	golang.org/x/crypto v0.31.0 // indirect
 	golang.org/x/exp v0.0.0-20241210194714-1829a127f884 // indirect
 	golang.org/x/net v0.32.0 // indirect
 	golang.org/x/sys v0.28.0 // indirect
