@@ -1,11 +1,15 @@
-[tool.poetry]
+[project]
 name = "pkilint"
 version = "0.11.4"
 description = "A framework for verifying PKI structures"
-authors = ["DigiCert, Inc. <corey.bonnell@digicert.com>"]
+authors = [
+  { name = "DigiCert, Inc.", email = "corey.bonnell@digicert.com" },
+]
 license = "MIT"
-include = ["README.md", "CHANGELOG.md", "tests"]
 readme = "README.md"
+
+[tool.poetry]
+include = ["README.md", "CHANGELOG.md", "tests"]
 
 [tool.poetry.dependencies]
 python = ">=3.9,<4"

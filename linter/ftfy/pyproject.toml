@@ -1,11 +1,15 @@
-[tool.poetry]
+[project]
 name = "ftfy"
 version = "6.3.0"
 description = "Fixes mojibake and other problems with Unicode, after the fact"
-authors = ["Robyn Speer <rspeer@arborelia.net>"]
+authors = [
+  { name = "Robyn Speer", email = "rspeer@arborelia.net" },
+]
 license = "Apache-2.0"
-include = ["README.md", "CHANGELOG.md", "tests"]
 readme = "README.md"
+
+[tool.poetry]
+include = ["README.md", "CHANGELOG.md", "tests"]
 
 [tool.poetry.dependencies]
 python = ">=3.9,<4"

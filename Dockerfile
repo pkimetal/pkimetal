@@ -44,6 +44,7 @@ RUN git fetch --depth=2147483647 && \
 	# Build badkeys.
 	cd /usr/local/build/badkeys && \
 	cp /app/linter/badkeys/pyproject.toml . && \
+	poetry lock && \
 	poetry bundle venv --python=/usr/bin/python3 --only=main /usr/local/pkimetal/badkeys && \
 	cp badkeys-cli /usr/local/pkimetal/badkeys/bin && \
 	# Build certlint.
@@ -53,7 +54,7 @@ RUN git fetch --depth=2147483647 && \
 	# Build ftfy wheel.
 	cd /usr/local/build/ftfy && \
 	cp /app/linter/ftfy/pyproject.toml . && \
-	poetry lock --no-update && \
+	poetry lock && \
 	poetry bundle venv --python=/usr/bin/python3 --only=main /usr/local/pkimetal/ftfy && \
 	# Install rust + cargo using rustup (for pyasn1-fasder).
 	rustup-init -y && \
@@ -61,6 +62,7 @@ RUN git fetch --depth=2147483647 && \
 	# Build pkilint wheel.
 	cd /usr/local/build/pkilint && \
 	cp /app/linter/pkilint/pyproject.toml . && \
+	poetry lock && \
 	poetry bundle venv --python=/usr/bin/python3 --only=main /usr/local/pkimetal/pkilint && \
 	cp pkilint/cabf/smime/finding_metadata.csv /app/finding_metadata.csv.smime && \
 	cp pkilint/cabf/serverauth/finding_metadata.csv /app/finding_metadata.csv.serverauth && \

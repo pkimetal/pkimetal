@@ -1,8 +1,10 @@
-[tool.poetry]
+[project]
 name = "badkeys"
 version = "0.0.12"
 description = "Check cryptographic keys for known weaknesses"
-authors = ["Hanno Böck"]
+authors = [
+  { name = "Hanno Böck", email = "hanno@hboeck.de" },
+]
 license = "MIT"
 readme = "README.md"
 
