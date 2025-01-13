@@ -11,7 +11,7 @@ require (
 	github.com/titanous/rocacheck v0.0.0-20171023193734-afe73141d399
 	github.com/valyala/fasthttp v1.58.0
 	github.com/zmap/zcrypto v0.0.0-20241218205341-e47c4f4da3a4
-	github.com/zmap/zlint/v3 v3.6.4
+	github.com/zmap/zlint/v3 v3.6.5
 	go.uber.org/automaxprocs v1.6.0
 	go.uber.org/zap v1.27.0
 )
@@ -23,7 +23,7 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/certlint/certlint v1.7.5 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
-	github.com/digicert/pkilint v0.12.5 // indirect
+	github.com/digicert/pkilint v0.12.6 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/fsnotify/fsnotify v1.8.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
