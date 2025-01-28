@@ -10,7 +10,7 @@ require (
 	github.com/spf13/viper v1.19.0
 	github.com/titanous/rocacheck v0.0.0-20171023193734-afe73141d399
 	github.com/valyala/fasthttp v1.58.0
-	github.com/zmap/zcrypto v0.0.0-20250122162432-7a1cf5fc45e3
+	github.com/zmap/zcrypto v0.0.0-20250128182517-82bf308399e9
 	github.com/zmap/zlint/v3 v3.6.6-0.20250125172815-32cb0bf2798b
 	go.uber.org/automaxprocs v1.6.0
 	go.uber.org/zap v1.27.0
@@ -53,7 +53,7 @@ require (
 	github.com/weppos/publicsuffix-go v0.40.3-0.20241218111332-1518a6f1cb34 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/crypto v0.32.0 // indirect
-	golang.org/x/exp v0.0.0-20250128144449-3edf0e91c1ae // indirect
+	golang.org/x/exp v0.0.0-20250128182459-e0ece0dbea4c // indirect
 	golang.org/x/net v0.34.0 // indirect
 	golang.org/x/sys v0.29.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
