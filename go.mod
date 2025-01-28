@@ -4,7 +4,7 @@ go 1.23.5
 
 require (
 	github.com/CVE-2008-0166/dwklint/v2 v2.0.1
-	github.com/goccy/go-json v0.10.4
+	github.com/goccy/go-json v0.10.5
 	github.com/prometheus/client_golang v1.20.5
 	github.com/sergi/go-diff v1.3.1
 	github.com/spf13/viper v1.19.0
