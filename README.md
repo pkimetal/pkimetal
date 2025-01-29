@@ -87,7 +87,8 @@ These public instances are provided as-is, on a best effort basis. They are NOT 
 
 Here are some projects/CAs that are known to use or integrate with pkimetal:
 
-- [Sectigo](https://sectigo.com/), [crt.sh](https://crt.sh/), [EJBCA](https://www.ejbca.org), and the two [Public instances](#public-instances) listed above
+- [EJBCA](https://www.ejbca.org)
+- [Sectigo](https://sectigo.com/), [crt.sh](https://crt.sh/), and the two [Public instances](#public-instances) listed above
 
 Please submit a pull request to update README.md if you are aware of another CA/project that uses or integrates with pkimetal.
 
