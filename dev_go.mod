@@ -1,6 +1,6 @@
 module github.com/pkimetal/pkimetal
 
-go 1.23.5
+go 1.23.6
 
 require (
 	github.com/CVE-2008-0166/dwklint/v2 v2.0.1
