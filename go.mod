@@ -53,7 +53,7 @@ require (
 	github.com/weppos/publicsuffix-go v0.40.3-0.20250127173806-e489a31678ca // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/crypto v0.32.0 // indirect
-	golang.org/x/exp v0.0.0-20250128182459-e0ece0dbea4c // indirect
+	golang.org/x/exp v0.0.0-20250207012021-f9890c6ad9f3 // indirect
 	golang.org/x/net v0.34.0 // indirect
 	golang.org/x/sys v0.30.0 // indirect
 	golang.org/x/text v0.22.0 // indirect
