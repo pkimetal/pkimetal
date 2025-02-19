@@ -68,6 +68,9 @@ func initResponseLatencyMetrics() {
 var serverLabel = [...]string{"monitoring", "linting"}
 var fhConcurrency [len(serverLabel)]prometheus.Gauge
 var fhOpenConnections [len(serverLabel)]prometheus.Gauge
+var fhRejectedConnections [len(serverLabel)]prometheus.Gauge
+var fhMaxConcurrency [len(serverLabel)]prometheus.Gauge
+var fhMaxConnsPerIP [len(serverLabel)]prometheus.Gauge
 
 func initFastHTTPMetrics() {
 	// Configure prometheus gauges.
@@ -76,23 +79,60 @@ func initFastHTTPMetrics() {
 			Namespace:   config.ApplicationNamespace,
 			Subsystem:   "fasthttp",
 			Name:        "concurrency",
-			Help:        "Number of currently served HTTP connections.",
+			Help:        "Number of currently served connections.",
 			ConstLabels: map[string]string{"server": serverLabel[i]},
 		})
 		fhOpenConnections[i] = promauto.NewGauge(prometheus.GaugeOpts{
 			Namespace:   config.ApplicationNamespace,
 			Subsystem:   "fasthttp",
 			Name:        "open",
-			Help:        "Number of currently open HTTP connections.",
+			Help:        "Number of currently open connections.",
+			ConstLabels: map[string]string{"server": serverLabel[i]},
+		})
+		fhRejectedConnections[i] = promauto.NewGauge(prometheus.GaugeOpts{
+			Namespace:   config.ApplicationNamespace,
+			Subsystem:   "fasthttp",
+			Name:        "rejected",
+			Help:        "Number of rejected connections.",
+			ConstLabels: map[string]string{"server": serverLabel[i]},
+		})
+		fhMaxConcurrency[i] = promauto.NewGauge(prometheus.GaugeOpts{
+			Namespace:   config.ApplicationNamespace,
+			Subsystem:   "fasthttp",
+			Name:        "maxconcurrency",
+			Help:        "Maximum number of concurrent connections.",
+			ConstLabels: map[string]string{"server": serverLabel[i]},
+		})
+		fhMaxConnsPerIP[i] = promauto.NewGauge(prometheus.GaugeOpts{
+			Namespace:   config.ApplicationNamespace,
+			Subsystem:   "fasthttp",
+			Name:        "maxconnsperip",
+			Help:        "Maximum number of concurrent connections per IP address.",
 			ConstLabels: map[string]string{"server": serverLabel[i]},
 		})
 	}
+}
+
+// Copied from fasthttp's internal getConcurrency() function.
+func getMaxConcurrency(s *fasthttp.Server) int {
+	n := s.Concurrency
+	if n <= 0 {
+		n = fasthttp.DefaultConcurrency
+	}
+	return n
 }
 
 func getFastHTTPMetrics() {
 	// Get fasthttp metrics, and set the gauges.
 	fhConcurrency[0].Set(float64(monitoringServer.GetCurrentConcurrency()))
 	fhOpenConnections[0].Set(float64(monitoringServer.GetOpenConnectionsCount()))
+	fhRejectedConnections[0].Set(float64(monitoringServer.GetRejectedConnectionsCount()))
+	fhMaxConcurrency[0].Set(float64(getMaxConcurrency(monitoringServer)))
+	fhMaxConnsPerIP[0].Set(float64(monitoringServer.MaxConnsPerIP))
+
 	fhConcurrency[1].Set(float64(webServer.GetCurrentConcurrency()))
 	fhOpenConnections[1].Set(float64(webServer.GetOpenConnectionsCount()))
+	fhRejectedConnections[1].Set(float64(webServer.GetRejectedConnectionsCount()))
+	fhMaxConcurrency[1].Set(float64(getMaxConcurrency(webServer)))
+	fhMaxConnsPerIP[1].Set(float64(webServer.MaxConnsPerIP))
 }
