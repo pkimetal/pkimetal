@@ -7,7 +7,7 @@ require (
 	github.com/goccy/go-json v0.10.5
 	github.com/prometheus/client_golang v1.21.1
 	github.com/sergi/go-diff v1.3.1
-	github.com/spf13/viper v1.20.0
+	github.com/spf13/viper v1.20.1
 	github.com/titanous/rocacheck v0.0.0-20171023193734-afe73141d399
 	github.com/valyala/fasthttp v1.59.0
 	github.com/zmap/zcrypto v0.0.0-20250324021606-4f0ea0eaccac
