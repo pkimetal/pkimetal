@@ -5,7 +5,8 @@ ARG gomodfile
 # Install build dependencies.
 RUN apk add --no-cache --update \
 	# Common.
-	gcc git g++ make \
+	gcc g++ make musl-dev pkgconfig \
+	git \
 	# certlint.
 	ruby ruby-dev \
 	# badkeys, ftfy, and pkilint.
@@ -13,7 +14,9 @@ RUN apk add --no-cache --update \
 	# pkilint (for pyasn1-fasder).
 	rustup \
 	# x509lint.
-	openssl-dev
+	openssl-dev \
+	# badkeys/rsakeys/fermat.py.
+	gmp-dev mpfr-dev mpc1-dev
 
 # Configure environment.
 ENV PATH="/root/.local/bin:/root/.cargo/bin:${PATH}"
@@ -96,7 +99,11 @@ RUN apk add --no-cache --update \
 	# pkilint and ftfy.
 	python3 \
 	# certlint.
-	ruby && \
+	ruby \
+	# badkeys/rsakeys/fermat.py.
+	gmp \
+	mpfr \
+	mpc1 && \
 	gem install public_suffix simpleidn && \
 	# badkeys.
 	adduser -D pkimetal
