@@ -5,18 +5,17 @@ ARG gomodfile
 # Install build dependencies.
 RUN apk add --no-cache --update \
 	# Common.
-	gcc g++ make musl-dev pkgconfig \
-	git \
-	# certlint.
-	ruby ruby-dev \
+	g++ gcc git make musl-dev pkgconfig \
+	# badkeys (for rsakeys/fermat.py).
+	gmp-dev mpfr-dev mpc1-dev \
 	# badkeys, ftfy, and pkilint.
 	pipx \
+	# certlint.
+	ruby ruby-dev \
 	# pkilint (for pyasn1-fasder).
 	rustup \
 	# x509lint.
-	openssl-dev \
-	# badkeys/rsakeys/fermat.py.
-	gmp-dev mpfr-dev mpc1-dev
+	openssl-dev
 
 # Configure environment.
 ENV PATH="/root/.local/bin:/root/.cargo/bin:${PATH}"
@@ -96,17 +95,16 @@ FROM alpine:edge AS runtime
 # Install runtime dependencies.
 COPY --from=build /usr/local/pkimetal /usr/local/pkimetal
 RUN apk add --no-cache --update \
-	# pkilint and ftfy.
-	python3 \
+	# badkeys (for rsakeys/fermat.py).
+	gmp mpfr mpc1 \
 	# certlint.
 	ruby \
-	# badkeys/rsakeys/fermat.py.
-	gmp \
-	mpfr \
-	mpc1 && \
-	gem install public_suffix simpleidn && \
+	# pkilint and ftfy.
+	python3 && \
 	# badkeys.
-	adduser -D pkimetal
+	adduser -D pkimetal && \
+	# certlint.
+	gem install public_suffix simpleidn
 USER pkimetal:pkimetal
 WORKDIR /usr/local/pkimetal/badkeys/bin
 RUN ./python3 badkeys-cli --update-bl
