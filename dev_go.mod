@@ -23,7 +23,7 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/certlint/certlint v1.7.7 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
-	github.com/digicert/pkilint v0.12.7 // indirect
+	github.com/digicert/pkilint v0.12.8-0.20250403125723-24b7a2058d04 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/fsnotify/fsnotify v1.8.0 // indirect
 	github.com/go-viper/mapstructure/v2 v2.2.1 // indirect
