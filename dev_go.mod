@@ -19,7 +19,7 @@ require (
 require (
 	github.com/CVE-2008-0166/dwk_blocklists_sqlite3 v0.0.0-20241104144956-b20aa84afe4c // indirect
 	github.com/andybalholm/brotli v1.1.1 // indirect
-	github.com/badkeys/badkeys v0.0.14-0.20250409163226-5877069dac2b // indirect
+	github.com/badkeys/badkeys v0.0.14-0.20250410082430-ee6c510cfb97 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/certlint/certlint v1.7.7 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
