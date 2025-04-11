@@ -87,9 +87,11 @@ These public instances are provided as-is, on a best effort basis. They are NOT 
 
 Here are some projects/CAs that are known to use or integrate with pkimetal:
 
+- [crt.sh](https://crt.sh) (Sectigo): On-demand certificate linting.
 - [EJBCA](https://www.ejbca.org): Post Processing [Validator](https://docs.keyfactor.com/ejbca/latest/pkimetal-validator)
 - [Let's Encrypt](https://letsencrypt.org): [Continuous integration](https://github.com/letsencrypt/boulder/pull/8063)
-- [Sectigo](https://sectigo.com/): Pre-issuance linting, [crt.sh](https://crt.sh/), and the two [Public instances](#public-instances) listed above
+- [pkimet.al](https://pkimet.al) (Sectigo): The two [Public instances](#public-instances) listed above
+- [Sectigo](https://sectigo.com/): Pre-issuance linting
 
 Please submit a pull request to update README.md if you are aware of another CA/project that uses or integrates with pkimetal.
 
