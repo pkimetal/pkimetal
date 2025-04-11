@@ -21,7 +21,7 @@ require (
 	github.com/andybalholm/brotli v1.1.1 // indirect
 	github.com/badkeys/badkeys v0.0.14-0.20250411074956-d8be6b569f63 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
-	github.com/certlint/certlint v1.7.8-0.20250411193605-02dba3ff1790 // indirect
+	github.com/certlint/certlint v1.7.8-0.20250411223433-78c08ce89ea2 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/digicert/pkilint v0.12.8 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
