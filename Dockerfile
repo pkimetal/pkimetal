@@ -90,7 +90,7 @@ RUN git fetch --depth=2147483647 && \
 
 
 # RUNTIME.
-FROM alpine:edge AS runtime
+FROM alpine:latest AS runtime
 
 # Install runtime dependencies.
 COPY --from=build /usr/local/pkimetal /usr/local/pkimetal
