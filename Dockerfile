@@ -5,7 +5,7 @@ ARG gomodfile
 # Install build dependencies.
 RUN apk add --no-cache --update \
 	# Common.
-	g++ gcc git make musl-dev openssl openssl-dev pkgconfig \
+	g++ gcc git make musl-dev pkgconfig \
 	# badkeys (for rsakeys/fermat.py).
 	gmp-dev mpfr-dev mpc1-dev python3-dev \
 	# badkeys, ftfy, and pkilint.
@@ -13,7 +13,9 @@ RUN apk add --no-cache --update \
 	# certlint.
 	ruby ruby-dev \
 	# pkilint (for pyasn1-fasder).
-	rustup
+	rustup \
+	# x509lint.
+	openssl-dev
 
 # Configure environment.
 ENV PATH="/root/.local/bin:/root/.cargo/bin:${PATH}"
@@ -96,7 +98,7 @@ RUN apk add --no-cache --update \
 	# badkeys (for rsakeys/fermat.py).
 	gmp mpfr mpc1 \
 	# certlint.
-	ruby \
+	openssl ruby \
 	# pkilint and ftfy.
 	python3 && \
 	# badkeys.
