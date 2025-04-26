@@ -11,7 +11,7 @@ require (
 	github.com/titanous/rocacheck v0.0.0-20171023193734-afe73141d399
 	github.com/valyala/fasthttp v1.61.0
 	github.com/zmap/zcrypto v0.0.0-20250418211859-7510c141e4b7
-	github.com/zmap/zlint/v3 v3.6.6-rc2
+	github.com/zmap/zlint/v3 v3.6.6
 	go.uber.org/automaxprocs v1.6.0
 	go.uber.org/zap v1.27.0
 )
@@ -19,7 +19,7 @@ require (
 require (
 	github.com/CVE-2008-0166/dwk_blocklists_sqlite3 v0.0.0-20241104144956-b20aa84afe4c // indirect
 	github.com/andybalholm/brotli v1.1.1 // indirect
-	github.com/badkeys/badkeys v0.0.14-0.20250420191916-3bf6ac271ef4 // indirect
+	github.com/badkeys/badkeys v0.0.14-0.20250426134105-9e30028fff68 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/certlint/certlint v1.8.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
