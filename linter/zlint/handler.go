@@ -14,6 +14,8 @@ import (
 	"github.com/zmap/zlint/v3/lint"
 
 	"go.uber.org/zap"
+
+	"golang.org/x/crypto/ocsp"
 )
 
 type Zlint struct{}
@@ -31,7 +33,7 @@ func init() {
 		Name:         "zlint",
 		Version:      linter.GetPackageVersion("github.com/zmap/zlint"),
 		Url:          "https://github.com/zmap/zlint",
-		Unsupported:  linter.OcspProfileIDs,
+		Unsupported:  nil,
 		NumInstances: config.Config.Linter.Zlint.NumGoroutines,
 		Interface:    func() linter.LinterInterface { return &Zlint{} },
 	}).Register()
@@ -138,6 +140,39 @@ func lintCRL(lreq *linter.LintingRequest, registry *lint.Registry) []linter.Lint
 	return lres
 }
 
+func lintOCSPResponse(lreq *linter.LintingRequest, registry *lint.Registry) []linter.LintingResult {
+	var lres []linter.LintingResult
+	if ocspResponse, err := ocsp.ParseResponse(lreq.DecodedInput, nil); err != nil {
+		lres = append(lres, linter.LintingResult{
+			Severity: linter.SEVERITY_FATAL,
+			Finding:  fmt.Sprintf("Could not parse OCSP Response: %v", err),
+		})
+	} else {
+		zlintResultSet := zlint.LintOcspResponseEx(ocspResponse, *registry)
+		for k, v := range zlintResultSet.Results {
+			ocspResponseLint := defaultRegistry.OcspResponseLints().ByName(k)
+			lresult := linter.LintingResult{
+				Finding: ocspResponseLint.Description,
+				Code:    ocspResponseLint.Name,
+			}
+			switch v.Status {
+			case lint.Notice:
+				lresult.Severity = linter.SEVERITY_NOTICE
+			case lint.Warn:
+				lresult.Severity = linter.SEVERITY_WARNING
+			case lint.Error:
+				lresult.Severity = linter.SEVERITY_ERROR
+			case lint.Fatal:
+				lresult.Severity = linter.SEVERITY_FATAL
+			default:
+				continue
+			}
+			lres = append(lres, lresult)
+		}
+	}
+	return lres
+}
+
 func (l *Zlint) HandleRequest(ctx context.Context, lin *linter.LinterInstance, lreq *linter.LintingRequest) []linter.LintingResult {
 	var registry *lint.Registry
 	if slices.Contains(linter.TbrTevgLeafProfileIDs, lreq.ProfileId) {
@@ -150,7 +185,9 @@ func (l *Zlint) HandleRequest(ctx context.Context, lin *linter.LinterInstance, l
 		registry = &defaultRegistry
 	}
 
-	if slices.Contains(linter.CrlProfileIDs, lreq.ProfileId) {
+	if slices.Contains(linter.OcspProfileIDs, lreq.ProfileId) {
+		return lintOCSPResponse(lreq, registry)
+	} else if slices.Contains(linter.CrlProfileIDs, lreq.ProfileId) {
 		return lintCRL(lreq, registry)
 	} else {
 		return lintCert(lreq, registry)
