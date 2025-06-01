@@ -104,7 +104,7 @@ RUN apk add --no-cache --update \
 	# badkeys.
 	adduser -D pkimetal && \
 	# certlint.
-	gem install public_suffix simpleidn
+	gem install base64 public_suffix simpleidn
 USER pkimetal:pkimetal
 WORKDIR /usr/local/pkimetal/badkeys/bin
 RUN ./python3 badkeys-cli --update-bl
