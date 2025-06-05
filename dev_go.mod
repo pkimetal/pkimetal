@@ -14,7 +14,7 @@ require (
 	github.com/zmap/zlint/v3 v3.6.7-0.20250601185345-8696d6cdc9d5
 	go.uber.org/automaxprocs v1.6.0
 	go.uber.org/zap v1.27.0
-	golang.org/x/crypto v0.38.0
+	golang.org/x/crypto v0.39.0
 )
 
 require (
