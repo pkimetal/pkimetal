@@ -6,7 +6,7 @@ require (
 	github.com/CVE-2008-0166/dwklint/v2 v2.0.1
 	github.com/goccy/go-json v0.10.5
 	github.com/prometheus/client_golang v1.22.0
-	github.com/sergi/go-diff v1.3.1
+	github.com/sergi/go-diff v1.4.0
 	github.com/spf13/viper v1.20.1
 	github.com/titanous/rocacheck v0.0.0-20171023193734-afe73141d399
 	github.com/valyala/fasthttp v1.62.0
