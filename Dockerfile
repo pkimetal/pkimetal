@@ -1,5 +1,5 @@
 # BUILD.
-FROM docker.io/library/golang:1.24.3-alpine AS build
+FROM docker.io/library/golang:1.24.5-alpine AS build
 ARG gomodfile
 
 # Install build dependencies.
