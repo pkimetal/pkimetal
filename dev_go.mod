@@ -22,7 +22,7 @@ require (
 	github.com/andybalholm/brotli v1.2.0 // indirect
 	github.com/badkeys/badkeys v0.0.14-0.20250708145352-309a7a2675c4 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
-	github.com/certlint/certlint v1.8.1-0.20250711161937-5f8179777410 // indirect
+	github.com/certlint/certlint v1.8.1-0.20250711181312-055fcf6917fe // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/digicert/pkilint v0.12.11 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
@@ -50,7 +50,7 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/weppos/publicsuffix-go v0.40.3-0.20250708083804-25ff8f86d8b3 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/exp v0.0.0-20250620022241-b7579e27df2b // indirect
+	golang.org/x/exp v0.0.0-20250711185948-6ae5c78190dc // indirect
 	golang.org/x/net v0.42.0 // indirect
 	golang.org/x/sys v0.34.0 // indirect
 	golang.org/x/text v0.27.0 // indirect
