@@ -15,8 +15,8 @@ github.com/cespare/xxhash/v2 v2.3.0/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XL
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/digicert/pkilint v0.12.11 h1:xMe2kdsYcFx8Lp7SsYCDACQJs+zrqU9JiGdK1LFu3eQ=
-github.com/digicert/pkilint v0.12.11/go.mod h1:7xsqkDdi3sVsaYHDyeKZtI2WNd0Dd2EPQL+d9g48smY=
+github.com/digicert/pkilint v0.12.12 h1:dYeBKuqC3EjFohyDwiK5RwFUNzC0+gvR8XpXVa5f7s0=
+github.com/digicert/pkilint v0.12.12/go.mod h1:7xsqkDdi3sVsaYHDyeKZtI2WNd0Dd2EPQL+d9g48smY=
 github.com/dustin/go-humanize v1.0.1 h1:GzkhY7T5VNhEkwH0PVJgjz+fX1rhBrR7pRT3mDkpeCY=
 github.com/dustin/go-humanize v1.0.1/go.mod h1:Mu1zIs6XwVuF/gI1OepvI0qD18qycQx+mFykh5fBlto=
 github.com/frankban/quicktest v1.14.6 h1:7Xjx+VpznH+oBnejlPUj8oUpdxnVs4f8XU8WnHkI4W8=
