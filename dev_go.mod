@@ -9,7 +9,7 @@ require (
 	github.com/sergi/go-diff v1.4.0
 	github.com/spf13/viper v1.20.1
 	github.com/titanous/rocacheck v0.0.0-20171023193734-afe73141d399
-	github.com/valyala/fasthttp v1.63.0
+	github.com/valyala/fasthttp v1.64.0
 	github.com/zmap/zcrypto v0.0.0-20250710172053-7835e31ca584
 	github.com/zmap/zlint/v3 v3.6.7-rc1
 	go.uber.org/automaxprocs v1.6.0
@@ -27,7 +27,7 @@ require (
 	github.com/digicert/pkilint v0.12.12 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
-	github.com/go-viper/mapstructure/v2 v2.3.0 // indirect
+	github.com/go-viper/mapstructure/v2 v2.4.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/klauspost/compress v1.18.0 // indirect
 	github.com/kroeckx/x509lint v0.0.0-20210110132446-e2d7fe9b9a48 // indirect
