@@ -142,7 +142,7 @@ func isRootCertificate(cert *x509.Certificate) bool {
 		return false
 	} else if !bytes.Equal(cert.RawSubject, cert.RawIssuer) {
 		return false
-	} else if cert.Version >= 3 && !bytes.Equal(cert.AuthorityKeyId, cert.SubjectKeyId) {
+	} else if cert.Version >= 3 && len(cert.AuthorityKeyId) > 0 && len(cert.SubjectKeyId) > 0 && !bytes.Equal(cert.AuthorityKeyId, cert.SubjectKeyId) {
 		return false
 	} else {
 		return true
