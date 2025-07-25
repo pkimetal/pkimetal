@@ -3,7 +3,7 @@ module github.com/pkimetal/pkimetal
 go 1.24.5
 
 require (
-	github.com/CVE-2008-0166/dwklint/v2 v2.0.1
+	github.com/CVE-2008-0166/dwklint/v2 v2.1.0
 	github.com/goccy/go-json v0.10.5
 	github.com/prometheus/client_golang v1.22.0
 	github.com/sergi/go-diff v1.4.0
