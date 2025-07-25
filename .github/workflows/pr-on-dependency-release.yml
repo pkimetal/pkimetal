@@ -1,7 +1,7 @@
 name: Scheduled check and PR creation on dependency release
 
 permissions:
-  contents: read
+  contents: write
   pull-requests: write
   
 on:
