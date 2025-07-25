@@ -1,7 +1,7 @@
-github.com/CVE-2008-0166/dwk_blocklists_sqlite3 v0.0.0-20241104144956-b20aa84afe4c h1:OyfXjlyT8A61o0ikpc+klcTaTaG0suWFIloCUpuuQ0Q=
-github.com/CVE-2008-0166/dwk_blocklists_sqlite3 v0.0.0-20241104144956-b20aa84afe4c/go.mod h1:9nAxuc8UYVb+/4839zXo4Fhg8TP6wfMtLDn8mtyJj6o=
-github.com/CVE-2008-0166/dwklint/v2 v2.0.1 h1:WXKNvdE4zKNvNCT3mna7WYTFanmucLqMCqwGfjfM0yA=
-github.com/CVE-2008-0166/dwklint/v2 v2.0.1/go.mod h1:NW2bWvZKsZooTfoLt7fo4ZZ7rGLhsKhzyErFZdbtkiQ=
+github.com/CVE-2008-0166/dwk_blocklists_sqlite3 v0.0.0-20250725083057-d37481c06d85 h1:tIKAHLIlU65khMWR6KCwlrgEnoLi2EfcZDtKunqYPq0=
+github.com/CVE-2008-0166/dwk_blocklists_sqlite3 v0.0.0-20250725083057-d37481c06d85/go.mod h1:9nAxuc8UYVb+/4839zXo4Fhg8TP6wfMtLDn8mtyJj6o=
+github.com/CVE-2008-0166/dwklint/v2 v2.1.0 h1:+KTe6n6u6lIyMdDfQawYUyUcu3kirOa/VIIruQHdxpc=
+github.com/CVE-2008-0166/dwklint/v2 v2.1.0/go.mod h1:GqG3XhrGfZuNC/CwfNpm3udsDUjsw5EdLJHWxtSbICo=
 github.com/andybalholm/brotli v1.2.0 h1:ukwgCxwYrmACq68yiUqwIWnGY0cTPox/M94sVwToPjQ=
 github.com/andybalholm/brotli v1.2.0/go.mod h1:rzTDkvFWvIrjDXZHkuS16NPggd91W3kUSvPlQ1pLaKY=
 github.com/badkeys/badkeys v0.0.13 h1:/OCqdZpYTJlg25DUxVaG+BfnZiTU8SZ/HYY8IXcae+w=
