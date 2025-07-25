@@ -1,5 +1,9 @@
 name: Scheduled check and build on dependency updates
 
+permissions:
+  contents: read
+  pull-requests: write
+
 on:
   schedule:
     # Run Hourly
