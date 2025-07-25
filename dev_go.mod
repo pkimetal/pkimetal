@@ -18,7 +18,7 @@ require (
 )
 
 require (
-	github.com/CVE-2008-0166/dwk_blocklists_sqlite3 v0.0.0-20241104144956-b20aa84afe4c // indirect
+	github.com/CVE-2008-0166/dwk_blocklists_sqlite3 v0.0.0-20250725083057-d37481c06d85 // indirect
 	github.com/andybalholm/brotli v1.2.0 // indirect
 	github.com/badkeys/badkeys v0.0.14-0.20250708145352-309a7a2675c4 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
