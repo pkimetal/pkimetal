@@ -13,6 +13,7 @@ At a glance:
 - [Public instances](#public-instances)
 - [Known users/integrations](#known-usersintegrations)
 - [About this project](#about-this-project)
+- [Mascot](#mascot)
 
 Details:
 
