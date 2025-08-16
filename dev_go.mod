@@ -18,13 +18,11 @@ require (
 )
 
 require (
-	github.com/CVE-2008-0166/dwk_blocklists_sqlite3 v0.0.0-20250725083057-d37481c06d85 // indirect
 	github.com/andybalholm/brotli v1.2.0 // indirect
 	github.com/badkeys/badkeys v0.0.14-0.20250708145352-309a7a2675c4 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/certlint/certlint v1.8.4-0.20250731135423-01d1596963af // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
-	github.com/digicert/pkilint v0.12.12 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/go-viper/mapstructure/v2 v2.4.0 // indirect
