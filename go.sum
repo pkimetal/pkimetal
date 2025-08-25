@@ -102,8 +102,8 @@ github.com/weppos/publicsuffix-go v0.50.0 h1:M178k6l8cnh9T1c1cStkhytVxdk5zPd6gGZ
 github.com/weppos/publicsuffix-go v0.50.0/go.mod h1:VXhClBYMlDrUsome4pOTpe68Ui0p6iQRAbyHQD1yKoU=
 github.com/xyproto/randomstring v1.0.5 h1:YtlWPoRdgMu3NZtP45drfy1GKoojuR7hmRcnhZqKjWU=
 github.com/xyproto/randomstring v1.0.5/go.mod h1:rgmS5DeNXLivK7YprL0pY+lTuhNQW3iGxZ18UQApw/E=
-github.com/zmap/zcrypto v0.0.0-20250710172053-7835e31ca584 h1:FzOi860ixlhQ5SodERONhXklDZLX1T/u4fwH8V/9K98=
-github.com/zmap/zcrypto v0.0.0-20250710172053-7835e31ca584/go.mod h1:n0u7W+CyRA4475yuig+KsD/QwboF+aK5VVnNenc+Q6w=
+github.com/zmap/zcrypto v0.0.0-20250825150232-25f53d2dd4bc h1:IwMfZG2cqTICj3kDhfUEn9l09NIXb8RWYc4UHLo+Krw=
+github.com/zmap/zcrypto v0.0.0-20250825150232-25f53d2dd4bc/go.mod h1:1t04oQUY0Vpc+9ps7qMS2KcoApXbghF/1Y6XBsPsrws=
 github.com/zmap/zlint/v3 v3.6.7 h1:ETRdgQ0MpcoyZqGGhBINCWnlFJ8TmmFotX9ezjzQRsU=
 github.com/zmap/zlint/v3 v3.6.7/go.mod h1:Tm0qwwaO629pgJ/En7M9U9Edx4+rQRuoeXVpXvgVHhA=
 go.uber.org/automaxprocs v1.6.0 h1:O3y2/QNTOdbF+e/dpXNNW7Rx2hZ4sTIPyybbxyNqTUs=
