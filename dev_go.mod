@@ -29,7 +29,7 @@ require (
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/go-viper/mapstructure/v2 v2.4.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
-	github.com/grafana/regexp v0.0.0-20240518133315-a468a5bfb3bc // indirect
+	github.com/grafana/regexp v0.0.0-20250905093917-f7b3be9d1853 // indirect
 	github.com/klauspost/compress v1.18.0 // indirect
 	github.com/kroeckx/x509lint v0.0.0-20210110132446-e2d7fe9b9a48 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
