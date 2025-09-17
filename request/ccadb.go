@@ -24,7 +24,7 @@ var caCertCapMap map[[sha256.Size]byte]*caCertCapabilities
 var issuerCapMap map[string]*caCertCapabilities
 
 const (
-	CCADB_CSV_FILENAME        = "AllCertificateRecordsCSVFormatv2"
+	CCADB_CSV_FILENAME        = "AllCertificateRecordsCSVFormatv4"
 	CCADB_RECORD_ROOT         = "Root Certificate"
 	CCADB_RECORD_INTERMEDIATE = "Intermediate Certificate"
 )
