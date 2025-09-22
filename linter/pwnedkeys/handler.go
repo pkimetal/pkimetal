@@ -131,6 +131,7 @@ func (l *Pwnedkeys) HandleRequest(ctx context.Context, lin *linter.LinterInstanc
 	default:
 		lres = append(lres, linter.LintingResult{
 			Severity: linter.Severity[config.Config.Linter.Pwnedkeys.APIErrorSeverity],
+			Finding:  "API request failed: HTTP " + httpResponse.Status,
 		})
 	}
 
