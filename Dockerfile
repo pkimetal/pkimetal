@@ -43,6 +43,10 @@ RUN git fetch --depth=2147483647 && \
 	# Install poetry (for building Python-based linters).
 	pipx install poetry && \
 	pipx inject poetry poetry-plugin-bundle && \
+	# Configure package versions for each Python-based linter.
+	sed -i "s/_VERSION_/`go list -modfile=$gomodfile -m -f '{{.Version}}' github.com/badkeys/badkeys | sed 's/[-+].*//g'`/g" /app/linter/badkeys/pyproject.toml && \
+	sed -i "s/_VERSION_/`go list -modfile=$gomodfile -m -f '{{.Version}}' github.com/rspeer/python-ftfy | sed 's/[-+].*//g'`/g" /app/linter/ftfy/pyproject.toml && \
+	sed -i "s/_VERSION_/`go list -modfile=$gomodfile -m -f '{{.Version}}' github.com/digicert/pkilint | sed 's/[-+].*//g'`/g" /app/linter/pkilint/pyproject.toml && \
 	# Build badkeys.
 	cd /usr/local/build/badkeys && \
 	cp /app/linter/badkeys/pyproject.toml . && \

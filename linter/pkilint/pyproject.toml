@@ -1,6 +1,6 @@
 [project]
 name = "pkilint"
-version = "0.11.4"
+version = "_VERSION_"
 description = "A framework for verifying PKI structures"
 authors = [
   { name = "DigiCert, Inc.", email = "corey.bonnell@digicert.com" },

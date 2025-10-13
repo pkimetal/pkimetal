@@ -1,6 +1,6 @@
 [project]
 name = "badkeys"
-version = "0.0.12"
+version = "_VERSION_"
 description = "Check cryptographic keys for known weaknesses"
 authors = [
   { name = "Hanno Böck", email = "hanno@hboeck.de" },

@@ -1,6 +1,6 @@
 [project]
 name = "ftfy"
-version = "6.3.0"
+version = "_VERSION_"
 description = "Fixes mojibake and other problems with Unicode, after the fact"
 authors = [
   { name = "Robyn Speer", email = "rspeer@arborelia.net" },
