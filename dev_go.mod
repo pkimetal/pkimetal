@@ -38,7 +38,7 @@ require (
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
 	github.com/prometheus/client_model v0.6.2 // indirect
 	github.com/prometheus/common v0.67.1 // indirect
-	github.com/prometheus/procfs v0.18.0 // indirect
+	github.com/prometheus/procfs v0.19.0 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/rspeer/python-ftfy v6.3.2-0.20241030210025-74dd0452b482+incompatible // indirect
 	github.com/sagikazarmark/locafero v0.12.0 // indirect
