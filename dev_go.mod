@@ -10,7 +10,7 @@ require (
 	github.com/spf13/viper v1.21.0
 	github.com/titanous/rocacheck v0.0.0-20171023193734-afe73141d399
 	github.com/valyala/fasthttp v1.68.0
-	github.com/zmap/zcrypto v0.0.0-20251029162733-9c5a2089b00a
+	github.com/zmap/zcrypto v0.0.0-20251029191044-acd9ff6f53bb
 	github.com/zmap/zlint/v3 v3.6.8-rc1
 	go.uber.org/automaxprocs v1.6.0
 	go.uber.org/zap v1.27.0
