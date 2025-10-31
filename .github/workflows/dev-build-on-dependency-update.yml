@@ -3,6 +3,7 @@ name: Scheduled check and build on dependency updates
 permissions:
   contents: write
   pull-requests: write
+  actions: write
 
 on:
   schedule:
