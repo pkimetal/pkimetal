@@ -8,8 +8,8 @@ github.com/badkeys/badkeys v0.0.15-0.20251029132031-aed2d1654161 h1:1BWU4v/dK50B
 github.com/badkeys/badkeys v0.0.15-0.20251029132031-aed2d1654161/go.mod h1:mnRAMRGxK03ObNuLiSQhBdufzeuyO/pasHMsYjUU8S8=
 github.com/beorn7/perks v1.0.1 h1:VlbKKnNfV8bJzeqoa4cOKqO6bYr3WgKZxO8Z16+hsOM=
 github.com/beorn7/perks v1.0.1/go.mod h1:G2ZrVWU2WbWT9wwq4/hrbKbnv/1ERSJQ0ibhJ6rlkpw=
-github.com/certlint/certlint v1.8.4-0.20251030213806-ba6ba2ef0b36 h1:YQqkXMFpPpAx+zT2Sydw+COqGYy8nI88u6Qd2iKFFq8=
-github.com/certlint/certlint v1.8.4-0.20251030213806-ba6ba2ef0b36/go.mod h1:o1y8jZXOgB34WoUCkuQrxd+3TgXDdMdJDdPwQZoMyhU=
+github.com/certlint/certlint v1.8.4-0.20251031101726-e66b552c46d8 h1:M58Pr+pBqFlummH6Bi6w3FXZc8yuskPPcJnGWsMayNg=
+github.com/certlint/certlint v1.8.4-0.20251031101726-e66b552c46d8/go.mod h1:o1y8jZXOgB34WoUCkuQrxd+3TgXDdMdJDdPwQZoMyhU=
 github.com/cespare/xxhash/v2 v2.3.0 h1:UL815xU9SqsFlibzuggzjXhog7bL6oX9BbNZnL2UFvs=
 github.com/cespare/xxhash/v2 v2.3.0/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XLFGgcrjCOs=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
