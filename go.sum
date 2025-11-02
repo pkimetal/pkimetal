@@ -102,8 +102,8 @@ github.com/xyproto/randomstring v1.0.5 h1:YtlWPoRdgMu3NZtP45drfy1GKoojuR7hmRcnhZ
 github.com/xyproto/randomstring v1.0.5/go.mod h1:rgmS5DeNXLivK7YprL0pY+lTuhNQW3iGxZ18UQApw/E=
 github.com/zmap/zcrypto v0.0.0-20251029191044-acd9ff6f53bb h1:lMMWO1GNyQq6jlO0J+a6RigH2MWtPY84Q9s4W2buwkE=
 github.com/zmap/zcrypto v0.0.0-20251029191044-acd9ff6f53bb/go.mod h1:mfVbqgXLjfIpOLJVMzFBt6UvLiyNYwV2bizyC5tBBSc=
-github.com/zmap/zlint/v3 v3.6.7 h1:ETRdgQ0MpcoyZqGGhBINCWnlFJ8TmmFotX9ezjzQRsU=
-github.com/zmap/zlint/v3 v3.6.7/go.mod h1:Tm0qwwaO629pgJ/En7M9U9Edx4+rQRuoeXVpXvgVHhA=
+github.com/zmap/zlint/v3 v3.6.8 h1:ZvdfwSgqPxeD2Sb0yhH/7jzrpFHBKAjPhzKr1vVev9c=
+github.com/zmap/zlint/v3 v3.6.8/go.mod h1:Tm0qwwaO629pgJ/En7M9U9Edx4+rQRuoeXVpXvgVHhA=
 go.uber.org/automaxprocs v1.6.0 h1:O3y2/QNTOdbF+e/dpXNNW7Rx2hZ4sTIPyybbxyNqTUs=
 go.uber.org/automaxprocs v1.6.0/go.mod h1:ifeIMSnPZuznNm6jmdzmU3/bfk01Fe2fotchwEFJ8r8=
 go.uber.org/goleak v1.3.0 h1:2K3zAYmnTNqV73imy9J1T3WC+gmCePx2hEGkimedGto=
