@@ -98,12 +98,12 @@ github.com/valyala/bytebufferpool v1.0.0 h1:GqA5TC/0021Y/b9FG4Oi9Mr3q7XYx6Kllzaw
 github.com/valyala/bytebufferpool v1.0.0/go.mod h1:6bBcMArwyJ5K/AmCkWv1jt77kVWyCJ6HpOuEn7z0Csc=
 github.com/valyala/fasthttp v1.68.0 h1:v12Nx16iepr8r9ySOwqI+5RBJ/DqTxhOy1HrHoDFnok=
 github.com/valyala/fasthttp v1.68.0/go.mod h1:5EXiRfYQAoiO/khu4oU9VISC/eVY6JqmSpPJoHCKsz4=
-github.com/weppos/publicsuffix-go v0.50.1-0.20251017103100-a363bfbecc27 h1:fzhYevQ05Rh0nZmfQiyk4swKZeXVBAaaxQwnACOHcdA=
-github.com/weppos/publicsuffix-go v0.50.1-0.20251017103100-a363bfbecc27/go.mod h1:VXhClBYMlDrUsome4pOTpe68Ui0p6iQRAbyHQD1yKoU=
+github.com/weppos/publicsuffix-go v0.50.1-0.20251112144109-bba082b5c27e h1:2e5ycGP5WU1WXStEnkiXo0/87wekBUpDKUhc9Vx+MPQ=
+github.com/weppos/publicsuffix-go v0.50.1-0.20251112144109-bba082b5c27e/go.mod h1:0rnD093afLzb7jH8cG0kpdh06DqA8qmR0JpBH2v63VQ=
 github.com/xyproto/randomstring v1.0.5 h1:YtlWPoRdgMu3NZtP45drfy1GKoojuR7hmRcnhZqKjWU=
 github.com/xyproto/randomstring v1.0.5/go.mod h1:rgmS5DeNXLivK7YprL0pY+lTuhNQW3iGxZ18UQApw/E=
-github.com/zmap/zcrypto v0.0.0-20251029191044-acd9ff6f53bb h1:lMMWO1GNyQq6jlO0J+a6RigH2MWtPY84Q9s4W2buwkE=
-github.com/zmap/zcrypto v0.0.0-20251029191044-acd9ff6f53bb/go.mod h1:mfVbqgXLjfIpOLJVMzFBt6UvLiyNYwV2bizyC5tBBSc=
+github.com/zmap/zcrypto v0.0.0-20251114213923-32d47c4e8b1a h1:cVpRmP/ok6Uf9LQF1ipc7kqpXeclftXaKxQ9dYH8Zbk=
+github.com/zmap/zcrypto v0.0.0-20251114213923-32d47c4e8b1a/go.mod h1:NBtLpB/eitQk7/yXV7mHbZ/Gtmigw0Un9H9DEnrl+Zg=
 github.com/zmap/zlint/v3 v3.6.9-0.20251109154016-cfa6a89f0635 h1:8T17HoknAi8XgVpct4TxDjvm9X2HEN/bO0VcVpaktEE=
 github.com/zmap/zlint/v3 v3.6.9-0.20251109154016-cfa6a89f0635/go.mod h1:Tm0qwwaO629pgJ/En7M9U9Edx4+rQRuoeXVpXvgVHhA=
 go.uber.org/automaxprocs v1.6.0 h1:O3y2/QNTOdbF+e/dpXNNW7Rx2hZ4sTIPyybbxyNqTUs=
