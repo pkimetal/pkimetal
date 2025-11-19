@@ -13,8 +13,8 @@ require (
 	github.com/zmap/zcrypto v0.0.0-20251114214934-bb32b590b717
 	github.com/zmap/zlint/v3 v3.6.8
 	go.uber.org/automaxprocs v1.6.0
-	go.uber.org/zap v1.27.0
-	golang.org/x/crypto v0.44.0
+	go.uber.org/zap v1.27.1
+	golang.org/x/crypto v0.45.0
 )
 
 require (
