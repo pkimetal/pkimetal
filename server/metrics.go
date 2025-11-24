@@ -23,7 +23,7 @@ func init() {
 var prometheusHandler = fasthttpadaptor.NewFastHTTPHandler(promhttp.Handler())
 
 func metrics(ctx *fasthttp.RequestCtx) int {
-	ctx.SetUserValue("level", zap.InfoLevel)
+	ctx.SetUserValue("level", zap.DebugLevel)
 	ctx.SetUserValue("msg", "Metrics")
 
 	ctxWithDeadline, cancel := context.WithDeadline(context.Background(), ctx.Time().Add(time.Duration(config.Config.Server.MetricsTimeout)))

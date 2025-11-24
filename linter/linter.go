@@ -220,7 +220,7 @@ func (lin *LinterInstance) startInstance_external(directory, cmd string, arg ...
 	go func(lin *LinterInstance) {
 		for lin.stderr.Scan() {
 			logger.Logger.Info(
-				"From stderr (goroutine)",
+				"From stderr",
 				zap.Int("instance#", lin.instanceNumber),
 				zap.String("name", lin.Name),
 				zap.String("text", lin.stderr.Text()),
