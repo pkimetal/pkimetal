@@ -14,7 +14,7 @@ import (
 )
 
 func livez(ctx *fasthttp.RequestCtx) int {
-	ctx.SetUserValue("level", zap.InfoLevel)
+	ctx.SetUserValue("level", zap.DebugLevel)
 	ctx.SetUserValue("msg", "Liveness check")
 
 	ctxWithDeadline, cancel := context.WithDeadline(context.Background(), ctx.Time().Add(time.Duration(config.Config.Server.LivezTimeout)))
