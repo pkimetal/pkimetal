@@ -134,7 +134,7 @@ func (l *Linter) Register() {
 }
 
 func (slice LinterSlice) Len() int {
-    return len(slice)
+	return len(slice)
 }
 
 func (slice LinterSlice) Less(i, j int) bool {
@@ -142,7 +142,7 @@ func (slice LinterSlice) Less(i, j int) bool {
 }
 
 func (slice LinterSlice) Swap(i, j int) {
-    slice[i], slice[j] = slice[j], slice[i]
+	slice[i], slice[j] = slice[j], slice[i]
 }
 
 func StartLinters(ctx context.Context) {
@@ -216,6 +216,19 @@ func (lin *LinterInstance) startInstance_external(directory, cmd string, arg ...
 	}
 	lin.stderr = bufio.NewScanner(stderr)
 
+	// Continuously log STDERR output as it is produced.
+	go func(lin *LinterInstance) {
+		// Log any STDERR output from the linter backend.
+		for lin.stderr.Scan() {
+			logger.Logger.Info(
+				"From stderr (goroutine)",
+				zap.Int("instance#", lin.instanceNumber),
+				zap.String("name", lin.Name),
+				zap.String("text", lin.stderr.Text()),
+			)
+		}
+	}(lin)
+
 	// Start the linter backend.
 	lin.command.Start()
 	if lin.command.Process == nil {
@@ -251,16 +264,6 @@ func StopLinters(ctx context.Context) {
 
 func (lin *LinterInstance) stopInstance_external() {
 	lin.Stdin.Close()
-
-	// Log any STDERR output from the linter backend.
-	for lin.stderr.Scan() {
-		logger.Logger.Info(
-			"From stderr",
-			zap.Int("instance#", lin.instanceNumber),
-			zap.String("name", lin.Name),
-			zap.String("text", lin.stderr.Text()),
-		)
-	}
 
 	if err := lin.command.Wait(); err != nil {
 		logger.Logger.Error(
