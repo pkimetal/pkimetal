@@ -218,7 +218,6 @@ func (lin *LinterInstance) startInstance_external(directory, cmd string, arg ...
 
 	// Continuously log STDERR output as it is produced.
 	go func(lin *LinterInstance) {
-		// Log any STDERR output from the linter backend.
 		for lin.stderr.Scan() {
 			logger.Logger.Info(
 				"From stderr (goroutine)",
