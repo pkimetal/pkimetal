@@ -74,14 +74,13 @@ func (ri *RequestInfo) GetInput(fhctx *fasthttp.RequestCtx) error {
 	}
 
 	var err error
-	if (ri.endpoint == ENDPOINT_LINTCERT) || (ri.endpoint == ENDPOINT_LINTTBSCERT) {
+	switch ri.endpoint {
+	case ENDPOINT_LINTCERT, ENDPOINT_LINTTBSCERT:
 		ri.cert, err = ri.parseCertificateInput()
-		return err
-	} else if (ri.endpoint == ENDPOINT_LINTCRL) || (ri.endpoint == ENDPOINT_LINTTBSCRL) {
-		return ri.parseCRLInput()
-	} else if (ri.endpoint == ENDPOINT_LINTOCSP) || (ri.endpoint == ENDPOINT_LINTTBSOCSP) {
-		return ri.parseOCSPResponseInput()
-	} else {
-		return nil
+	case ENDPOINT_LINTCRL, ENDPOINT_LINTTBSCRL:
+		err = ri.parseCRLInput()
+	case ENDPOINT_LINTOCSP, ENDPOINT_LINTTBSOCSP:
+		err = ri.parseOCSPResponseInput()
 	}
+	return err
 }
