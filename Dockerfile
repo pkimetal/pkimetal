@@ -39,7 +39,6 @@ RUN git fetch --depth=2147483647 && \
 	cp -R $(go list -modfile=$gomodfile -m -f '{{.Dir}}' github.com/digicert/pkilint) /usr/local/build/pkilint/ && \
 	go get -modfile=$gomodfile github.com/kroeckx/x509lint && \
 	cp -R $(go list -modfile=$gomodfile -m -f '{{.Dir}}' github.com/kroeckx/x509lint) /usr/local/build/x509lint/ && \
-	wget https://ccadb.my.salesforce-sites.com/ccadb/AllCertificateRecordsCSVFormatv4 && \
 	# Install poetry (for building Python-based linters).
 	pipx install poetry && \
 	pipx inject poetry poetry-plugin-bundle && \
@@ -115,5 +114,5 @@ RUN ./python3 badkeys-cli --update-bl
 
 # Install pkimetal.
 WORKDIR /app
-COPY --from=build /app/pkimetal /app/AllCertificateRecordsCSVFormatv4 /app/finding_metadata.csv.* /app/
+COPY --from=build /app/pkimetal /app/finding_metadata.csv.* /app/
 CMD ["/app/pkimetal"]

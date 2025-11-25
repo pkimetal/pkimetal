@@ -9,6 +9,8 @@ import (
 	"encoding/base64"
 
 	"github.com/pkimetal/pkimetal/linter"
+
+	"github.com/crtsh/ccadb_data"
 )
 
 var (
@@ -200,16 +202,16 @@ func (ri *RequestInfo) detectCRLProfile() linter.ProfileId {
 	// Use the Key Identifier from the CRL's AKI extension to lookup the issuer's capabilities in the CCADB data.
 	if rl, err := x509.ParseRevocationList(ri.decodedInput); err == nil {
 		if keyIdentifier := getBase64AKI(rl.Extensions); keyIdentifier != "" {
-			if ic := issuerCapMap[keyIdentifier]; ic != nil {
+			if ic := ccadb_data.GetIssuerCapabilitiesByKeyIdentifier(keyIdentifier); ic != nil {
 				// Infer the CRL profile based on the issuer's capabilities and CCADB record type.
-				if ic.certificateRecordType == CCADB_RECORD_ROOT {
-					if ic.tlsCapable {
+				if ic.CertificateRecordType == ccadb_data.CCADB_RECORD_ROOT {
+					if ic.TlsCapable {
 						return linter.TBR_ARL
 					} else {
 						return linter.RFC5280_ARL
 					}
 				} else {
-					if ic.tlsCapable {
+					if ic.TlsCapable {
 						return linter.TBR_CRL
 					} else {
 						return linter.RFC5280_CRL
@@ -224,14 +226,14 @@ func (ri *RequestInfo) detectCRLProfile() linter.ProfileId {
 
 func (ri *RequestInfo) detectRootCertificateProfile() linter.ProfileId {
 	// Look for this root certificate's capabilities in the CCADB CSV data.
-	if ic := caCertCapMap[sha256.Sum256(ri.decodedInput)]; ic != nil {
-		if ic.tlsEvCapable {
+	if ic := ccadb_data.GetCACertCapabilitiesBySHA256(sha256.Sum256(ri.decodedInput)); ic != nil {
+		if ic.TlsEvCapable {
 			return linter.TEVG_ROOT_TLSSERVER
-		} else if ic.tlsCapable {
+		} else if ic.TlsCapable {
 			return linter.TBR_ROOT_TLSSERVER
-		} else if ic.smimeCapable {
+		} else if ic.SmimeCapable {
 			return linter.SBR_ROOT_SMIME
-		} else if ic.codeSigningCapable {
+		} else if ic.CodeSigningCapable {
 			return linter.CSBR_ROOT_CODESIGNING
 		}
 	}
@@ -288,19 +290,19 @@ func (ri *RequestInfo) detectSubordinateCertificateProfile() linter.ProfileId {
 
 	// Use the Key Identifier from the certificate's AKI extension to lookup the issuer's capabilities in the CCADB data.
 	if keyIdentifier := getBase64AKI(ri.cert.Extensions); keyIdentifier != "" {
-		if ic := issuerCapMap[keyIdentifier]; ic != nil {
+		if ic := ccadb_data.GetIssuerCapabilitiesByKeyIdentifier(keyIdentifier); ic != nil {
 			// Determine the subordinate certificate profile based on the issuer's capabilities and the certificate's EKUs.
 			if hasServerAuthEKU || hasAnyOrNoEKU {
-				if ic.tlsEvCapable {
+				if ic.TlsEvCapable {
 					return linter.TEVG_SUBORDINATE_TLSSERVER
-				} else if ic.tlsCapable {
+				} else if ic.TlsCapable {
 					return linter.TBR_SUBORDINATE_TLSSERVER
 				}
 			}
-			if (hasEmailProtectionEKU || hasAnyOrNoEKU) && ic.smimeCapable {
+			if (hasEmailProtectionEKU || hasAnyOrNoEKU) && ic.SmimeCapable {
 				return linter.SBR_SUBORDINATE_SMIME
 			}
-			if (hasCodeSigningEKU || hasAnyOrNoEKU) && ic.codeSigningCapable {
+			if (hasCodeSigningEKU || hasAnyOrNoEKU) && ic.CodeSigningCapable {
 				return linter.CSBR_SUBORDINATE_CODESIGNING
 			}
 			if hasTimeStampingEKU { // The CCADB CSV data doesn't reveal timestamping capability, but the Timestamping EKU OID combined with presence in the CCADB is a strong indicator of CSBR scope.
@@ -493,16 +495,16 @@ func (ri *RequestInfo) detectLeafCertificateProfile() linter.ProfileId {
 	// Use the Key Identifier in the certificate's AKI extension to lookup the issuer's capabilities in the CCADB data.
 	// This is useful to determine TLS BR and EVCS scope, since older versions of those documents did not require CABForum policy OIDs.
 	if keyIdentifier := getBase64AKI(ri.cert.Extensions); keyIdentifier != "" {
-		if ic := issuerCapMap[keyIdentifier]; ic != nil {
+		if ic := ccadb_data.GetIssuerCapabilitiesByKeyIdentifier(keyIdentifier); ic != nil {
 			// Determine the leaf certificate profile based on the issuer's capabilities and the certificate's EKUs.
 			if hasServerAuthEKU || hasAnyOrNoEKU {
-				if ic.tlsEvCapable {
+				if ic.TlsEvCapable {
 					if isPrecertificate {
 						return linter.TEVG_LEAF_TLSSERVER_EV_PRECERTIFICATE
 					} else {
 						return linter.TEVG_LEAF_TLSSERVER_EV
 					}
-				} else if ic.tlsCapable {
+				} else if ic.TlsCapable {
 					if isNaturalPerson {
 						if isPrecertificate {
 							return linter.TBR_LEAF_TLSSERVER_IV_PRECERTIFICATE
@@ -524,10 +526,10 @@ func (ri *RequestInfo) detectLeafCertificateProfile() linter.ProfileId {
 					}
 				}
 			}
-			if hasOCSPSigningEKU && ic.tlsCapable {
+			if hasOCSPSigningEKU && ic.TlsCapable {
 				return linter.TBR_LEAF_OCSPSIGNING
 			}
-			if (hasCodeSigningEKU || hasAnyOrNoEKU) && ic.codeSigningCapable {
+			if (hasCodeSigningEKU || hasAnyOrNoEKU) && ic.CodeSigningCapable {
 				if hasJurisdictionCountryNameAttribute(ri.cert.Subject) {
 					return linter.CSBR_LEAF_CODESIGNING_EV
 				} else if hasOrganizationNameAttribute(ri.cert.Subject) {
