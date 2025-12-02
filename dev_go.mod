@@ -5,7 +5,9 @@ go 1.25.4
 require (
 	github.com/CVE-2008-0166/dwklint/v2 v2.1.0
 	github.com/crtsh/ccadb_data v0.0.0-20251201204412-b6cd6f1d7e7e
+	github.com/crtsh/ctlint v0.0.0-20251202133904-24a2e113a52c
 	github.com/goccy/go-json v0.10.5
+	github.com/google/certificate-transparency-go v1.3.2
 	github.com/prometheus/client_golang v1.23.2
 	github.com/sergi/go-diff v1.4.0
 	github.com/spf13/viper v1.21.0

@@ -239,6 +239,7 @@ var (
 	SbrLeafProfileIDs, TbrTevgLeafProfileIDs, TbrTevgCertificateProfileIDs           []ProfileId
 	NonTbrTevgCertificateProfileIDs, NonCabforumProfileIDs, NonCertificateProfileIDs []ProfileId
 	EtsiCertificateProfileIDs, EtsiNonBrowserCertificateProfileIDs                   []ProfileId
+	PrecertificateProfileIDs                                                         []ProfileId
 )
 
 func init() {
@@ -272,6 +273,10 @@ func init() {
 			if strings.Contains(v.Name, "nonbrowser") {
 				EtsiNonBrowserCertificateProfileIDs = append(EtsiNonBrowserCertificateProfileIDs, k)
 			}
+		}
+
+		if strings.HasSuffix(v.Name, "_precertificate") {
+			PrecertificateProfileIDs = append(PrecertificateProfileIDs, k)
 		}
 	}
 

@@ -19,6 +19,7 @@ import (
 	_ "github.com/pkimetal/pkimetal/linter/pkilint"
 
 	// Internal:
+	_ "github.com/pkimetal/pkimetal/linter/ctlint"
 	_ "github.com/pkimetal/pkimetal/linter/dwklint"
 	_ "github.com/pkimetal/pkimetal/linter/pwnedkeys"
 	_ "github.com/pkimetal/pkimetal/linter/rocacheck"
