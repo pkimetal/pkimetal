@@ -39,6 +39,9 @@ type config struct {
 			NumProcesses int `mapstructure:"numProcesses"`
 			RubyDir      string
 		}
+		Ctlint struct {
+			NumGoroutines int `mapstructure:"numGoroutines"`
+		}
 		Dwklint struct {
 			NumGoroutines   int    `mapstructure:"numGoroutines"`
 			BlocklistDBPath string `mapstructure:"blocklistDBPath"`
@@ -198,6 +201,7 @@ func initViper() error {
 	viper.SetDefault("linter.badkeys.pythonDir", "autodetect")
 	viper.SetDefault("linter.certlint.numProcesses", 1)
 	viper.SetDefault("linter.certlint.rubyDir", "autodetect")
+	viper.SetDefault("linter.ctlint.numGoroutines", 1)
 	viper.SetDefault("linter.dwklint.numGoroutines", 1)
 	viper.SetDefault("linter.dwklint.blocklistDBPath", "")
 	viper.SetDefault("linter.ftfy.numProcesses", 1)
