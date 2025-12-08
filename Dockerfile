@@ -3,7 +3,8 @@ FROM docker.io/library/golang:1.25.5-alpine AS build
 ARG gomodfile
 
 # Install build dependencies.
-RUN apk add --no-cache --update \
+RUN apk add --no-cache busybox && \
+	apk add --no-cache --update \
 	# Common.
 	g++ gcc git make musl-dev pkgconfig \
 	# badkeys (for rsakeys/fermat.py).
