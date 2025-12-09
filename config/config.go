@@ -19,7 +19,10 @@ import (
 type config struct {
 	Server struct {
 		WebserverPort       int           `mapstructure:"webserverPort"`
+		WebserverPath       string        `mapstructure:"webserverPath"`
 		MonitoringPort      int           `mapstructure:"monitoringPort"`
+		MonitoringPath      string        `mapstructure:"monitoringPath"`
+		SocketPermissions   os.FileMode   `mapstructure:"socketPermissions"`
 		ReadTimeout         time.Duration `mapstructure:"readTimeout"`
 		IdleTimeout         time.Duration `mapstructure:"idleTimeout"`
 		DisableKeepalive    bool          `mapstructure:"disableKeepalive"`
@@ -188,6 +191,7 @@ func initViper() error {
 	// Set defaults for all values in-order to use env config for all options.
 	viper.SetDefault("server.webserverPort", 8080)
 	viper.SetDefault("server.monitoringPort", 8081)
+	viper.SetDefault("server.socketPermissions", 0o600)
 	viper.SetDefault("server.readTimeout", 30*time.Second)
 	viper.SetDefault("server.idleTimeout", 30*time.Second)
 	viper.SetDefault("server.disableKeepalive", false)
