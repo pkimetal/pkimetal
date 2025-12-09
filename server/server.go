@@ -100,7 +100,6 @@ func monitoringHandler(fhctx *fasthttp.RequestCtx) {
 }
 
 func Run() {
-	logger.Logger.Info("Starting WebServer")
 	webServer = &fasthttp.Server{
 		Handler:               webHandler,
 		CloseOnShutdown:       true,
@@ -109,13 +108,23 @@ func Run() {
 		DisableKeepalive:      config.Config.Server.DisableKeepalive,
 		NoDefaultServerHeader: true,
 	}
-	go func() {
-		if err := webServer.ListenAndServe(fmt.Sprintf(":%d", config.Config.Server.WebserverPort)); err != nil {
-			logger.Logger.Fatal("webServer.ListenAndServe failed", zap.Error(err))
-		}
-	}()
+	if config.Config.Server.WebserverPort != 0 {
+		logger.Logger.Info("Starting WebServer", zap.Int("port", config.Config.Server.WebserverPort))
+		go func() {
+			if err := webServer.ListenAndServe(fmt.Sprintf(":%d", config.Config.Server.WebserverPort)); err != nil {
+				logger.Logger.Fatal("webServer.ListenAndServe failed", zap.Error(err))
+			}
+		}()
+	}
+	if config.Config.Server.WebserverPath != "" {
+		logger.Logger.Info("Starting WebServer", zap.String("path", config.Config.Server.WebserverPath))
+		go func() {
+			if err := webServer.ListenAndServeUNIX(config.Config.Server.WebserverPath, config.Config.Server.SocketPermissions); err != nil {
+				logger.Logger.Fatal("webServer.ListenAndServeUNIX failed", zap.Error(err))
+			}
+		}()
+	}
 
-	logger.Logger.Info("Starting MonitoringServer")
 	monitoringServer = &fasthttp.Server{
 		Handler:               monitoringHandler,
 		CloseOnShutdown:       true,
@@ -124,11 +133,22 @@ func Run() {
 		DisableKeepalive:      config.Config.Server.DisableKeepalive,
 		NoDefaultServerHeader: true,
 	}
-	go func() {
-		if err := monitoringServer.ListenAndServe(fmt.Sprintf(":%d", config.Config.Server.MonitoringPort)); err != nil {
-			logger.Logger.Fatal("monitoringServer.ListenAndServe failed", zap.Error(err))
-		}
-	}()
+	if config.Config.Server.MonitoringPort != 0 {
+		logger.Logger.Info("Starting MonitoringServer", zap.Int("port", config.Config.Server.MonitoringPort))
+		go func() {
+			if err := monitoringServer.ListenAndServe(fmt.Sprintf(":%d", config.Config.Server.MonitoringPort)); err != nil {
+				logger.Logger.Fatal("monitoringServer.ListenAndServe failed", zap.Error(err))
+			}
+		}()
+	}
+	if config.Config.Server.MonitoringPath != "" {
+		logger.Logger.Info("Starting MonitoringServer", zap.String("path", config.Config.Server.MonitoringPath))
+		go func() {
+			if err := monitoringServer.ListenAndServeUNIX(config.Config.Server.MonitoringPath, config.Config.Server.SocketPermissions); err != nil {
+				logger.Logger.Fatal("monitoringServer.ListenAndServeUNIX failed", zap.Error(err))
+			}
+		}()
+	}
 }
 
 func Shutdown() {
