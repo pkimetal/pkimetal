@@ -12,10 +12,10 @@ github.com/certlint/certlint v1.8.4-0.20251031101726-e66b552c46d8 h1:M58Pr+pBqFl
 github.com/certlint/certlint v1.8.4-0.20251031101726-e66b552c46d8/go.mod h1:o1y8jZXOgB34WoUCkuQrxd+3TgXDdMdJDdPwQZoMyhU=
 github.com/cespare/xxhash/v2 v2.3.0 h1:UL815xU9SqsFlibzuggzjXhog7bL6oX9BbNZnL2UFvs=
 github.com/cespare/xxhash/v2 v2.3.0/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XLFGgcrjCOs=
-github.com/crtsh/ccadb_data v0.0.0-20251215210428-8a2a029cc84a h1:EuGvW/k+Hw9iP0EgdnmQbnoyv8pU+mAfuWmiLzhokF8=
-github.com/crtsh/ccadb_data v0.0.0-20251215210428-8a2a029cc84a/go.mod h1:mqO/B2IAHrFm8+blGTMCIlR7TvVaAdRkIO55HOUo0h8=
-github.com/crtsh/ctlint v0.0.0-20251218152454-d2d80d006c0a h1:SzHPl0rszWBOFimKVvGHHq48jumfZkGDkhV67wrIN8s=
-github.com/crtsh/ctlint v0.0.0-20251218152454-d2d80d006c0a/go.mod h1:tjxWgToIUZ3+TAcezQWFJDvpw6t83ImDLKDc+8NWwZM=
+github.com/crtsh/ccadb_data v0.0.0-20251221173715-ee14640eecbb h1:qLlvrP960Ka+xprmuD2Bca42SNJsgsyTrtM6D4tbrLY=
+github.com/crtsh/ccadb_data v0.0.0-20251221173715-ee14640eecbb/go.mod h1:mqO/B2IAHrFm8+blGTMCIlR7TvVaAdRkIO55HOUo0h8=
+github.com/crtsh/ctlint v0.0.0-20251221172617-8159f29c8113 h1:eJkmEwUPeDFAZALXnBo6+1chFs2+qYzFik1aI+5W2zI=
+github.com/crtsh/ctlint v0.0.0-20251221172617-8159f29c8113/go.mod h1:tjxWgToIUZ3+TAcezQWFJDvpw6t83ImDLKDc+8NWwZM=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc h1:U9qPSI2PIWSS1VwoXQT9A3Wy9MM3WgvqSxFWenqJduM=
