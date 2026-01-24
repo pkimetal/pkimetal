@@ -4,8 +4,8 @@ github.com/CVE-2008-0166/dwklint/v2 v2.1.0 h1:+KTe6n6u6lIyMdDfQawYUyUcu3kirOa/VI
 github.com/CVE-2008-0166/dwklint/v2 v2.1.0/go.mod h1:GqG3XhrGfZuNC/CwfNpm3udsDUjsw5EdLJHWxtSbICo=
 github.com/andybalholm/brotli v1.2.0 h1:ukwgCxwYrmACq68yiUqwIWnGY0cTPox/M94sVwToPjQ=
 github.com/andybalholm/brotli v1.2.0/go.mod h1:rzTDkvFWvIrjDXZHkuS16NPggd91W3kUSvPlQ1pLaKY=
-github.com/badkeys/badkeys v0.0.17-0.20260122212119-657810de2cff h1:QEP4RwDA/Z0yO7DeJIv6m/iv4J7mFM3geO7HDatAlCI=
-github.com/badkeys/badkeys v0.0.17-0.20260122212119-657810de2cff/go.mod h1:mnRAMRGxK03ObNuLiSQhBdufzeuyO/pasHMsYjUU8S8=
+github.com/badkeys/badkeys v0.0.17-0.20260124125631-f3c4d945a85b h1:FlLi02wbCCwfFvVpf6V+WI2oGWu3qGkMsIS4hAUT2tQ=
+github.com/badkeys/badkeys v0.0.17-0.20260124125631-f3c4d945a85b/go.mod h1:mnRAMRGxK03ObNuLiSQhBdufzeuyO/pasHMsYjUU8S8=
 github.com/beorn7/perks v1.0.1 h1:VlbKKnNfV8bJzeqoa4cOKqO6bYr3WgKZxO8Z16+hsOM=
 github.com/beorn7/perks v1.0.1/go.mod h1:G2ZrVWU2WbWT9wwq4/hrbKbnv/1ERSJQ0ibhJ6rlkpw=
 github.com/certlint/certlint v1.8.4 h1:Qdkk0jKppKz+ePSKkdbZQfCRi+JUqFkqySZBvUgo0GA=
