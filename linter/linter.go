@@ -3,7 +3,6 @@ package linter
 import (
 	"bufio"
 	"context"
-	"crypto/x509"
 	"fmt"
 	"io"
 	"os/exec"
@@ -20,6 +19,7 @@ import (
 	json "github.com/goccy/go-json"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
+	"github.com/zmap/zcrypto/x509"
 
 	"go.uber.org/zap"
 )

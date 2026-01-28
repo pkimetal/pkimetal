@@ -1,14 +1,15 @@
 package request
 
 import (
-	"crypto/x509"
-	"crypto/x509/pkix"
-	"encoding/asn1"
 	"encoding/pem"
 	"fmt"
 	"math/big"
 
 	"github.com/pkimetal/pkimetal/utils"
+
+	"github.com/zmap/zcrypto/encoding/asn1"
+	"github.com/zmap/zcrypto/x509"
+	"github.com/zmap/zcrypto/x509/pkix"
 )
 
 type tbsCertificatePartial struct {

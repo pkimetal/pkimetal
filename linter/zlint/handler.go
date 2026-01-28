@@ -76,33 +76,26 @@ func (l *Zlint) StopInstance(lin *linter.LinterInstance) {
 
 func lintCert(lreq *linter.LintingRequest, registry *lint.Registry) []linter.LintingResult {
 	var lres []linter.LintingResult
-	if cert, err := x509.ParseCertificate(lreq.DecodedInput); err != nil {
-		lres = append(lres, linter.LintingResult{
-			Severity: linter.SEVERITY_FATAL,
-			Finding:  fmt.Sprintf("Could not parse certificate: %v", err),
-		})
-	} else {
-		zlintResultSet := zlint.LintCertificateEx(cert, *registry)
-		for k, v := range zlintResultSet.Results {
-			certificateLint := defaultRegistry.CertificateLints().ByName(k)
-			lresult := linter.LintingResult{
-				Finding: certificateLint.Description,
-				Code:    certificateLint.Name,
-			}
-			switch v.Status {
-			case lint.Notice:
-				lresult.Severity = linter.SEVERITY_NOTICE
-			case lint.Warn:
-				lresult.Severity = linter.SEVERITY_WARNING
-			case lint.Error:
-				lresult.Severity = linter.SEVERITY_ERROR
-			case lint.Fatal:
-				lresult.Severity = linter.SEVERITY_FATAL
-			default:
-				continue
-			}
-			lres = append(lres, lresult)
+	zlintResultSet := zlint.LintCertificateEx(lreq.Cert, *registry)
+	for k, v := range zlintResultSet.Results {
+		certificateLint := defaultRegistry.CertificateLints().ByName(k)
+		lresult := linter.LintingResult{
+			Finding: certificateLint.Description,
+			Code:    certificateLint.Name,
 		}
+		switch v.Status {
+		case lint.Notice:
+			lresult.Severity = linter.SEVERITY_NOTICE
+		case lint.Warn:
+			lresult.Severity = linter.SEVERITY_WARNING
+		case lint.Error:
+			lresult.Severity = linter.SEVERITY_ERROR
+		case lint.Fatal:
+			lresult.Severity = linter.SEVERITY_FATAL
+		default:
+			continue
+		}
+		lres = append(lres, lresult)
 	}
 	return lres
 }
