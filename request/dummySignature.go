@@ -1,8 +1,8 @@
 package request
 
 import (
-	"crypto/x509/pkix"
-	"encoding/asn1"
+	"github.com/zmap/zcrypto/encoding/asn1"
+	"github.com/zmap/zcrypto/x509/pkix"
 )
 
 type signed struct {

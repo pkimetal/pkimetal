@@ -2,7 +2,6 @@ package request
 
 import (
 	"context"
-	"crypto/x509"
 	"fmt"
 	"slices"
 	"sort"
@@ -17,6 +16,7 @@ import (
 
 	json "github.com/goccy/go-json"
 	"github.com/valyala/fasthttp"
+	"github.com/zmap/zcrypto/x509"
 
 	"go.uber.org/zap"
 )

@@ -2,6 +2,8 @@ package dwklint
 
 import (
 	"context"
+	"crypto/x509"
+	"fmt"
 
 	"github.com/pkimetal/pkimetal/config"
 	"github.com/pkimetal/pkimetal/linter"
@@ -54,27 +56,34 @@ func (l *Dwklint) StopInstance(lin *linter.LinterInstance) {
 
 func (l *Dwklint) HandleRequest(ctx context.Context, lin *linter.LinterInstance, lreq *linter.LintingRequest) []linter.LintingResult {
 	var lres linter.LintingResult
-	dwkStatus := dwklint.HasDebianWeakKey(lreq.Cert)
-	switch dwkStatus {
-	case dwklint.NotWeak:
-		lres.Severity = linter.SEVERITY_INFO
-		lres.Finding = "Public Key is not a Debian weak key"
-	case dwklint.UnknownButTLSBRExceptionGranted:
-		lres.Severity = linter.SEVERITY_NOTICE
-		lres.Finding = "No Debian weak key blocklist is available for this key algorithm/size, but Public Key is larger than RSA-8192"
-	case dwklint.Unknown:
-		lres.Severity = linter.SEVERITY_WARNING
-		lres.Finding = "No Debian weak key blocklist is available for this key algorithm/size"
-	case dwklint.Weak:
-		lres.Severity = linter.SEVERITY_ERROR
-		lres.Finding = "Public Key is a Debian weak key"
-	case dwklint.Error:
+
+	if cert, err := x509.ParseCertificate(lreq.DecodedInput); err != nil {
 		lres.Severity = linter.SEVERITY_FATAL
-		lres.Finding = "Public Key could not be decoded for Debian weak key check"
-	default:
-		lres.Severity = linter.SEVERITY_FATAL
-		lres.Finding = "Unexpected response from Debian weak key check"
+		lres.Finding = fmt.Sprintf("Could not parse certificate: %v", err)
+	} else {
+		dwkStatus := dwklint.HasDebianWeakKey(cert)
+		switch dwkStatus {
+		case dwklint.NotWeak:
+			lres.Severity = linter.SEVERITY_INFO
+			lres.Finding = "Public Key is not a Debian weak key"
+		case dwklint.UnknownButTLSBRExceptionGranted:
+			lres.Severity = linter.SEVERITY_NOTICE
+			lres.Finding = "No Debian weak key blocklist is available for this key algorithm/size, but Public Key is larger than RSA-8192"
+		case dwklint.Unknown:
+			lres.Severity = linter.SEVERITY_WARNING
+			lres.Finding = "No Debian weak key blocklist is available for this key algorithm/size"
+		case dwklint.Weak:
+			lres.Severity = linter.SEVERITY_ERROR
+			lres.Finding = "Public Key is a Debian weak key"
+		case dwklint.Error:
+			lres.Severity = linter.SEVERITY_FATAL
+			lres.Finding = "Public Key could not be decoded for Debian weak key check"
+		default:
+			lres.Severity = linter.SEVERITY_FATAL
+			lres.Finding = "Unexpected response from Debian weak key check"
+		}
 	}
+
 	return []linter.LintingResult{lres}
 }
 

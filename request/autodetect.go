@@ -3,22 +3,23 @@ package request
 import (
 	"bytes"
 	"crypto/sha256"
-	"crypto/x509"
-	"crypto/x509/pkix"
-	"encoding/asn1"
 	"encoding/base64"
 
 	"github.com/pkimetal/pkimetal/linter"
 
 	"github.com/crtsh/ccadb_data"
+	"github.com/zmap/zcrypto/encoding/asn1"
+	"github.com/zmap/zcrypto/x509"
+	"github.com/zmap/zcrypto/x509/pkix"
 )
 
 var (
 	// Additional Extended Key Usage OIDs.
-	oidEKU_DocumentSigning              asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 7, 3, 36}
-	oidEKU_PrecertificateSigning        asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 11129, 2, 4, 4}
-	oidEKU_MicrosoftDocumentSigning     asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 311, 10, 3, 12}
-	oidEKU_AdobeAuthenticDocumentsTrust asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 2, 840, 113583, 1, 1, 5}
+	oidEKU_DocumentSigning                asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 7, 3, 36}
+	oidEKU_PrecertificateSigning          asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 11129, 2, 4, 4}
+	oidEKU_MicrosoftDocumentSigning       asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 311, 10, 3, 12}
+	oidEKU_MicrosoftCommercialCodeSigning asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 311, 2, 1, 22}
+	oidEKU_AdobeAuthenticDocumentsTrust   asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 2, 840, 113583, 1, 1, 5}
 
 	// Additional Extension OIDs.
 	oidExtension_AuthorityKeyIdentifier asn1.ObjectIdentifier = asn1.ObjectIdentifier{2, 5, 29, 35}
@@ -280,10 +281,16 @@ func (ri *RequestInfo) detectSubordinateCertificateProfile() linter.ProfileId {
 				hasServerAuthEKU = true
 			case x509.ExtKeyUsageEmailProtection:
 				hasEmailProtectionEKU = true
-			case x509.ExtKeyUsageCodeSigning, x509.ExtKeyUsageMicrosoftCommercialCodeSigning, x509.ExtKeyUsageMicrosoftKernelCodeSigning:
+			case x509.ExtKeyUsageCodeSigning, x509.ExtKeyUsageMicrosoftKernelModeCodeSigning:
 				hasCodeSigningEKU = true
 			case x509.ExtKeyUsageTimeStamping:
 				hasTimeStampingEKU = true
+			}
+		}
+
+		for _, eku := range ri.cert.UnknownExtKeyUsage {
+			if eku.Equal(oidEKU_MicrosoftCommercialCodeSigning) {
+				hasCodeSigningEKU = true
 			}
 		}
 	}
@@ -448,12 +455,18 @@ func (ri *RequestInfo) detectLeafCertificateProfile() linter.ProfileId {
 				hasClientAuthEKU = true
 			case x509.ExtKeyUsageEmailProtection:
 				hasEmailProtectionEKU = true
-			case x509.ExtKeyUsageCodeSigning, x509.ExtKeyUsageMicrosoftCommercialCodeSigning, x509.ExtKeyUsageMicrosoftKernelCodeSigning:
+			case x509.ExtKeyUsageCodeSigning, x509.ExtKeyUsageMicrosoftKernelModeCodeSigning:
 				hasCodeSigningEKU = true
 			case x509.ExtKeyUsageTimeStamping:
 				hasTimeStampingEKU = true
-			case x509.ExtKeyUsageOCSPSigning:
+			case x509.ExtKeyUsageOcspSigning:
 				hasOCSPSigningEKU = true
+			}
+		}
+
+		for _, eku := range ri.cert.UnknownExtKeyUsage {
+			if eku.Equal(oidEKU_MicrosoftCommercialCodeSigning) {
+				hasCodeSigningEKU = true
 			}
 		}
 	}
