@@ -252,6 +252,7 @@ var (
 	CrlProfileIDs, OcspProfileIDs, RootProfileIDs, SubordinateProfileIDs             []ProfileId
 	SbrLeafProfileIDs, TbrTevgLeafProfileIDs, TbrTevgCertificateProfileIDs           []ProfileId
 	NonTbrTevgCertificateProfileIDs, NonCabforumProfileIDs, NonCertificateProfileIDs []ProfileId
+	MarkCertificateProfileIDs                                                        []ProfileId
 	EtsiCertificateProfileIDs, EtsiNonBrowserCertificateProfileIDs                   []ProfileId
 	PrecertificateProfileIDs                                                         []ProfileId
 )
@@ -271,6 +272,8 @@ func init() {
 			SbrLeafProfileIDs = append(SbrLeafProfileIDs, k)
 		} else if strings.HasPrefix(v.Name, "tbr_leaf_") || strings.HasPrefix(v.Name, "tevg_leaf_") || (strings.HasPrefix(v.Name, "etsi_leaf_tlsserver_") && !strings.Contains(v.Name, "person")) {
 			TbrTevgLeafProfileIDs = append(TbrTevgLeafProfileIDs, k)
+		} else if strings.HasPrefix(v.Name, "bimigroup_") {
+			MarkCertificateProfileIDs = append(MarkCertificateProfileIDs, k)
 		}
 	}
 

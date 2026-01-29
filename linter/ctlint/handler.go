@@ -48,6 +48,10 @@ func (l *Ctlint) HandleRequest(ctx context.Context, lin *linter.LinterInstance, 
 	var results []string
 	if slices.Contains(linter.PrecertificateProfileIDs, lreq.ProfileId) {
 		results = ctlint.CheckPrecertificate(cert)
+	} else if slices.Contains(linter.TbrTevgLeafProfileIDs, lreq.ProfileId) {
+		results = ctlint.CheckCertificate(cert, nil, ctlint.ServerAuthenticationCertificate)
+	} else if slices.Contains(linter.MarkCertificateProfileIDs, lreq.ProfileId) {
+		results = ctlint.CheckCertificate(cert, nil, ctlint.MarkCertificate)
 	} else {
 		results = ctlint.CheckCertificate(cert, nil)
 	}
