@@ -122,6 +122,13 @@ const (
 	ETSI_LEAF_TLSSERVER_QEVCPWPSD2EIDASNONBROWSER_PRECERTIFICATE
 	ETSI_LEAF_NCPNATURALPERSON
 	ETSI_LEAF_NCPLEGALPERSON
+	// BIMIGroup Mark Certificates.
+	BIMIGROUP_ROOT_BIMI
+	BIMIGROUP_SUBORDINATE_BIMI
+	BIMIGROUP_LEAF_COMMONMARK
+	BIMIGROUP_LEAF_COMMONMARK_PRECERTIFICATE
+	BIMIGROUP_LEAF_VERIFIEDMARK
+	BIMIGROUP_LEAF_VERIFIEDMARK_PRECERTIFICATE
 )
 
 var (
@@ -232,6 +239,13 @@ var (
 		ETSI_LEAF_TLSSERVER_QEVCPWPSD2EIDASNONBROWSER_PRECERTIFICATE:     {Name: "etsi_leaf_tlsserver_qevcpwpsd2eidasnonbrowser_precertificate", Source: "EN 319 412", Description: "ETSI Web Auth Precert: EV, PSD2 (Qualified, eIDAS, non-Browser)"},
 		ETSI_LEAF_NCPNATURALPERSON:                                       {Name: "etsi_leaf_ncpnaturalperson", Source: "EN 319 412", Description: "ETSI Electronic Seal Certificate: Natural Person"},
 		ETSI_LEAF_NCPLEGALPERSON:                                         {Name: "etsi_leaf_ncplegalperson", Source: "EN 319 412", Description: "ETSI Electronic Seal Certificate: Legal Person "},
+		// BIMI Mark Certificates.
+		BIMIGROUP_ROOT_BIMI:                        {Name: "bimigroup_root_bimi", Source: "Mark Certificate Guidelines", Description: "BIMI Root CA Certificate"},
+		BIMIGROUP_SUBORDINATE_BIMI:                 {Name: "bimigroup_subordinate_bimi", Source: "Mark Certificate Guidelines", Description: "BIMI Subordinate CA Certificate"},
+		BIMIGROUP_LEAF_COMMONMARK:                  {Name: "bimigroup_leaf_commonmark", Source: "Mark Certificate Guidelines", Description: "Common Mark Certificate"},
+		BIMIGROUP_LEAF_COMMONMARK_PRECERTIFICATE:   {Name: "bimigroup_leaf_commonmark_precertificate", Source: "Mark Certificate Guidelines", Description: "Common Mark Precertificate"},
+		BIMIGROUP_LEAF_VERIFIEDMARK:                {Name: "bimigroup_leaf_verifiedmark", Source: "Mark Certificate Guidelines", Description: "Verified Mark Certificate"},
+		BIMIGROUP_LEAF_VERIFIEDMARK_PRECERTIFICATE: {Name: "bimigroup_leaf_verifiedmark_precertificate", Source: "Mark Certificate Guidelines", Description: "Verified Mark Precertificate"},
 	}
 
 	AllProfilesOrdered                                                               []Profile
