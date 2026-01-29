@@ -15,11 +15,12 @@ import (
 
 var (
 	// Additional Extended Key Usage OIDs.
-	oidEKU_DocumentSigning                asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 7, 3, 36}
-	oidEKU_PrecertificateSigning          asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 11129, 2, 4, 4}
-	oidEKU_MicrosoftDocumentSigning       asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 311, 10, 3, 12}
-	oidEKU_MicrosoftCommercialCodeSigning asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 311, 2, 1, 22}
-	oidEKU_AdobeAuthenticDocumentsTrust   asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 2, 840, 113583, 1, 1, 5}
+	oidEKU_DocumentSigning                        asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 7, 3, 36}
+	oidEKU_PrecertificateSigning                  asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 11129, 2, 4, 4}
+	oidEKU_MicrosoftDocumentSigning               asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 311, 10, 3, 12}
+	oidEKU_MicrosoftCommercialCodeSigning         asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 311, 2, 1, 22}
+	oidEKU_AdobeAuthenticDocumentsTrust           asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 2, 840, 113583, 1, 1, 5}
+	oidEKU_BrandIndicatorforMessageIdentification asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 7, 3, 31}
 
 	// Additional Extension OIDs.
 	oidExtension_AuthorityKeyIdentifier asn1.ObjectIdentifier = asn1.ObjectIdentifier{2, 5, 29, 35}
@@ -54,6 +55,7 @@ var (
 	oidAttribute_givenName               asn1.ObjectIdentifier = asn1.ObjectIdentifier{2, 5, 4, 42}
 	oidAttribute_pseudonym               asn1.ObjectIdentifier = asn1.ObjectIdentifier{2, 5, 4, 65}
 	oidAttribute_jurisdictionCountryName asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 311, 60, 2, 1, 3}
+	oidAttribute_markType                asn1.ObjectIdentifier = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 53087, 1, 13}
 
 	// QCStatement OIDs.
 	oidQCStatement_etsiQcsQcCompliance    asn1.ObjectIdentifier = asn1.ObjectIdentifier{0, 4, 0, 1862, 1, 1}
@@ -134,6 +136,20 @@ func hasJurisdictionCountryNameAttribute(subject pkix.Name) bool {
 		}
 	}
 	return false
+}
+
+func hasBIMIMarkTypeAttribute(subject pkix.Name) (bool, bool) {
+	for _, name := range subject.Names {
+		if name.Type.Equal(oidAttribute_markType) {
+			switch name.Value {
+			case "Registered Mark", "Government Mark":
+				return true, true
+			case "Prior Use Mark", "Modified Registered Mark":
+				return true, false
+			}
+		}
+	}
+	return false, false
 }
 
 func isRootCertificate(cert *x509.Certificate) bool {
@@ -236,6 +252,8 @@ func (ri *RequestInfo) detectRootCertificateProfile() linter.ProfileId {
 			return linter.SBR_ROOT_SMIME
 		} else if ic.CodeSigningCapable {
 			return linter.CSBR_ROOT_CODESIGNING
+		} else if ic.HasVMCAudit {
+			return linter.BIMIGROUP_ROOT_BIMI
 		}
 	}
 
@@ -267,31 +285,29 @@ func (ri *RequestInfo) detectSubordinateCertificateProfile() linter.ProfileId {
 	}
 
 	// Look for common EKUs in the certificate.
-	var hasAnyOrNoEKU, hasServerAuthEKU, hasEmailProtectionEKU, hasCodeSigningEKU, hasTimeStampingEKU bool
-	if len(ri.cert.ExtKeyUsage) == 0 {
-		if len(ri.cert.UnknownExtKeyUsage) == 0 {
-			hasAnyOrNoEKU = true
-		}
-	} else {
-		for _, eku := range ri.cert.ExtKeyUsage {
-			switch eku {
-			case x509.ExtKeyUsageAny:
-				hasAnyOrNoEKU = true
-			case x509.ExtKeyUsageServerAuth, x509.ExtKeyUsageMicrosoftServerGatedCrypto, x509.ExtKeyUsageNetscapeServerGatedCrypto:
-				hasServerAuthEKU = true
-			case x509.ExtKeyUsageEmailProtection:
-				hasEmailProtectionEKU = true
-			case x509.ExtKeyUsageCodeSigning, x509.ExtKeyUsageMicrosoftKernelModeCodeSigning:
-				hasCodeSigningEKU = true
-			case x509.ExtKeyUsageTimeStamping:
-				hasTimeStampingEKU = true
-			}
-		}
+	hasAnyOrNoEKU := (len(ri.cert.ExtKeyUsage) == 0 && len(ri.cert.UnknownExtKeyUsage) == 0)
+	var hasServerAuthEKU, hasEmailProtectionEKU, hasCodeSigningEKU, hasTimeStampingEKU, hasBIMIEKU bool
 
-		for _, eku := range ri.cert.UnknownExtKeyUsage {
-			if eku.Equal(oidEKU_MicrosoftCommercialCodeSigning) {
-				hasCodeSigningEKU = true
-			}
+	for _, eku := range ri.cert.ExtKeyUsage {
+		switch eku {
+		case x509.ExtKeyUsageAny:
+			hasAnyOrNoEKU = true
+		case x509.ExtKeyUsageServerAuth, x509.ExtKeyUsageMicrosoftServerGatedCrypto, x509.ExtKeyUsageNetscapeServerGatedCrypto:
+			hasServerAuthEKU = true
+		case x509.ExtKeyUsageEmailProtection:
+			hasEmailProtectionEKU = true
+		case x509.ExtKeyUsageCodeSigning, x509.ExtKeyUsageMicrosoftKernelModeCodeSigning:
+			hasCodeSigningEKU = true
+		case x509.ExtKeyUsageTimeStamping:
+			hasTimeStampingEKU = true
+		}
+	}
+
+	for _, eku := range ri.cert.UnknownExtKeyUsage {
+		if eku.Equal(oidEKU_MicrosoftCommercialCodeSigning) {
+			hasCodeSigningEKU = true
+		} else if eku.Equal(oidEKU_BrandIndicatorforMessageIdentification) {
+			hasBIMIEKU = true
 		}
 	}
 
@@ -314,6 +330,9 @@ func (ri *RequestInfo) detectSubordinateCertificateProfile() linter.ProfileId {
 			}
 			if hasTimeStampingEKU { // The CCADB CSV data doesn't reveal timestamping capability, but the Timestamping EKU OID combined with presence in the CCADB is a strong indicator of CSBR scope.
 				return linter.CSBR_SUBORDINATE_TIMESTAMPING
+			}
+			if hasBIMIEKU {
+				return linter.BIMIGROUP_SUBORDINATE_BIMI
 			}
 		}
 	}
@@ -439,35 +458,33 @@ func (ri *RequestInfo) detectLeafCertificateProfile() linter.ProfileId {
 	}
 
 	// Look for common EKUs in the certificate.
-	var hasAnyOrNoEKU, hasServerAuthEKU, hasClientAuthEKU, hasEmailProtectionEKU, hasCodeSigningEKU, hasTimeStampingEKU, hasOCSPSigningEKU bool
-	if len(ri.cert.ExtKeyUsage) == 0 {
-		if len(ri.cert.UnknownExtKeyUsage) == 0 {
-			hasAnyOrNoEKU = true
-		}
-	} else {
-		for _, eku := range ri.cert.ExtKeyUsage {
-			switch eku {
-			case x509.ExtKeyUsageAny:
-				hasAnyOrNoEKU = true
-			case x509.ExtKeyUsageServerAuth, x509.ExtKeyUsageMicrosoftServerGatedCrypto, x509.ExtKeyUsageNetscapeServerGatedCrypto:
-				hasServerAuthEKU = true
-			case x509.ExtKeyUsageClientAuth:
-				hasClientAuthEKU = true
-			case x509.ExtKeyUsageEmailProtection:
-				hasEmailProtectionEKU = true
-			case x509.ExtKeyUsageCodeSigning, x509.ExtKeyUsageMicrosoftKernelModeCodeSigning:
-				hasCodeSigningEKU = true
-			case x509.ExtKeyUsageTimeStamping:
-				hasTimeStampingEKU = true
-			case x509.ExtKeyUsageOcspSigning:
-				hasOCSPSigningEKU = true
-			}
-		}
+	hasAnyOrNoEKU := (len(ri.cert.ExtKeyUsage) == 0 && len(ri.cert.UnknownExtKeyUsage) == 0)
+	var hasServerAuthEKU, hasClientAuthEKU, hasEmailProtectionEKU, hasCodeSigningEKU, hasTimeStampingEKU, hasOCSPSigningEKU, hasBIMIEKU bool
 
-		for _, eku := range ri.cert.UnknownExtKeyUsage {
-			if eku.Equal(oidEKU_MicrosoftCommercialCodeSigning) {
-				hasCodeSigningEKU = true
-			}
+	for _, eku := range ri.cert.ExtKeyUsage {
+		switch eku {
+		case x509.ExtKeyUsageAny:
+			hasAnyOrNoEKU = true
+		case x509.ExtKeyUsageServerAuth, x509.ExtKeyUsageMicrosoftServerGatedCrypto, x509.ExtKeyUsageNetscapeServerGatedCrypto:
+			hasServerAuthEKU = true
+		case x509.ExtKeyUsageClientAuth:
+			hasClientAuthEKU = true
+		case x509.ExtKeyUsageEmailProtection:
+			hasEmailProtectionEKU = true
+		case x509.ExtKeyUsageCodeSigning, x509.ExtKeyUsageMicrosoftKernelModeCodeSigning:
+			hasCodeSigningEKU = true
+		case x509.ExtKeyUsageTimeStamping:
+			hasTimeStampingEKU = true
+		case x509.ExtKeyUsageOcspSigning:
+			hasOCSPSigningEKU = true
+		}
+	}
+
+	for _, eku := range ri.cert.UnknownExtKeyUsage {
+		if eku.Equal(oidEKU_MicrosoftCommercialCodeSigning) {
+			hasCodeSigningEKU = true
+		} else if eku.Equal(oidEKU_BrandIndicatorforMessageIdentification) {
+			hasBIMIEKU = true
 		}
 	}
 
@@ -551,6 +568,23 @@ func (ri *RequestInfo) detectLeafCertificateProfile() linter.ProfileId {
 			}
 			if hasTimeStampingEKU { // The CCADB CSV data doesn't reveal timestamping capability, but the Timestamping EKU OID combined with the issuer's presence in the CCADB is a strong indicator of CSBR scope.
 				return linter.CSBR_LEAF_TIMESTAMPING
+			}
+			if hasBIMIEKU {
+				if isMarkCertificate, isVerifiedMarkCertificate := hasBIMIMarkTypeAttribute(ri.cert.Subject); isMarkCertificate {
+					if isVerifiedMarkCertificate {
+						if isPrecertificate {
+							return linter.BIMIGROUP_LEAF_VERIFIEDMARK_PRECERTIFICATE
+						} else {
+							return linter.BIMIGROUP_LEAF_VERIFIEDMARK
+						}
+					} else {
+						if isPrecertificate {
+							return linter.BIMIGROUP_LEAF_COMMONMARK_PRECERTIFICATE
+						} else {
+							return linter.BIMIGROUP_LEAF_COMMONMARK
+						}
+					}
+				}
 			}
 		}
 	}
