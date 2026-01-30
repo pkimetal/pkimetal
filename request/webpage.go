@@ -158,7 +158,16 @@ func APIWebpage(fhctx *fasthttp.RequestCtx, endpoint string) {
   <LINK href="/` + ENDPOINTSTRING_CSS + `" rel="stylesheet">
 </HEAD>
 <BODY>
-  <FORM method="post">
+  <SCRIPT>
+    function handleFiles() {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        document.form1.b64input.value = reader.result;
+      }
+      reader.readAsText(document.getElementById("fil").files[0]);
+    }
+  </SCRIPT>
+  <FORM method="post" name="form1">
     <TABLE>
       <TR>
         <TD style="text-align:center;vertical-align:middle"><A href="//` + linter.GetPackagePath() + `/releases" target="_blank"><DIV class="title">` + linter.PKIMETAL_NAME + ` ` + linter.VersionString(config.PkimetalVersion) + `</DIV></A></TD>
@@ -203,6 +212,12 @@ func APIWebpage(fhctx *fasthttp.RequestCtx, endpoint string) {
           </SELECT>
         </TD>
       </TR>
+      <TR>
+        <TD style="background-color:#EEEEEE;color:#888888;font-size:10pt">
+          Paste input above, or <INPUT type="file" id="fil" onchange="handleFiles(this.files)">
+        </TD>
+      </TR>
+      <TR><TD><HR></TD></TR>
       <TR>
         <TD>Profile:
           <BR><SELECT name="profile" size="15">`)
