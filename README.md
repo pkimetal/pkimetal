@@ -89,7 +89,7 @@ These public instances are provided as-is, on a best effort basis. They are NOT 
 
 Here are some projects/CAs that are known to use or integrate with pkimetal:
 
-- [CCADB](https://ccadb.org): Test Website [Validator](https://github.com/mozilla/CCADB-Tools/tree/master/capi)
+- [CCADB](https://ccadb.org): Test Website [Validator](https://github.com/mozilla/CCADB-Tools/blob/master/capi/README.md)
 - [crt.sh](https://crt.sh) (Sectigo): On-demand certificate linting
 - [EJBCA](https://www.ejbca.org): Post Processing [Validator](https://docs.keyfactor.com/ejbca/latest/pkimetal-validator)
 - [Let's Encrypt](https://letsencrypt.org): [Continuous integration](https://github.com/letsencrypt/boulder/pull/8063)
