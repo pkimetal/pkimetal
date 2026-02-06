@@ -5,7 +5,7 @@ go 1.25.7
 require (
 	github.com/CVE-2008-0166/dwklint/v2 v2.1.0
 	github.com/crtsh/ccadb_data v1.20260205.223323
-	github.com/crtsh/ctlint v0.0.0-20260206084814-8e27c8d3e68c
+	github.com/crtsh/ctlint v0.0.0-20260206220126-dec5d47f469c
 	github.com/goccy/go-json v0.10.5
 	github.com/google/certificate-transparency-go v1.3.2
 	github.com/prometheus/client_golang v1.23.2
@@ -27,6 +27,7 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/certlint/certlint v1.8.5 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
+	github.com/crtsh/ctloglists v0.0.0-20260206215416-d562a730086a // indirect
 	github.com/digicert/pkilint v0.13.1 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
