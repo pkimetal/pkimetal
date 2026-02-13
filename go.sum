@@ -16,8 +16,8 @@ github.com/crtsh/ccadb_data v1.20260212.190933 h1:yT+9au2tq1M0PLjkoJRmlzgFQB3UTt
 github.com/crtsh/ccadb_data v1.20260212.190933/go.mod h1:M0/wpxYjxeu4Kj/ZUBCWT5JBCAYzY/CqQQjiHvHF0eA=
 github.com/crtsh/ctlint v0.0.0-20260213085424-d66b7d6f225e h1:mTR0m7Q373hRdLxusVavYzBk44eUv/iwzRzFU5nlKH4=
 github.com/crtsh/ctlint v0.0.0-20260213085424-d66b7d6f225e/go.mod h1:ER8xgBV+zAA32slsQ2wqodeV2fPZnprbC4IFkP/YI8o=
-github.com/crtsh/ctloglists v0.0.0-20260213100513-7cccd93d0082 h1:2qoDFUZ7NUnrr6xzqUAqXKpZQwjqzwvJLNEX1/+WmEA=
-github.com/crtsh/ctloglists v0.0.0-20260213100513-7cccd93d0082/go.mod h1:Qt1YFGwD7aNUYD7ANaSmuhPxT9Y3soiBCqbZCDa3UKQ=
+github.com/crtsh/ctloglists v0.0.0-20260213152034-e30c610bc969 h1:ne/TG5ZqkuYqcDo8svWaulKutFWZlmXDj8M+KXedRIc=
+github.com/crtsh/ctloglists v0.0.0-20260213152034-e30c610bc969/go.mod h1:Qt1YFGwD7aNUYD7ANaSmuhPxT9Y3soiBCqbZCDa3UKQ=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc h1:U9qPSI2PIWSS1VwoXQT9A3Wy9MM3WgvqSxFWenqJduM=
