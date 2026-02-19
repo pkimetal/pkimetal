@@ -1,6 +1,5 @@
 # BUILD.
 FROM docker.io/library/golang:1.26.0-alpine AS build
-ARG gomodfile
 
 # Install build dependencies.
 RUN apk add --no-cache busybox && \
@@ -24,6 +23,7 @@ ENV PATH="/root/.local/bin:/root/.cargo/bin:${PATH}"
 # Build dependencies.
 WORKDIR /app
 COPY . .
+ARG gomodfile
 RUN git fetch --depth=2147483647 && \
 	# Fetch repositories.
 	mkdir /usr/local/build && \
@@ -47,12 +47,12 @@ RUN git fetch --depth=2147483647 && \
 	sed -i "s/_VERSION_/`go list -modfile=$gomodfile -m -f '{{.Version}}' github.com/badkeys/badkeys | sed 's/[-+].*//g'`/g" /app/linter/badkeys/pyproject.toml && \
 	sed -i "s/_VERSION_/`go list -modfile=$gomodfile -m -f '{{.Version}}' github.com/rspeer/python-ftfy | sed 's/[-+].*//g'`/g" /app/linter/ftfy/pyproject.toml && \
 	sed -i "s/_VERSION_/`go list -modfile=$gomodfile -m -f '{{.Version}}' github.com/digicert/pkilint | sed 's/[-+].*//g'`/g" /app/linter/pkilint/pyproject.toml && \
-	# Build badkeys.
+	# Build badkeys and update its blocklist.
 	cd /usr/local/build/badkeys && \
 	cp /app/linter/badkeys/pyproject.toml . && \
 	poetry lock && \
 	poetry bundle venv --python=/usr/bin/python3 --only=main /usr/local/pkimetal/badkeys && \
-	cp badkeys-cli /usr/local/pkimetal/badkeys/bin && \
+	/usr/local/pkimetal/badkeys/bin/python3 badkeys-cli --update-bl && \
 	# Build certlint.
 	cd /usr/local/pkimetal/certlint/ext && \
 	ruby extconf.rb && \
@@ -96,8 +96,12 @@ RUN git fetch --depth=2147483647 && \
 # RUNTIME.
 FROM alpine:latest AS runtime
 
+# Configure environment.
+CMD ["/app/pkimetal"]
+ENV HOME=/usr/local/pkimetal
+WORKDIR /app
+
 # Install runtime dependencies.
-COPY --from=build /usr/local/pkimetal /usr/local/pkimetal
 RUN apk add --no-cache --update \
 	# badkeys (for rsakeys/fermat.py).
 	gmp mpfr mpc1 \
@@ -105,15 +109,15 @@ RUN apk add --no-cache --update \
 	openssl ruby \
 	# pkilint and ftfy.
 	python3 && \
-	# badkeys.
-	adduser -D pkimetal && \
 	# certlint.
-	gem install base64 public_suffix simpleidn
-USER pkimetal:pkimetal
-WORKDIR /usr/local/pkimetal/badkeys/bin
-RUN ./python3 badkeys-cli --update-bl
+	gem install base64 public_suffix simpleidn && \
+	# badkeys.
+	adduser -D -u 1001 --home /usr/local/pkimetal pkimetal && \
+	chgrp -R 0 /usr/local/pkimetal && \
+	chmod -R g=u /usr/local/pkimetal
 
-# Install pkimetal.
-WORKDIR /app
+# Copy build assets.
+COPY --from=build /root/.cache/badkeys /usr/local/pkimetal/.cache/badkeys
+USER 1001
+COPY --from=build /usr/local/pkimetal /usr/local/pkimetal
 COPY --from=build /app/pkimetal /app/finding_metadata.csv.* /app/
-CMD ["/app/pkimetal"]
