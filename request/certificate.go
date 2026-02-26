@@ -18,24 +18,25 @@ type tbsCertificatePartial struct {
 	SignatureAlgorithm pkix.AlgorithmIdentifier
 }
 
-func (ri *RequestInfo) parseCertificateInput() (*x509.Certificate, error) {
+func (ri *RequestInfo) parseCertificateInput() (cert *x509.Certificate, err error) {
 	// Decode the PEM or Base64 certificate input.
-	var err error
 	if ri.b64Input == nil {
-		return nil, fmt.Errorf("no certificate provided")
+		err = fmt.Errorf("no certificate provided")
+		return
 	} else if ri.decodedInput, err = utils.DecodePEMOrBase64(ri.b64Input, "CERTIFICATE"); err != nil {
-		return nil, err
+		return
 	}
 
 	// Process the input based on the endpoint.
 	switch ri.endpoint {
 	case ENDPOINT_LINTTBSCERT:
 		if err = ri.makeDummyCertificate(); err != nil {
-			return nil, err
+			return
 		}
 	case ENDPOINT_LINTCERT:
 	default:
-		return nil, fmt.Errorf("invalid endpoint for certificate input")
+		err = fmt.Errorf("invalid endpoint for certificate input")
+		return
 	}
 
 	// Update the Base64 input field from the processed input, which will ensure that PEM encapsulation boundaries are present.
@@ -44,7 +45,14 @@ func (ri *RequestInfo) parseCertificateInput() (*x509.Certificate, error) {
 		Bytes: ri.decodedInput,
 	})
 
-	return x509.ParseCertificate(ri.decodedInput)
+	// Parse the certificate, recovering from any panics that may occur during parsing.
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("Recovered from panic while parsing certificate: %v", r)
+		}
+	}()
+	cert, err = x509.ParseCertificate(ri.decodedInput)
+	return
 }
 
 func (ri *RequestInfo) makeDummyCertificate() error {
