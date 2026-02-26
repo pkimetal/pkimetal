@@ -8,7 +8,7 @@ require (
 	github.com/crtsh/ctlint v0.0.0-20260226102041-c47d05f122d2
 	github.com/crtsh/ctloglists v0.0.0-20260225154329-cc9e8bfb7624
 	github.com/goccy/go-json v0.10.5
-	github.com/google/certificate-transparency-go v1.3.2
+	github.com/google/certificate-transparency-go v1.3.3
 	github.com/prometheus/client_golang v1.23.2
 	github.com/sergi/go-diff v1.4.0
 	github.com/spf13/viper v1.21.0
@@ -31,6 +31,7 @@ require (
 	github.com/digicert/pkilint v0.13.1 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
+	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-viper/mapstructure/v2 v2.5.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/klauspost/compress v1.18.4 // indirect
@@ -60,6 +61,7 @@ require (
 	golang.org/x/sys v0.41.0 // indirect
 	golang.org/x/text v0.34.0 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
+	k8s.io/klog/v2 v2.130.1 // indirect
 	modernc.org/libc v1.68.0 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
