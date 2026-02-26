@@ -4,8 +4,8 @@ go 1.26.0
 
 require (
 	github.com/CVE-2008-0166/dwklint/v2 v2.1.0
-	github.com/crtsh/ccadb_data v1.20260226.85558
-	github.com/crtsh/ctlint v0.0.0-20260223104010-7b46ace4361d
+	github.com/crtsh/ccadb_data v1.20260226.95639
+	github.com/crtsh/ctlint v0.0.0-20260226102041-c47d05f122d2
 	github.com/crtsh/ctloglists v0.0.0-20260225154329-cc9e8bfb7624
 	github.com/goccy/go-json v0.10.5
 	github.com/google/certificate-transparency-go v1.3.2
