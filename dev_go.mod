@@ -58,7 +58,7 @@ require (
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/net v0.51.0 // indirect
 	golang.org/x/sys v0.42.0 // indirect
-	golang.org/x/text v0.34.0 // indirect
+	golang.org/x/text v0.35.0 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 	k8s.io/klog/v2 v2.140.0 // indirect
 	modernc.org/libc v1.70.0 // indirect
