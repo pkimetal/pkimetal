@@ -4,7 +4,7 @@ go 1.26.1
 
 require (
 	github.com/CVE-2008-0166/dwklint/v2 v2.1.0
-	github.com/crtsh/ccadb_data v1.20260311.213815
+	github.com/crtsh/ccadb_data v1.20260312.70242
 	github.com/crtsh/ctlint v0.0.0-20260306140223-2e5af8383041
 	github.com/crtsh/ctloglists v0.0.0-20260306135954-04e2b557a8dd
 	github.com/goccy/go-json v0.10.5
