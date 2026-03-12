@@ -7,7 +7,7 @@ require (
 	github.com/crtsh/ccadb_data v1.20260312.70242
 	github.com/crtsh/ctlint v0.0.0-20260306140223-2e5af8383041
 	github.com/crtsh/ctloglists v0.0.0-20260306135954-04e2b557a8dd
-	github.com/goccy/go-json v0.10.5
+	github.com/goccy/go-json v0.10.6
 	github.com/google/certificate-transparency-go v1.3.3
 	github.com/prometheus/client_golang v1.23.2
 	github.com/sergi/go-diff v1.4.0
