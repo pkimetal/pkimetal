@@ -6,7 +6,7 @@ require (
 	github.com/CVE-2008-0166/dwklint/v2 v2.1.0
 	github.com/crtsh/ccadb_data v1.20260331.134311
 	github.com/crtsh/ctlint v0.0.0-20260330104154-abeabc895cd4
-	github.com/crtsh/ctloglists v0.0.0-20260331152943-5bda220ac0cf
+	github.com/crtsh/ctloglists v0.0.0-20260331180530-16643f152c42
 	github.com/goccy/go-json v0.10.6
 	github.com/google/certificate-transparency-go v1.3.3
 	github.com/prometheus/client_golang v1.23.2
@@ -23,7 +23,7 @@ require (
 
 require (
 	github.com/CVE-2008-0166/dwk_blocklists_sqlite3 v0.0.0-20250725083057-d37481c06d85 // indirect
-	github.com/andybalholm/brotli v1.2.0 // indirect
+	github.com/andybalholm/brotli v1.2.1 // indirect
 	github.com/badkeys/badkeys v0.0.17 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/certlint/certlint v1.8.5 // indirect
