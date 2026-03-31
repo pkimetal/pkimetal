@@ -2,8 +2,8 @@ github.com/CVE-2008-0166/dwk_blocklists_sqlite3 v0.0.0-20250725083057-d37481c06d
 github.com/CVE-2008-0166/dwk_blocklists_sqlite3 v0.0.0-20250725083057-d37481c06d85/go.mod h1:9nAxuc8UYVb+/4839zXo4Fhg8TP6wfMtLDn8mtyJj6o=
 github.com/CVE-2008-0166/dwklint/v2 v2.1.0 h1:+KTe6n6u6lIyMdDfQawYUyUcu3kirOa/VIIruQHdxpc=
 github.com/CVE-2008-0166/dwklint/v2 v2.1.0/go.mod h1:GqG3XhrGfZuNC/CwfNpm3udsDUjsw5EdLJHWxtSbICo=
-github.com/andybalholm/brotli v1.2.0 h1:ukwgCxwYrmACq68yiUqwIWnGY0cTPox/M94sVwToPjQ=
-github.com/andybalholm/brotli v1.2.0/go.mod h1:rzTDkvFWvIrjDXZHkuS16NPggd91W3kUSvPlQ1pLaKY=
+github.com/andybalholm/brotli v1.2.1 h1:R+f5xP285VArJDRgowrfb9DqL18yVK0gKAW/F+eTWro=
+github.com/andybalholm/brotli v1.2.1/go.mod h1:rzTDkvFWvIrjDXZHkuS16NPggd91W3kUSvPlQ1pLaKY=
 github.com/badkeys/badkeys v0.0.17 h1:vRHlTVGwSAXVHDA4xSeSYtKYqXhDtn2Dt39cZm0Gxgs=
 github.com/badkeys/badkeys v0.0.17/go.mod h1:mnRAMRGxK03ObNuLiSQhBdufzeuyO/pasHMsYjUU8S8=
 github.com/beorn7/perks v1.0.1 h1:VlbKKnNfV8bJzeqoa4cOKqO6bYr3WgKZxO8Z16+hsOM=
@@ -16,8 +16,8 @@ github.com/crtsh/ccadb_data v1.20260331.134311 h1:83/qEJhncDTVrvjQTz0vPW7/cTGEEu
 github.com/crtsh/ccadb_data v1.20260331.134311/go.mod h1:M0/wpxYjxeu4Kj/ZUBCWT5JBCAYzY/CqQQjiHvHF0eA=
 github.com/crtsh/ctlint v0.0.0-20260330104154-abeabc895cd4 h1:WHn10osqBhR0Skz+U7o9HKUEsCecgvWRqtzlsTR1aHg=
 github.com/crtsh/ctlint v0.0.0-20260330104154-abeabc895cd4/go.mod h1:8hiEHaqkBeOX3fZMP2dE5k8MvS4f5qSdfFPyjh3E+Hs=
-github.com/crtsh/ctloglists v0.0.0-20260331152943-5bda220ac0cf h1:Kcx+kUpDQ8skUKnhu+ibkgi9bJqkJ22xHBKkwMUz8Dk=
-github.com/crtsh/ctloglists v0.0.0-20260331152943-5bda220ac0cf/go.mod h1:WgJOgbnyD0FWgCFZpM5hr3Ql9iNX+9oQgtzHWtLU78s=
+github.com/crtsh/ctloglists v0.0.0-20260331180530-16643f152c42 h1:pmNAPTBPQShg/gyNxlAB/2ShTv7m/3G2WHaKWeqbXK0=
+github.com/crtsh/ctloglists v0.0.0-20260331180530-16643f152c42/go.mod h1:WgJOgbnyD0FWgCFZpM5hr3Ql9iNX+9oQgtzHWtLU78s=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc h1:U9qPSI2PIWSS1VwoXQT9A3Wy9MM3WgvqSxFWenqJduM=
