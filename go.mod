@@ -4,7 +4,7 @@ go 1.26.1
 
 require (
 	github.com/CVE-2008-0166/dwklint/v2 v2.1.0
-	github.com/crtsh/ccadb_data v1.20260402.132413
+	github.com/crtsh/ccadb_data v1.20260407.110153
 	github.com/crtsh/ctlint v0.0.0-20260401100627-f0e740f9090f
 	github.com/crtsh/ctloglists v0.0.0-20260331195604-2a6671b8d3a4
 	github.com/goccy/go-json v0.10.6
@@ -13,7 +13,7 @@ require (
 	github.com/sergi/go-diff v1.4.0
 	github.com/spf13/viper v1.21.0
 	github.com/titanous/rocacheck v0.0.0-20171023193734-afe73141d399
-	github.com/valyala/fasthttp v1.69.0
+	github.com/valyala/fasthttp v1.70.0
 	github.com/zmap/zcrypto v0.0.0-20260309174858-0e3c42de5a13
 	github.com/zmap/zlint/v3 v3.6.8
 	go.uber.org/automaxprocs v1.6.0
@@ -64,6 +64,6 @@ require (
 	modernc.org/libc v1.70.0 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
-	modernc.org/sqlite v1.48.0 // indirect
+	modernc.org/sqlite v1.48.1 // indirect
 	zombiezen.com/go/sqlite v1.4.2 // indirect
 )
