@@ -12,8 +12,8 @@ github.com/certlint/certlint v1.8.5 h1:Ri9eCGdt2FKmsPGWskiwnWvSn7LhSNNeaWD0dmbsa
 github.com/certlint/certlint v1.8.5/go.mod h1:o1y8jZXOgB34WoUCkuQrxd+3TgXDdMdJDdPwQZoMyhU=
 github.com/cespare/xxhash/v2 v2.3.0 h1:UL815xU9SqsFlibzuggzjXhog7bL6oX9BbNZnL2UFvs=
 github.com/cespare/xxhash/v2 v2.3.0/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XLFGgcrjCOs=
-github.com/crtsh/ccadb_data v1.20260406.132026 h1:+jhvKD+vPE5Z+DkCVVZksz8If2qZyNPBLRbs6L4x59E=
-github.com/crtsh/ccadb_data v1.20260406.132026/go.mod h1:M0/wpxYjxeu4Kj/ZUBCWT5JBCAYzY/CqQQjiHvHF0eA=
+github.com/crtsh/ccadb_data v1.20260407.110153 h1:4Ch8AWNt+vdpihIM2vz9pcx3bE4p2/rUtM3M6gP+h0U=
+github.com/crtsh/ccadb_data v1.20260407.110153/go.mod h1:M0/wpxYjxeu4Kj/ZUBCWT5JBCAYzY/CqQQjiHvHF0eA=
 github.com/crtsh/ctlint v0.0.0-20260401100627-f0e740f9090f h1:AOe/1Kjb8LonEG6mRMYtjNlHn8QhuX8hi5ott0xNDbg=
 github.com/crtsh/ctlint v0.0.0-20260401100627-f0e740f9090f/go.mod h1:Zwf/GDrXC80GDU8VgfUfkHFw5tB8eOw30k0lYEOUOP0=
 github.com/crtsh/ctloglists v0.0.0-20260331195604-2a6671b8d3a4 h1:ejwFSDHsuxPVsJaDnLesiO9phR2HffnFKXwXToWJBu4=
