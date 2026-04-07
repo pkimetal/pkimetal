@@ -1,5 +1,5 @@
 # BUILD.
-FROM docker.io/library/golang:1.26.1-alpine AS build
+FROM docker.io/library/golang:1.26.2-alpine AS build
 
 # Install build dependencies.
 RUN apk add --no-cache busybox && \
