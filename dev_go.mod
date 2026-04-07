@@ -13,7 +13,7 @@ require (
 	github.com/sergi/go-diff v1.4.0
 	github.com/spf13/viper v1.21.0
 	github.com/titanous/rocacheck v0.0.0-20171023193734-afe73141d399
-	github.com/valyala/fasthttp v1.69.0
+	github.com/valyala/fasthttp v1.70.0
 	github.com/zmap/zcrypto v0.0.0-20260309174858-0e3c42de5a13
 	github.com/zmap/zlint/v3 v3.6.9-0.20260405160649-215f568d92d8
 	go.uber.org/automaxprocs v1.6.0
