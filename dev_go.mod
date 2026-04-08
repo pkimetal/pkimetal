@@ -5,8 +5,8 @@ go 1.26.2
 require (
 	github.com/CVE-2008-0166/dwklint/v2 v2.1.0
 	github.com/crtsh/ccadb_data v1.20260407.110153
-	github.com/crtsh/ctlint v0.0.0-20260407231248-ccb5b5885a9a
-	github.com/crtsh/ctloglists v0.0.0-20260408073020-65f843ebf406
+	github.com/crtsh/ctlint v0.0.0-20260408112817-0b06e8b2852d
+	github.com/crtsh/ctloglists v0.0.0-20260408112850-dbcfb4254d12
 	github.com/goccy/go-json v0.10.6
 	github.com/google/certificate-transparency-go v1.3.3
 	github.com/prometheus/client_golang v1.23.2
@@ -28,7 +28,7 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/certlint/certlint v1.8.5 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
-	github.com/digicert/pkilint v0.13.2 // indirect
+	github.com/digicert/pkilint v0.13.3-0.20260408124915-3b01b6651544 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
@@ -57,7 +57,7 @@ require (
 	go.yaml.in/yaml/v2 v2.4.4 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/net v0.52.0 // indirect
-	golang.org/x/sys v0.42.0 // indirect
+	golang.org/x/sys v0.43.0 // indirect
 	golang.org/x/text v0.35.0 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 	k8s.io/klog/v2 v2.140.0 // indirect
