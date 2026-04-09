@@ -4,7 +4,7 @@ go 1.26.2
 
 require (
 	github.com/CVE-2008-0166/dwklint/v2 v2.1.0
-	github.com/crtsh/ccadb_data v1.20260407.110153
+	github.com/crtsh/ccadb_data v1.20260409.110344
 	github.com/crtsh/ctlint v0.0.0-20260408112817-0b06e8b2852d
 	github.com/crtsh/ctloglists v0.0.0-20260408193048-c1ec5dce272f
 	github.com/goccy/go-json v0.10.6
@@ -58,7 +58,7 @@ require (
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/net v0.52.0 // indirect
 	golang.org/x/sys v0.43.0 // indirect
-	golang.org/x/text v0.35.0 // indirect
+	golang.org/x/text v0.36.0 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 	k8s.io/klog/v2 v2.140.0 // indirect
 	modernc.org/libc v1.70.0 // indirect
