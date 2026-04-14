@@ -4,7 +4,7 @@ go 1.26.2
 
 require (
 	github.com/CVE-2008-0166/dwklint/v2 v2.1.0
-	github.com/crtsh/ccadb_data v1.20260413.112018
+	github.com/crtsh/ccadb_data v1.20260414.52909
 	github.com/crtsh/ctlint v0.0.0-20260410103204-b4d11881791c
 	github.com/crtsh/ctloglists v0.0.0-20260410164834-912257afa10a
 	github.com/goccy/go-json v0.10.6
@@ -14,7 +14,7 @@ require (
 	github.com/spf13/viper v1.21.0
 	github.com/titanous/rocacheck v0.0.0-20171023193734-afe73141d399
 	github.com/valyala/fasthttp v1.70.0
-	github.com/zmap/zcrypto v0.0.0-20260410020656-f1177f7dea82
+	github.com/zmap/zcrypto v0.0.0-20260413215825-aacf0e34cc16
 	github.com/zmap/zlint/v3 v3.6.8
 	go.uber.org/automaxprocs v1.6.0
 	go.uber.org/zap v1.27.1
