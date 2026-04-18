@@ -6,7 +6,7 @@ require (
 	github.com/CVE-2008-0166/dwklint/v2 v2.1.0
 	github.com/crtsh/ccadb_data v1.20260417.92341
 	github.com/crtsh/ctlint v0.0.0-20260417093805-9b3f327b8bef
-	github.com/crtsh/ctloglists v0.0.0-20260416201437-b8d09c4a4210
+	github.com/crtsh/ctloglists v0.0.0-20260418104126-43d6fc53f79d
 	github.com/goccy/go-json v0.10.6
 	github.com/google/certificate-transparency-go v1.3.3
 	github.com/prometheus/client_golang v1.23.2
