@@ -28,7 +28,7 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/certlint/certlint v1.8.5 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
-	github.com/digicert/pkilint v0.13.2 // indirect
+	github.com/digicert/pkilint v0.13.3 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
@@ -61,7 +61,7 @@ require (
 	golang.org/x/text v0.36.0 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 	k8s.io/klog/v2 v2.140.0 // indirect
-	modernc.org/libc v1.72.0 // indirect
+	modernc.org/libc v1.72.1 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
 	modernc.org/sqlite v1.49.1 // indirect
