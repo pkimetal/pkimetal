@@ -106,4 +106,6 @@ The "metal" suffix was chosen for its double-meaning: it's both an abbreviation 
 
 ## Mascot
 
-Meet [Sir Lintalot](https://pkimet.al/mascot.jpg) ("Linty" to his friends), a cartoon lint roller pretending to be a brave knight, clad in armour (metal, obviously) to bravely fight the good fight of PKI policy compliance! Standing atop his vanquished foe (a pile of clothes, representing a marauding band of noncompliant TBSCertificates), he proudly displays the battle wounds (linter "findings") sustained during his noble quest. 😉
+Meet [Sir Lintalot](https://pkimet.al/mascot.jpg) ("Linty" to his friends; "Minty Linty" since the 2026 Sectigo brand refresh!), a cartoon lint roller pretending to be a brave knight, clad in armour (metal, obviously) to bravely fight the good fight of PKI policy compliance! Standing atop his vanquished foe (a pile of clothes, representing a marauding band of noncompliant TBSCertificates), he proudly displays the battle wounds (linter "findings") sustained during his noble quest. 😉
+
+![Minty Linty](server/images/mascot.png)
