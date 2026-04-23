@@ -8,8 +8,8 @@ import (
 	"go.uber.org/zap"
 )
 
-//go:embed images/mascot.jpg
-var mascot_jpeg []byte
+//go:embed images/mascot.png
+var mascot_png []byte
 
 func mascot(ctx *fasthttp.RequestCtx) {
 	ctx.SetUserValue("level", zap.InfoLevel)
@@ -17,8 +17,8 @@ func mascot(ctx *fasthttp.RequestCtx) {
 
 	ctx.Response.Header.Set(fasthttp.HeaderCacheControl, "max-age=86400")
 	ctx.SetStatusCode(fasthttp.StatusOK)
-	ctx.SetContentType("image/jpeg")
+	ctx.SetContentType("image/png")
 	if !ctx.IsHead() {
-		ctx.SetBody(mascot_jpeg)
+		ctx.SetBody(mascot_png)
 	}
 }

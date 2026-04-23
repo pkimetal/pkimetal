@@ -19,7 +19,7 @@ func copyright() string {
 	var s strings.Builder
 
 	copyrightFromYear := 2024
-	s.WriteString(fmt.Sprintf(`<P class="copyright">&copy; Sectigo Limited %d`, copyrightFromYear))
+	s.WriteString(fmt.Sprintf(`<P class="copyright">&copy; <A href="//sectigo.com" target="_blank">Sectigo</A> Limited %d`, copyrightFromYear))
 	copyrightToYear := time.Now().Year()
 	if copyrightToYear > copyrightFromYear {
 		s.WriteString(fmt.Sprintf(`-%d`, copyrightToYear))
@@ -33,13 +33,13 @@ func CSS(fhctx *fasthttp.RequestCtx) {
 	var response strings.Builder
 	response.WriteString(`
 div {
-  font: 8pt Roboto, sans-serif;
+  font: 8pt 'DM Sans', sans-serif;
   font-style: italic
 }
 table {
   border-collapse: collapse;
   color: #222222;
-  font: 12pt Roboto, sans-serif;
+  font: 12pt 'DM Sans', sans-serif;
   margin-left: auto;
   margin-right: auto
 }
@@ -48,10 +48,14 @@ td {
   vertical-align: top
 }
 select {
-  font: 10pt Roboto, sans-serif
+  font: 10pt 'DM Sans', sans-serif
 }
 textarea {
-  font: 8pt Roboto Mono, monospace
+  font: 8pt 'Roboto Mono', monospace
+}
+a {
+  color: #015258;
+  text-decoration: underline
 }
 .title {
   background: transparent;
@@ -60,7 +64,7 @@ textarea {
   box-shadow: inset 0px 1px 0px rgba(255,255,255,1),0px 1px 3px rgba(0,0,0,0.3);
   color: #888888;
   display: inline-block;
-  font: 18pt Roboto, sans-serif;
+  font: 18pt Urbanist, sans-serif;
   padding: 5px 30px;
   text-align: center;
   text-shadow: 0px -1px 0px rgba(0,0,0,0.4);
@@ -74,10 +78,10 @@ textarea {
   border-color: #7c7c7c;
   border-radius: 5px;
   box-shadow: inset 0px 1px 0px rgba(255,255,255,1),0px 1px 3px rgba(0,0,0,0.3);
-  color: #44BB88;
+  color: #015258;
   cursor: pointer;
   display: inline-block;
-  font: 14pt Roboto, sans-serif;
+  font: 14pt 'Urbanist', sans-serif;
   font-weight: bold;
   height: 40px;
   padding: 5px 25px;
@@ -88,8 +92,8 @@ textarea {
   transform: translateY(2px)
 }
 .copyright {
-  font: 8pt Roboto, sans-serif;
-  color: #00B373;
+  font: 8pt 'DM Sans', sans-serif;
+  color: #000000;
   text-align: center
 }`)
 
@@ -106,7 +110,7 @@ func FrontPage(fhctx *fasthttp.RequestCtx) {
 <HEAD>
   <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <TITLE>pkimetal | PKI Meta-Linter</TITLE>
-  <LINK href="//fonts.googleapis.com/css?family=Roboto+Mono|Roboto:400,400i,700,700i" rel="stylesheet">
+  <LINK href="//fonts.googleapis.com/css2?family=Urbanist:wght@500;700&family=DM+Sans:wght@400;500&family=Roboto+Mono&family=Roboto:wght@400;500" rel="stylesheet">
   <LINK href="/` + ENDPOINTSTRING_CSS + `" rel="stylesheet">
 </HEAD>
 <BODY>
@@ -118,7 +122,7 @@ func FrontPage(fhctx *fasthttp.RequestCtx) {
     <TR>
       <TD>
         <BR><A href="//` + linter.GetPackagePath() + `/blob/main/doc/REST_API.md" target="_blank">REST API Documentation [GitHub]</A>
-        <BR><BR><BR>Example webpages that use the linting REST APIs:
+        <BR><BR><BR><B>Example webpages that use the linting REST APIs:</B>
         <UL>
           <LI><A href="/` + ENDPOINTSTRING_LINTCERT + `">` + ENDPOINTSTRING_LINTCERT + `</A> - Lint a Certificate</LI>
           <LI><A href="/` + ENDPOINTSTRING_LINTTBSCERT + `">` + ENDPOINTSTRING_LINTTBSCERT + `</A> - Lint a to-be-signed Certificate</LI>
@@ -127,7 +131,7 @@ func FrontPage(fhctx *fasthttp.RequestCtx) {
           <LI><A href="/` + ENDPOINTSTRING_LINTOCSP + `">` + ENDPOINTSTRING_LINTOCSP + `</A> - Lint an OCSP Response</LI>
           <LI><A href="/` + ENDPOINTSTRING_LINTTBSOCSP + `">` + ENDPOINTSTRING_LINTTBSOCSP + `</A> - Lint a to-be-signed OCSP Response</LI>
         </UL>
-        <BR>Other APIs:
+        <BR><B>Other APIs:</B>
         <UL>
           <LI><A href="/` + ENDPOINTSTRING_LINTERS + `">` + ENDPOINTSTRING_LINTERS + `</A> - List all available linters</LI>
           <LI><A href="/` + ENDPOINTSTRING_PROFILES + `">` + ENDPOINTSTRING_PROFILES + `</A> - List all available profiles</LI>
@@ -154,7 +158,7 @@ func APIWebpage(fhctx *fasthttp.RequestCtx, endpoint string) {
 <HEAD>
   <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <TITLE>pkimetal | PKI Meta-Linter</TITLE>
-  <LINK href="//fonts.googleapis.com/css?family=Roboto+Mono|Roboto:400,400i,700,700i" rel="stylesheet">
+  <LINK href="//fonts.googleapis.com/css2?family=Urbanist:wght@500;700&family=DM+Sans:wght@400;500&family=Roboto+Mono&family=Roboto:wght@400;500" rel="stylesheet">
   <LINK href="/` + ENDPOINTSTRING_CSS + `" rel="stylesheet">
 </HEAD>
 <BODY>
@@ -193,7 +197,7 @@ func APIWebpage(fhctx *fasthttp.RequestCtx, endpoint string) {
         <TD><A href="//` + linter.GetPackagePath() + `" target="_blank"><IMG src="/mascot.jpg" width="100" height="100"></A></TD>
       </TR>
       <TR>
-        <TD>`)
+        <TD><B>`)
 	inputType := ""
 	switch endpoint {
 	case ENDPOINTSTRING_LINTCERT:
@@ -209,16 +213,16 @@ func APIWebpage(fhctx *fasthttp.RequestCtx, endpoint string) {
 	case ENDPOINTSTRING_LINTTBSOCSP:
 		inputType = `To-be-signed OCSP Response`
 	}
-	response.WriteString(inputType + ` (PEM/Base64):
-          <BR><TEXTAREA name="b64input" cols="72" rows="18" autofocus autoCorrect="off" autoCapitalize="off" spellCheck="false" ondragover="handleDragOver(event)" ondrop="handleDrop(event)"></TEXTAREA>
+	response.WriteString(inputType + ` (PEM/Base64):</B>
+          <BR><TEXTAREA name="b64input" cols="74" rows="18" autofocus autoCorrect="off" autoCapitalize="off" spellCheck="false" ondragover="handleDragOver(event)" ondrop="handleDrop(event)"></TEXTAREA>
         </TD>
-        <TD>Response Format:
+        <TD><B>Response Format:</B>
           <BR><SELECT name="format" size="3" style="overflow:hidden">
             <OPTION value="html" selected>html</OPTION>
             <OPTION value="json">json</OPTION>
             <OPTION value="text">text</OPTION>
           </SELECT>
-          <BR><BR>Minimum Severity:
+          <BR><BR><B>Minimum Severity:</B>
           <BR><SELECT name="severity" size="8" style="overflow:hidden">
             <OPTION value="meta" selected>meta</OPTION>
             <OPTION value="debug">debug</OPTION>
@@ -238,8 +242,8 @@ func APIWebpage(fhctx *fasthttp.RequestCtx, endpoint string) {
       </TR>
       <TR><TD><HR></TD></TR>
       <TR>
-        <TD>Profile:
-          <BR><SELECT name="profile" size="15">`)
+        <TD><B>Profile:</B>
+          <BR><SELECT name="profile" size="17">`)
 	for id, profile := range linter.AllProfilesOrdered {
 		isShown := false
 		switch endpoint {
@@ -279,7 +283,7 @@ func APIWebpage(fhctx *fasthttp.RequestCtx, endpoint string) {
       </TR>
     </TABLE>
   </FORM>
-  <BR><BR><BR>` + copyright() + `
+  <BR><BR>` + copyright() + `
 </BODY>
 </HTML>
 `)
@@ -292,7 +296,7 @@ func APIWebpage(fhctx *fasthttp.RequestCtx, endpoint string) {
 
 func availableLinters() string {
 	var al strings.Builder
-	al.WriteString(`Available Linters:<DIV style="font-size:10pt;font-style:normal">`)
+	al.WriteString(`<B>Available Linters:</B><DIV style="font-size:10pt;font-style:normal">`)
 	for _, l := range linter.Linters {
 		if l.NumInstances <= 0 {
 			al.WriteString(`<S style="color:#888888">`)
@@ -308,5 +312,5 @@ func availableLinters() string {
 }
 
 func builtAt() string {
-	return `<BR>Built at:<DIV style="font-size:8pt;font-style:normal">` + config.BuildTimestamp + `</DIV>`
+	return `<BR><B>Built at:</B><DIV style="font-size:8pt;font-style:normal">` + config.BuildTimestamp + `</DIV>`
 }
