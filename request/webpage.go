@@ -117,7 +117,7 @@ func FrontPage(fhctx *fasthttp.RequestCtx) {
   <TABLE>
     <TR>
       <TD style="text-align:center;vertical-align:middle"><A href="//` + linter.GetPackagePath() + `/releases" target="_blank"><DIV class="title">` + linter.PKIMETAL_NAME + ` ` + linter.VersionString(config.PkimetalVersion) + `</DIV></A></TD>
-      <TD style="padding-left:50px"><A href="//` + linter.GetPackagePath() + `" target="_blank"><IMG src="/mascot.jpg" width="100" height="100"></A></TD>
+      <TD style="padding-left:50px"><A href="//` + linter.GetPackagePath() + `" target="_blank"><IMG src="/` + ENDPOINTSTRING_MASCOT + `" width="100" height="100"></A></TD>
     </TR>
     <TR>
       <TD>
@@ -194,7 +194,7 @@ func APIWebpage(fhctx *fasthttp.RequestCtx, endpoint string) {
     <TABLE>
       <TR>
         <TD style="text-align:center;vertical-align:middle"><A href="//` + linter.GetPackagePath() + `/releases" target="_blank"><DIV class="title">` + linter.PKIMETAL_NAME + ` ` + linter.VersionString(config.PkimetalVersion) + `</DIV></A></TD>
-        <TD><A href="//` + linter.GetPackagePath() + `" target="_blank"><IMG src="/mascot.jpg" width="100" height="100"></A></TD>
+        <TD><A href="//` + linter.GetPackagePath() + `" target="_blank"><IMG src="/` + ENDPOINTSTRING_MASCOT + `" width="100" height="100"></A></TD>
       </TR>
       <TR>
         <TD><B>`)

@@ -15,7 +15,7 @@ const (
 	ENDPOINTSTRING_FRONTPAGE = ""
 	ENDPOINTSTRING_CSS       = "pkimetal.css"
 	ENDPOINTSTRING_FAVICON   = "favicon.ico"
-	ENDPOINTSTRING_MASCOT    = "mascot.jpg"
+	ENDPOINTSTRING_MASCOT    = "mascot.png"
 	ENDPOINTSTRING_LINTERS   = "linters"
 	ENDPOINTSTRING_PROFILES  = "profiles"
 
