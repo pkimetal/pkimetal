@@ -244,7 +244,7 @@ func sendHTMLResponse(fhctx *fasthttp.RequestCtx, lrespFiltered []LintResult) in
 			style := ""
 			switch lres.Severity {
 			case linter.SEVERITYSTRING_META:
-				style = "color:#00B373"
+				style = "color:#015258"
 			case linter.SEVERITYSTRING_DEBUG:
 				style = "background-color:#FAFAFA;color:#AAAAAA"
 			case linter.SEVERITYSTRING_INFO:
