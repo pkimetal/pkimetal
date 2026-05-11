@@ -159,12 +159,31 @@ func APIWebpage(fhctx *fasthttp.RequestCtx, endpoint string) {
 </HEAD>
 <BODY>
   <SCRIPT>
-    function handleFiles() {
+    function loadFile(file) {
+      if (!file) return;
       var reader = new FileReader();
       reader.onload = function(e) {
         document.form1.b64input.value = reader.result;
       }
-      reader.readAsText(document.getElementById("fil").files[0]);
+      reader.readAsText(file);
+    }
+
+    function handleFiles() {
+      loadFile(document.getElementById("fil").files[0]);
+    }
+
+    function handleDragOver(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.dataTransfer.dropEffect = "copy";
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        loadFile(e.dataTransfer.files[0]);
+      }
     }
   </SCRIPT>
   <FORM method="post" name="form1">
@@ -191,7 +210,7 @@ func APIWebpage(fhctx *fasthttp.RequestCtx, endpoint string) {
 		inputType = `To-be-signed OCSP Response`
 	}
 	response.WriteString(inputType + ` (PEM/Base64):
-          <BR><TEXTAREA name="b64input" cols="72" rows="18" autofocus autoCorrect="off" autoCapitalize="off" spellCheck="false"></TEXTAREA>
+          <BR><TEXTAREA name="b64input" cols="72" rows="18" autofocus autoCorrect="off" autoCapitalize="off" spellCheck="false" ondragover="handleDragOver(event)" ondrop="handleDrop(event)"></TEXTAREA>
         </TD>
         <TD>Response Format:
           <BR><SELECT name="format" size="3" style="overflow:hidden">
@@ -214,7 +233,7 @@ func APIWebpage(fhctx *fasthttp.RequestCtx, endpoint string) {
       </TR>
       <TR>
         <TD style="background-color:#EEEEEE;color:#888888;font-size:10pt">
-          Paste input above, or <INPUT type="file" id="fil" onchange="handleFiles(this.files)">
+          Paste or drag a file above, or <INPUT type="file" id="fil" onchange="handleFiles(this.files)">
         </TD>
       </TR>
       <TR><TD><HR></TD></TR>
