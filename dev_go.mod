@@ -2,8 +2,6 @@ module github.com/pkimetal/pkimetal
 
 go 1.26.3
 
-replace github.com/zmap/zcrypto => github.com/zmap/zcrypto v0.0.0-20260426170728-e95752a6dfc1
-
 require (
 	github.com/CVE-2008-0166/dwklint/v2 v2.1.0
 	github.com/crtsh/ccadb_data v1.20260513.162530
@@ -17,7 +15,7 @@ require (
 	github.com/titanous/rocacheck v0.0.0-20171023193734-afe73141d399
 	github.com/valyala/fasthttp v1.71.0
 	github.com/zmap/zcrypto v0.0.0-20260514033604-a1159eb3cad9
-	github.com/zmap/zlint/v3 v3.7.1-0.20260510190528-77ce217f8990
+	github.com/zmap/zlint/v3 v3.7.1-0.20260514150611-ec384e20d187
 	go.uber.org/automaxprocs v1.6.0
 	go.uber.org/zap v1.28.0
 	golang.org/x/crypto v0.51.0
