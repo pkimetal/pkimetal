@@ -236,7 +236,7 @@ func APIWebpage(fhctx *fasthttp.RequestCtx, endpoint string) {
         </TD>
       </TR>
       <TR>
-        <TD style="background-color:#EEEEEE;color:#888888;font-size:10pt">
+        <TD style="color:#888888;font-size:10pt">
           Paste or drag a file above, or <INPUT type="file" id="fil" onchange="handleFiles(this.files)">
         </TD>
       </TR>
