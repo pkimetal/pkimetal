@@ -6,7 +6,7 @@ replace github.com/zmap/zcrypto => github.com/zmap/zcrypto v0.0.0-20260426170728
 
 require (
 	github.com/CVE-2008-0166/dwklint/v2 v2.1.0
-	github.com/crtsh/ccadb_data v1.20260521.83455
+	github.com/crtsh/ccadb_data v1.20260524.134419
 	github.com/crtsh/ctlint v0.0.0-20260522093012-9d4858e5df90
 	github.com/crtsh/ctloglists v1.20260511.154900
 	github.com/goccy/go-json v0.10.6
@@ -16,7 +16,7 @@ require (
 	github.com/spf13/viper v1.21.0
 	github.com/titanous/rocacheck v0.0.0-20171023193734-afe73141d399
 	github.com/valyala/fasthttp v1.71.0
-	github.com/zmap/zcrypto v0.0.0-20260517235217-bc526369ba84
+	github.com/zmap/zcrypto v0.0.0-20260524230146-75d741e15410
 	github.com/zmap/zlint/v3 v3.7.0
 	go.uber.org/automaxprocs v1.6.0
 	go.uber.org/zap v1.28.0
@@ -63,7 +63,7 @@ require (
 	golang.org/x/text v0.37.0 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 	k8s.io/klog/v2 v2.140.0 // indirect
-	modernc.org/libc v1.72.3 // indirect
+	modernc.org/libc v1.72.5 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
 	modernc.org/sqlite v1.50.1 // indirect
