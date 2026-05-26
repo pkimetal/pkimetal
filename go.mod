@@ -2,8 +2,6 @@ module github.com/pkimetal/pkimetal
 
 go 1.26.3
 
-replace github.com/zmap/zcrypto => github.com/zmap/zcrypto v0.0.0-20260426170728-e95752a6dfc1
-
 require (
 	github.com/CVE-2008-0166/dwklint/v2 v2.1.0
 	github.com/crtsh/ccadb_data v1.20260524.134419
