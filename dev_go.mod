@@ -5,7 +5,7 @@ go 1.26.3
 require (
 	github.com/CVE-2008-0166/dwklint/v2 v2.1.0
 	github.com/crtsh/ccadb_data v1.20260527.172311
-	github.com/crtsh/ctlint v0.0.0-20260526155948-b8ea2a807101
+	github.com/crtsh/ctlint v0.0.0-20260528085926-0ebc8b9a4522
 	github.com/crtsh/ctloglists v1.20260526.152706
 	github.com/goccy/go-json v0.10.6
 	github.com/google/certificate-transparency-go v1.3.3
@@ -64,6 +64,6 @@ require (
 	modernc.org/libc v1.72.5 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
-	modernc.org/sqlite v1.50.1 // indirect
+	modernc.org/sqlite v1.51.0 // indirect
 	zombiezen.com/go/sqlite v1.4.2 // indirect
 )
