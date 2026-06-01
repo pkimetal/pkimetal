@@ -92,10 +92,10 @@ Here are some projects/CAs that are known to use or integrate with pkimetal:
 - [CCADB](https://ccadb.org): Test Website [Validator](https://github.com/mozilla/CCADB-Tools/blob/master/capi/README.md)
 - [crt.sh](https://crt.sh) (Sectigo): On-demand certificate linting
 - [EJBCA](https://www.ejbca.org): Post Processing [Validator](https://docs.keyfactor.com/ejbca/latest/pkimetal-validator)
+- [GlobalSign](https://globalsign.com/): Pre-issuance linting
 - [Let's Encrypt](https://letsencrypt.org): [Continuous integration](https://github.com/letsencrypt/boulder/pull/8063)
 - [pkimet.al](https://pkimet.al) (Sectigo): The two [Public instances](#public-instances) listed above
 - [Sectigo](https://sectigo.com/): Pre-issuance linting
-- [GlobalSign](https://globalsign.com/): Pre-issuance linting
 
 Please submit a pull request to update README.md if you are aware of another CA/project that uses or integrates with pkimetal.
 
