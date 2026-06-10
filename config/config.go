@@ -141,14 +141,7 @@ func init() {
 				VcsTimestamp = bs.Value
 			}
 		}
-		logger.Logger.Info(
-			"Build information",
-			zap.String("build_timestamp", BuildTimestamp),
-			zap.String("vcs", Vcs),
-			zap.String("vcs_modified", VcsModified),
-			zap.String("vcs_revision", VcsRevision),
-			zap.String("vcs_timestamp", VcsTimestamp),
-		)
+		logger.Logger.Info("Build information", zap.String("build_timestamp", BuildTimestamp), zap.String("vcs", Vcs), zap.String("vcs_modified", VcsModified), zap.String("vcs_revision", VcsRevision), zap.String("vcs_timestamp", VcsTimestamp))
 	}
 
 	if PkimetalVersion == "" {
@@ -158,17 +151,9 @@ func init() {
 	// Log RLIMIT_NOFILE soft and hard limits.
 	var rlimit syscall.Rlimit
 	if err := syscall.Getrlimit(syscall.RLIMIT_NOFILE, &rlimit); err != nil {
-		logger.Logger.Error(
-			"Getrlimit(RLIMIT_NOFILE) error",
-			zap.Error(err),
-		)
+		logger.Logger.Error("Getrlimit(RLIMIT_NOFILE) error", zap.Error(err))
 	} else {
-		logger.Logger.Info(
-			"Resource limits",
-			zap.Uint64("rlimit_nofile_soft", rlimit.Cur),
-			zap.Uint64("rlimit_nofile_hard", rlimit.Max),
-			zap.String("gomemlimit", os.Getenv("GOMEMLIMIT")),
-		)
+		logger.Logger.Info("Resource limits", zap.Uint64("rlimit_nofile_soft", rlimit.Cur), zap.Uint64("rlimit_nofile_hard", rlimit.Max), zap.String("gomemlimit", os.Getenv("GOMEMLIMIT")))
 	}
 }
 

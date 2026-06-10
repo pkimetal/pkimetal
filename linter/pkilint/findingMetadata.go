@@ -32,10 +32,7 @@ func loadFindingMetadata() {
 	// List the files in the current directory.
 	files, err := os.ReadDir(".")
 	if err != nil {
-		logger.Logger.Info(
-			"ReadDir() failed",
-			zap.Error(err),
-		)
+		logger.Logger.Info("ReadDir() failed", zap.Error(err))
 		return
 	}
 
@@ -46,11 +43,7 @@ processFiles:
 			// Read this CSV file.
 			csvData, err := os.ReadFile(file.Name())
 			if err != nil {
-				logger.Logger.Info(
-					"CSV file could not be read",
-					zap.Error(err),
-					zap.String("csv_filename", file.Name()),
-				)
+				logger.Logger.Info("CSV file could not be read", zap.Error(err), zap.String("csv_filename", file.Name()))
 				continue processFiles
 			}
 
@@ -62,17 +55,10 @@ processFiles:
 			reader.ReuseRecord = true
 			records, err := reader.ReadAll()
 			if err != nil {
-				logger.Logger.Error(
-					"CSV file could not be parsed",
-					zap.Error(err),
-					zap.String("csv_filename", file.Name()),
-				)
+				logger.Logger.Error("CSV file could not be parsed", zap.Error(err), zap.String("csv_filename", file.Name()))
 				continue processFiles
 			} else if len(records) == 0 {
-				logger.Logger.Error(
-					"CSV file is empty",
-					zap.String("csv_filename", file.Name()),
-				)
+				logger.Logger.Error("CSV file is empty", zap.String("csv_filename", file.Name()))
 				continue processFiles
 			}
 
@@ -101,20 +87,14 @@ processFiles:
 			}
 			for i, v := range csvIdx {
 				if v == -1 && i != IDX_SOURCE {
-					logger.Logger.Error(
-						"CSV data is missing one or more expected headers",
-						zap.String("csv_filename", file.Name()),
-					)
+					logger.Logger.Error("CSV data is missing one or more expected headers", zap.String("csv_filename", file.Name()))
 					continue processFiles
 				}
 			}
 
 			for _, line := range records[1:] {
 				if len(line) <= greatestIdx {
-					logger.Logger.Warn(
-						"CSV data has a line that is missing one or more expected fields",
-						zap.String("line", strings.Join(line, ",")),
-					)
+					logger.Logger.Warn("CSV data has a line that is missing one or more expected fields", zap.String("line", strings.Join(line, ",")))
 					continue
 				}
 				// Add to map of finding metadata.

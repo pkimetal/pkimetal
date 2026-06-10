@@ -92,12 +92,7 @@ func (l *Linter) Register() {
 	Linters = append(Linters, l)
 	if l.NumInstances > 0 {
 		// Register this linter.
-		logger.Logger.Info(
-			"Registering Linter",
-			zap.Int("nInstances", l.NumInstances),
-			zap.String("name", l.Name),
-			zap.String("version", l.Version),
-		)
+		logger.Logger.Info("Registering Linter", zap.Int("nInstances", l.NumInstances), zap.String("name", l.Name), zap.String("version", l.Version))
 		registerLinterWithProfiles(l)
 		l.ReqChannel = make(chan LintingRequest, config.Config.Linter.MaxQueueSize)
 
@@ -126,10 +121,7 @@ func (l *Linter) Register() {
 			ConstLabels: map[string]string{"linter_name": l.Name},
 		})
 	} else {
-		logger.Logger.Info(
-			"Unused Linter",
-			zap.String("name", l.Name),
-		)
+		logger.Logger.Info("Unused Linter", zap.String("name", l.Name))
 	}
 }
 
@@ -153,11 +145,7 @@ func StartLinters(ctx context.Context) {
 
 	for _, lin := range linterInstances {
 		if lif := lin.Interface(); lif != nil {
-			logger.Logger.Info(
-				"Starting Linter",
-				zap.Int("instance#", lin.instanceNumber),
-				zap.String("name", lin.Name),
-			)
+			logger.Logger.Info("Starting Linter", zap.Int("instance#", lin.instanceNumber), zap.String("name", lin.Name))
 
 			// Start the linter backend.
 			var directory, cmd string
@@ -183,61 +171,32 @@ func (lin *LinterInstance) startInstance_external(directory, cmd string, arg ...
 	// Set up pipes.
 	var err error
 	if lin.Stdin, err = lin.command.StdinPipe(); err != nil {
-		logger.Logger.Fatal(
-			"Cmd.StdinPipe() failed",
-			zap.Error(err),
-			zap.String("cmd", cmd),
-			zap.String("directory", directory),
-			zap.String("name", lin.Name),
-		)
+		logger.Logger.Fatal("Cmd.StdinPipe() failed", zap.Error(err), zap.String("cmd", cmd), zap.String("directory", directory), zap.String("name", lin.Name))
 	}
 
 	var stdout io.ReadCloser
 	if stdout, err = lin.command.StdoutPipe(); err != nil {
-		logger.Logger.Fatal(
-			"Cmd.StdoutPipe() failed",
-			zap.Error(err),
-			zap.String("cmd", cmd),
-			zap.String("directory", directory),
-			zap.String("name", lin.Name),
-		)
+		logger.Logger.Fatal("Cmd.StdoutPipe() failed", zap.Error(err), zap.String("cmd", cmd), zap.String("directory", directory), zap.String("name", lin.Name))
 	}
 	lin.Stdout = bufio.NewScanner(stdout)
 
 	var stderr io.ReadCloser
 	if stderr, err = lin.command.StderrPipe(); err != nil {
-		logger.Logger.Fatal(
-			"Cmd.StderrPipe() failed",
-			zap.Error(err),
-			zap.String("cmd", cmd),
-			zap.String("directory", directory),
-			zap.String("name", lin.Name),
-		)
+		logger.Logger.Fatal("Cmd.StderrPipe() failed", zap.Error(err), zap.String("cmd", cmd), zap.String("directory", directory), zap.String("name", lin.Name))
 	}
 	lin.stderr = bufio.NewScanner(stderr)
 
 	// Continuously log STDERR output as it is produced.
 	go func(lin *LinterInstance) {
 		for lin.stderr.Scan() {
-			logger.Logger.Info(
-				"From stderr",
-				zap.Int("instance#", lin.instanceNumber),
-				zap.String("name", lin.Name),
-				zap.String("text", lin.stderr.Text()),
-			)
+			logger.Logger.Info("From stderr", zap.Int("instance#", lin.instanceNumber), zap.String("name", lin.Name), zap.String("text", lin.stderr.Text()))
 		}
 	}(lin)
 
 	// Start the linter backend.
 	lin.command.Start()
 	if lin.command.Process == nil {
-		logger.Logger.Fatal(
-			"Cmd.Start() failed",
-			zap.Error(err),
-			zap.String("cmd", cmd),
-			zap.String("directory", directory),
-			zap.String("name", lin.Name),
-		)
+		logger.Logger.Fatal("Cmd.Start() failed", zap.Error(err), zap.String("cmd", cmd), zap.String("directory", directory), zap.String("name", lin.Name))
 	}
 }
 
@@ -252,11 +211,7 @@ func StopLinters(ctx context.Context) {
 
 			lif.StopInstance(lin)
 
-			logger.Logger.Info(
-				"Stopped Linter",
-				zap.Int("instance#", lin.instanceNumber),
-				zap.String("name", lin.Name),
-			)
+			logger.Logger.Info("Stopped Linter", zap.Int("instance#", lin.instanceNumber), zap.String("name", lin.Name))
 		}
 	}
 }
@@ -265,12 +220,7 @@ func (lin *LinterInstance) stopInstance_external() {
 	lin.Stdin.Close()
 
 	if err := lin.command.Wait(); err != nil {
-		logger.Logger.Error(
-			"Cmd.Wait failed",
-			zap.Error(err),
-			zap.Int("instance#", lin.instanceNumber),
-			zap.String("name", lin.Name),
-		)
+		logger.Logger.Error("Cmd.Wait failed", zap.Error(err), zap.Int("instance#", lin.instanceNumber), zap.String("name", lin.Name))
 	}
 }
 
