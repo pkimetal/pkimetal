@@ -25,6 +25,9 @@ func getLocalVenvsDir() {
 		if stdin.Scan() {
 			_, _ = fmt.Sscanf(stdin.Text(), "%s", &pipxLocalVenvsDir)
 		}
+		if err := stdin.Err(); err != nil {
+			logger.Logger.Error("stdin.Scan() failed", zap.Error(err))
+		}
 	}
 
 	cmd.Wait()
@@ -54,6 +57,9 @@ func GetPackageDetailsFromPipx(packageName, directory string) (string, string) {
 				}
 				break
 			}
+		}
+		if err := stdin.Err(); err != nil {
+			logger.Logger.Error("stdin.Scan() failed", zap.Error(err))
 		}
 	}
 
