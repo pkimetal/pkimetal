@@ -5,7 +5,7 @@ go 1.26.4
 require (
 	github.com/CVE-2008-0166/dwklint/v2 v2.1.0
 	github.com/crtsh/ccadb_data v1.20260613.82423
-	github.com/crtsh/ctlint v0.0.0-20260612150343-85293139403e
+	github.com/crtsh/ctlint v0.0.0-20260615092119-1decfde054d7
 	github.com/crtsh/ctloglists v1.20260528.231700
 	github.com/goccy/go-json v0.10.6
 	github.com/google/certificate-transparency-go v1.3.3
@@ -60,7 +60,7 @@ require (
 	golang.org/x/text v0.38.0 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 	k8s.io/klog/v2 v2.140.0 // indirect
-	modernc.org/libc v1.73.3 // indirect
+	modernc.org/libc v1.73.4 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
 	modernc.org/sqlite v1.52.0 // indirect
