@@ -4,7 +4,7 @@ go 1.26.4
 
 require (
 	github.com/CVE-2008-0166/dwklint/v2 v2.1.0
-	github.com/crtsh/ccadb_data v1.20260618.193947
+	github.com/crtsh/ccadb_data v1.20260622.104314
 	github.com/crtsh/ctlint v0.0.0-20260622093524-30ddb270b5e8
 	github.com/crtsh/ctloglists v1.20260620.161833
 	github.com/goccy/go-json v0.10.6
@@ -40,7 +40,7 @@ require (
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/ncruces/go-strftime v1.0.0 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
-	github.com/pelletier/go-toml/v2 v2.4.0 // indirect
+	github.com/pelletier/go-toml/v2 v2.4.1 // indirect
 	github.com/prometheus/client_model v0.6.2 // indirect
 	github.com/prometheus/common v0.69.0 // indirect
 	github.com/prometheus/procfs v0.20.1 // indirect
