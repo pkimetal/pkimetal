@@ -24,6 +24,7 @@ var (
 	defaultRegistry                lint.Registry
 	cabforumTLSSubordinateRegistry lint.Registry
 	cabforumTLSLeafRegistry        lint.Registry
+	cabforumTLSARLRegistry         lint.Registry
 	notCabforumRegistry            lint.Registry
 )
 
@@ -54,6 +55,20 @@ func init() {
 	}); err != nil {
 		logger.Logger.Fatal("Failed to configure filtered zlint registry for BR/EVG TLS Server leaf certificates", zap.Error(err))
 	}
+
+	if cabforumTLSARLRegistry, err = defaultRegistry.Filter(lint.FilterOptions{
+		IncludeNames: defaultRegistry.Names(),
+	}); err != nil {
+		logger.Logger.Fatal("Failed to configure filtered zlint registry for BR/EVG TLS Server authority revocation lists", zap.Error(err))
+	}
+	arlConfig, err := lint.NewConfigFromString(`
+[e_crl_next_update_invalid]
+SubscriberCRL = false
+`)
+	if err != nil {
+		logger.Logger.Fatal("Failed to configure zlint CRL nextUpdate lint for BR/EVG TLS Server authority revocation lists", zap.Error(err))
+	}
+	cabforumTLSARLRegistry.SetConfiguration(arlConfig)
 
 	// Filter out CABForum lints for non-CABForum profiles.
 	if notCabforumRegistry, err = defaultRegistry.Filter(lint.FilterOptions{
@@ -172,6 +187,8 @@ func (l *Zlint) HandleRequest(ctx context.Context, lin *linter.LinterInstance, l
 		registry = &cabforumTLSLeafRegistry
 	} else if slices.Contains(linter.TbrTevgCertificateProfileIDs, lreq.ProfileId) {
 		registry = &cabforumTLSSubordinateRegistry
+	} else if slices.Contains(linter.TbrTevgARLProfileIDs, lreq.ProfileId) {
+		registry = &cabforumTLSARLRegistry
 	} else if slices.Contains(linter.NonCabforumProfileIDs, lreq.ProfileId) {
 		registry = &notCabforumRegistry
 	} else {

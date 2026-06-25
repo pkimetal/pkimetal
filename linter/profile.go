@@ -251,6 +251,7 @@ var (
 	AllProfilesOrdered                                                               []Profile
 	CrlProfileIDs, OcspProfileIDs, RootProfileIDs, SubordinateProfileIDs             []ProfileId
 	SbrLeafProfileIDs, TbrTevgLeafProfileIDs, TbrTevgCertificateProfileIDs           []ProfileId
+	TbrTevgARLProfileIDs                                                             []ProfileId
 	NonTbrTevgCertificateProfileIDs, NonCabforumProfileIDs, NonCertificateProfileIDs []ProfileId
 	MarkCertificateProfileIDs                                                        []ProfileId
 	EtsiCertificateProfileIDs, EtsiNonBrowserCertificateProfileIDs                   []ProfileId
@@ -262,6 +263,9 @@ func init() {
 	for k, v := range AllProfiles {
 		if strings.HasSuffix(v.Name, "_crl") || strings.HasSuffix(v.Name, "_arl") {
 			CrlProfileIDs = append(CrlProfileIDs, k)
+			if (strings.HasPrefix(v.Name, "tbr_") || strings.HasPrefix(v.Name, "tevg_")) && strings.HasSuffix(v.Name, "_arl") {
+				TbrTevgARLProfileIDs = append(TbrTevgARLProfileIDs, k)
+			}
 		} else if strings.HasSuffix(v.Name, "_ocspresponse") {
 			OcspProfileIDs = append(OcspProfileIDs, k)
 		} else if strings.Contains(v.Name, "_root_") || strings.HasSuffix(v.Name, "_root") {
