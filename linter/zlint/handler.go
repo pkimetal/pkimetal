@@ -187,7 +187,7 @@ func (l *Zlint) HandleRequest(ctx context.Context, lin *linter.LinterInstance, l
 		registry = &cabforumTLSLeafRegistry
 	} else if slices.Contains(linter.TbrTevgCertificateProfileIDs, lreq.ProfileId) {
 		registry = &cabforumTLSSubordinateRegistry
-	} else if slices.Contains(linter.TbrTevgARLProfileIDs, lreq.ProfileId) {
+	} else if slices.Contains(linter.TbrARLProfileIDs, lreq.ProfileId) {
 		registry = &cabforumTLSARLRegistry
 	} else if slices.Contains(linter.NonCabforumProfileIDs, lreq.ProfileId) {
 		registry = &notCabforumRegistry
