@@ -59,14 +59,14 @@ func init() {
 	if cabforumTLSARLRegistry, err = defaultRegistry.Filter(lint.FilterOptions{
 		IncludeNames: defaultRegistry.Names(),
 	}); err != nil {
-		logger.Logger.Fatal("Failed to configure filtered zlint registry for BR/EVG TLS Server authority revocation lists", zap.Error(err))
+		logger.Logger.Fatal("Failed to configure filtered zlint registry for BR TLS Server authority revocation lists", zap.Error(err))
 	}
 	arlConfig, err := lint.NewConfigFromString(`
 [e_crl_next_update_invalid]
 SubscriberCRL = false
 `)
 	if err != nil {
-		logger.Logger.Fatal("Failed to configure zlint CRL nextUpdate lint for BR/EVG TLS Server authority revocation lists", zap.Error(err))
+		logger.Logger.Fatal("Failed to configure zlint CRL nextUpdate lint for BR TLS Server authority revocation lists", zap.Error(err))
 	}
 	cabforumTLSARLRegistry.SetConfiguration(arlConfig)
 
