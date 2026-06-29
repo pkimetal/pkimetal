@@ -14,8 +14,8 @@ github.com/cespare/xxhash/v2 v2.3.0 h1:UL815xU9SqsFlibzuggzjXhog7bL6oX9BbNZnL2UF
 github.com/cespare/xxhash/v2 v2.3.0/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XLFGgcrjCOs=
 github.com/crtsh/ccadb_data v1.20260626.143316 h1:/P82nNbtbDc+dXpeYtpjy9KLocdLWnEM3tOnpTxA9fw=
 github.com/crtsh/ccadb_data v1.20260626.143316/go.mod h1:avWCZWp3bwPa5XuUWNoCeHgMUdOW2tccdnUJHvfmc74=
-github.com/crtsh/ctlint v0.0.0-20260626092302-681b48af1046 h1:lwhfB9cKc6STGeTs+yWBx5DkINB/GVQMYyRaKUkNFVw=
-github.com/crtsh/ctlint v0.0.0-20260626092302-681b48af1046/go.mod h1:AnpjJ1gzswyA1NnSSGpKaglVbBO6XkQfL+1XtGhDTqs=
+github.com/crtsh/ctlint v0.0.0-20260629114458-a283d13cfe02 h1:Y0gu8kFyidHUObBSHmybVgoLaGWwiFVy9dST1R+n5XQ=
+github.com/crtsh/ctlint v0.0.0-20260629114458-a283d13cfe02/go.mod h1:KTkfGcFdJoEkbkZKYcP1PMf4eEsj/Zv6QJRHJhAnwuY=
 github.com/crtsh/ctloglists v1.20260625.180924 h1:hwMwUk+9UXnp4Zk7Smcyhg2coVcj2PGOC1BaFi0p0Kc=
 github.com/crtsh/ctloglists v1.20260625.180924/go.mod h1:hyD7ZWkw44oRvuJMu2l9N+5g1nyy39qkPOF471Es2rk=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
@@ -108,8 +108,8 @@ github.com/titanous/rocacheck v0.0.0-20171023193734-afe73141d399 h1:e/5i7d4oYZ+C
 github.com/titanous/rocacheck v0.0.0-20171023193734-afe73141d399/go.mod h1:LdwHTNJT99C5fTAzDz0ud328OgXz+gierycbcIx2fRs=
 github.com/valyala/bytebufferpool v1.0.0 h1:GqA5TC/0021Y/b9FG4Oi9Mr3q7XYx6KllzawFIhcdPw=
 github.com/valyala/bytebufferpool v1.0.0/go.mod h1:6bBcMArwyJ5K/AmCkWv1jt77kVWyCJ6HpOuEn7z0Csc=
-github.com/valyala/fasthttp v1.71.0 h1:tepR7H+Guh9VUqxxcPggYi8R3lGUu2Rsdh+z7/FCY3k=
-github.com/valyala/fasthttp v1.71.0/go.mod h1:z1sDUvOShhXq/C9mwH/fSm1Vb71tUJwmQdgkBrBNwnA=
+github.com/valyala/fasthttp v1.72.0 h1:R7kYdoWhn1ye1fVpP+cDHDJwYm3NkwLliwgzJ/Abg7M=
+github.com/valyala/fasthttp v1.72.0/go.mod h1:zsbLTYqcpIktdQytlVBwIjY9La5d6bs990nBxWg8efk=
 github.com/weppos/publicsuffix-go v0.50.4-0.20260529064242-164fc2a0e798 h1:99LORymyDPKDSBE3x3MyFmtPWM3anyMQcalYMBqEZQo=
 github.com/weppos/publicsuffix-go v0.50.4-0.20260529064242-164fc2a0e798/go.mod h1:/rOa781xBykZhHK/I3QeHo92qdDKVmKZKF7s8qAEM/4=
 github.com/xyproto/randomstring v1.0.5 h1:YtlWPoRdgMu3NZtP45drfy1GKoojuR7hmRcnhZqKjWU=
