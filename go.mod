@@ -5,7 +5,7 @@ go 1.26.4
 require (
 	github.com/CVE-2008-0166/dwklint/v2 v2.1.0
 	github.com/crtsh/ccadb_data v1.20260626.143316
-	github.com/crtsh/ctlint v0.0.0-20260626092302-681b48af1046
+	github.com/crtsh/ctlint v0.0.0-20260629114458-a283d13cfe02
 	github.com/crtsh/ctloglists v1.20260625.180924
 	github.com/goccy/go-json v0.10.6
 	github.com/google/certificate-transparency-go v1.3.3
@@ -13,7 +13,7 @@ require (
 	github.com/sergi/go-diff v1.4.0
 	github.com/spf13/viper v1.21.0
 	github.com/titanous/rocacheck v0.0.0-20171023193734-afe73141d399
-	github.com/valyala/fasthttp v1.71.0
+	github.com/valyala/fasthttp v1.72.0
 	github.com/zmap/zcrypto v0.0.0-20260605180650-cdd78957abdf
 	github.com/zmap/zlint/v3 v3.7.1
 	go.uber.org/automaxprocs v1.6.0
