@@ -251,6 +251,7 @@ var (
 	AllProfilesOrdered                                                               []Profile
 	CrlProfileIDs, OcspProfileIDs, RootProfileIDs, SubordinateProfileIDs             []ProfileId
 	SbrLeafProfileIDs, TbrTevgLeafProfileIDs, TbrTevgCertificateProfileIDs           []ProfileId
+	TbrARLProfileIDs                                                                 []ProfileId
 	NonTbrTevgCertificateProfileIDs, NonCabforumProfileIDs, NonCertificateProfileIDs []ProfileId
 	MarkCertificateProfileIDs                                                        []ProfileId
 	EtsiCertificateProfileIDs, EtsiNonBrowserCertificateProfileIDs                   []ProfileId
@@ -274,6 +275,10 @@ func init() {
 			TbrTevgLeafProfileIDs = append(TbrTevgLeafProfileIDs, k)
 		} else if strings.HasPrefix(v.Name, "bimigroup_") {
 			MarkCertificateProfileIDs = append(MarkCertificateProfileIDs, k)
+		}
+
+		if k == TBR_ARL {
+			TbrARLProfileIDs = append(TbrARLProfileIDs, k)
 		}
 	}
 
