@@ -4,7 +4,7 @@ go 1.26.4
 
 require (
 	github.com/CVE-2008-0166/dwklint/v2 v2.1.0
-	github.com/crtsh/ccadb_data v1.20260630.81000
+	github.com/crtsh/ccadb_data v1.20260630.153216
 	github.com/crtsh/ctlint v0.0.0-20260629114458-a283d13cfe02
 	github.com/crtsh/ctloglists v1.20260625.180924
 	github.com/goccy/go-json v0.10.6
@@ -43,7 +43,7 @@ require (
 	github.com/pelletier/go-toml/v2 v2.4.2 // indirect
 	github.com/prometheus/client_model v0.6.2 // indirect
 	github.com/prometheus/common v0.69.0 // indirect
-	github.com/prometheus/procfs v0.21.0 // indirect
+	github.com/prometheus/procfs v0.21.1 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/rspeer/python-ftfy v6.3.2-0.20241030210025-74dd0452b482+incompatible // indirect
 	github.com/sagikazarmark/locafero v0.12.0 // indirect
