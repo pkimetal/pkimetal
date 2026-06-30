@@ -4,7 +4,7 @@ go 1.26.4
 
 require (
 	github.com/CVE-2008-0166/dwklint/v2 v2.1.0
-	github.com/crtsh/ccadb_data v1.20260626.143316
+	github.com/crtsh/ccadb_data v1.20260630.81000
 	github.com/crtsh/ctlint v0.0.0-20260629114458-a283d13cfe02
 	github.com/crtsh/ctloglists v1.20260625.180924
 	github.com/goccy/go-json v0.10.6
@@ -34,7 +34,7 @@ require (
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-viper/mapstructure/v2 v2.5.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
-	github.com/klauspost/compress v1.18.6 // indirect
+	github.com/klauspost/compress v1.18.7 // indirect
 	github.com/kroeckx/x509lint v0.0.0-20260109123110-103c92f2f1ad // indirect
 	github.com/mattn/go-isatty v0.0.22 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
