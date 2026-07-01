@@ -24,7 +24,7 @@ ENV PATH="/root/.local/bin:/root/.cargo/bin:${PATH}"
 WORKDIR /app
 COPY . .
 ARG gomodfile
-RUN git fetch --depth=2147483647 && \
+RUN \
 	# Fetch repositories.
 	mkdir /usr/local/build && \
 	mkdir /usr/local/pkimetal && \
