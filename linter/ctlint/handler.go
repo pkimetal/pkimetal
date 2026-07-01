@@ -3,6 +3,7 @@ package ctlint
 import (
 	"context"
 	"slices"
+	"time"
 
 	"github.com/pkimetal/pkimetal/config"
 	"github.com/pkimetal/pkimetal/linter"
@@ -11,9 +12,24 @@ import (
 	"github.com/crtsh/ctlint"
 	"github.com/crtsh/ctloglists"
 	"github.com/google/certificate-transparency-go/x509"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 )
 
 type Ctlint struct{}
+
+var _ = promauto.NewGaugeFunc(prometheus.GaugeOpts{
+	Namespace: config.ApplicationNamespace,
+	Subsystem: "loglist",
+	Name:      "oldest_timestamp_age_seconds",
+	Help:      "Age in seconds of the oldest log list timestamp among lists with a 70-day enforcement cut-off.",
+}, func() float64 {
+	oldest := ctloglists.OldestTimestampForLogListWithEnforcementCutOff()
+	if oldest.IsZero() {
+		return 0
+	}
+	return time.Since(oldest).Seconds()
+})
 
 func init() {
 	if err := ctloglists.LoadLogLists(); err != nil {
