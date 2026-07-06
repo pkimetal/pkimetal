@@ -16,8 +16,8 @@ github.com/crtsh/ccadb_data v1.20260630.153216 h1:EiuWqwm5tN16b2DgzQjDDayebk4uFG
 github.com/crtsh/ccadb_data v1.20260630.153216/go.mod h1:avWCZWp3bwPa5XuUWNoCeHgMUdOW2tccdnUJHvfmc74=
 github.com/crtsh/ctlint v0.0.0-20260701174551-b89a9e256b16 h1:fZIh0QXmRFwDCji5JYHOxpKydzBW7iepiq3ZudGsH+Y=
 github.com/crtsh/ctlint v0.0.0-20260701174551-b89a9e256b16/go.mod h1:3yQShYScomQYbSzCc4CQTsHTWngqrsfR2sbrQZZ4GJY=
-github.com/crtsh/ctloglists v1.20260701.151600 h1:AdKy4wAxCCx7/7hrARC9ijZfNXv72bzPrXCUg2b7Q6w=
-github.com/crtsh/ctloglists v1.20260701.151600/go.mod h1:FvWplGqNaPtCgjZqqVoXAlX6nDG1MTBmbWXn438HIQc=
+github.com/crtsh/ctloglists v1.20260703.151110 h1:EGsLoYTfId0MBDGilQWdRbIOKzCm5ESphi+409kO2yE=
+github.com/crtsh/ctloglists v1.20260703.151110/go.mod h1:FvWplGqNaPtCgjZqqVoXAlX6nDG1MTBmbWXn438HIQc=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc h1:U9qPSI2PIWSS1VwoXQT9A3Wy9MM3WgvqSxFWenqJduM=
@@ -65,8 +65,8 @@ github.com/ncruces/go-strftime v1.0.0 h1:HMFp8mLCTPp341M/ZnA4qaf7ZlsbTc+miZjCLOF
 github.com/ncruces/go-strftime v1.0.0/go.mod h1:Fwc5htZGVVkseilnfgOVb9mKy6w1naJmn9CehxcKcls=
 github.com/pelletier/go-toml v1.9.5 h1:4yBQzkHv+7BHq2PQUZF3Mx0IYxG7LsP222s7Agd3ve8=
 github.com/pelletier/go-toml v1.9.5/go.mod h1:u1nR/EPcESfeI/szUZKdtJ0xRNbUoANCkoOuaOx1Y+c=
-github.com/pelletier/go-toml/v2 v2.4.2 h1:M2fKKbmyvI+hGId/D0W64qDBMVhJnNR10O5gIbMc//Q=
-github.com/pelletier/go-toml/v2 v2.4.2/go.mod h1:2gIqNv+qfxSVS7cM2xJQKtLSTLUE9V8t9Stt+h56mCY=
+github.com/pelletier/go-toml/v2 v2.4.3 h1:GTRvJQutkOSftxIFD5xw9aepkYNuPWmVJpffdDPYVpY=
+github.com/pelletier/go-toml/v2 v2.4.3/go.mod h1:2gIqNv+qfxSVS7cM2xJQKtLSTLUE9V8t9Stt+h56mCY=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 h1:Jamvg5psRIccs7FGNTlIRMkT8wgtp5eCXdBlqhYGL6U=
 github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
