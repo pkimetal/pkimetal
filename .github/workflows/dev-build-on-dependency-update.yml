@@ -63,7 +63,7 @@ jobs:
     - name: Auto-Merge PR
       if: steps.check_changes.outputs.dev_files_changed == 'true'
       run: |
-          gh pr merge -d -m
+          gh pr merge auto-dev-update -d -m
 
     - name: Trigger Dev Container Build
       if: steps.check_changes.outputs.dev_files_changed == 'true'
