@@ -4,21 +4,21 @@ go 1.26.4
 
 require (
 	github.com/CVE-2008-0166/dwklint/v2 v2.1.0
-	github.com/crtsh/ccadb_data v1.20260707.115507
+	github.com/crtsh/ccadb_data v1.20260721.154959
 	github.com/crtsh/ctlint v0.0.0-20260707102530-367eb26ff739
-	github.com/crtsh/ctloglists v1.20260706.174245
+	github.com/crtsh/ctloglists v1.20260721.134823
 	github.com/goccy/go-json v0.10.6
 	github.com/google/certificate-transparency-go v1.3.3
-	github.com/prometheus/client_golang v1.23.2
+	github.com/prometheus/client_golang v1.24.0
 	github.com/sergi/go-diff v1.4.0
 	github.com/spf13/viper v1.21.0
 	github.com/titanous/rocacheck v0.0.0-20171023193734-afe73141d399
 	github.com/valyala/fasthttp v1.72.0
-	github.com/zmap/zcrypto v0.0.0-20260605180650-cdd78957abdf
+	github.com/zmap/zcrypto v0.0.0-20260716192702-66a5ac2578f3
 	github.com/zmap/zlint/v3 v3.7.1
 	go.uber.org/automaxprocs v1.6.0
 	go.uber.org/zap v1.28.0
-	golang.org/x/crypto v0.53.0
+	golang.org/x/crypto v0.54.0
 )
 
 require (
@@ -31,18 +31,18 @@ require (
 	github.com/digicert/pkilint v0.13.3 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/fsnotify/fsnotify v1.10.1 // indirect
-	github.com/go-logr/logr v1.4.3 // indirect
+	github.com/go-logr/logr v1.4.4 // indirect
 	github.com/go-viper/mapstructure/v2 v2.5.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
-	github.com/klauspost/compress v1.19.0 // indirect
+	github.com/klauspost/compress v1.19.1 // indirect
 	github.com/kroeckx/x509lint v0.0.0-20260109123110-103c92f2f1ad // indirect
-	github.com/mattn/go-isatty v0.0.22 // indirect
+	github.com/mattn/go-isatty v0.0.23 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/ncruces/go-strftime v1.0.0 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.4.3 // indirect
 	github.com/prometheus/client_model v0.6.2 // indirect
-	github.com/prometheus/common v0.69.0 // indirect
+	github.com/prometheus/common v0.70.1 // indirect
 	github.com/prometheus/procfs v0.21.1 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/rspeer/python-ftfy v6.3.1+incompatible // indirect
@@ -52,17 +52,17 @@ require (
 	github.com/spf13/pflag v1.0.10 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	github.com/weppos/publicsuffix-go v0.50.4-0.20260529064242-164fc2a0e798 // indirect
+	github.com/weppos/publicsuffix-go v0.50.4-0.20260715080728-6ed62ce99a4a // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
-	golang.org/x/net v0.56.0 // indirect
-	golang.org/x/sys v0.46.0 // indirect
-	golang.org/x/text v0.39.0 // indirect
+	golang.org/x/net v0.57.0 // indirect
+	golang.org/x/sys v0.47.0 // indirect
+	golang.org/x/text v0.40.0 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 	k8s.io/klog/v2 v2.140.0 // indirect
-	modernc.org/libc v1.74.0 // indirect
+	modernc.org/libc v1.74.3 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
-	modernc.org/sqlite v1.53.0 // indirect
+	modernc.org/sqlite v1.54.0 // indirect
 	zombiezen.com/go/sqlite v1.4.2 // indirect
 )
