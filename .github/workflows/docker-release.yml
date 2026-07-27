@@ -4,9 +4,6 @@ name: Docker - Stable Release Build
 on:
   release:
     types: [published]
-    branches: [ master ]
-    # Publish semver tags as releases.
-    tags: [ 'v*.*.*']
   workflow_dispatch:
 
 env:
