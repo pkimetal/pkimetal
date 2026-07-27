@@ -18,19 +18,21 @@ import (
 
 type config struct {
 	Server struct {
-		WebserverPort       int           `mapstructure:"webserverPort"`
-		WebserverPath       string        `mapstructure:"webserverPath"`
-		MonitoringPort      int           `mapstructure:"monitoringPort"`
-		MonitoringPath      string        `mapstructure:"monitoringPath"`
-		SocketPermissions   os.FileMode   `mapstructure:"socketPermissions"`
-		ReadTimeout         time.Duration `mapstructure:"readTimeout"`
-		IdleTimeout         time.Duration `mapstructure:"idleTimeout"`
-		DisableKeepalive    bool          `mapstructure:"disableKeepalive"`
-		RequestTimeout      time.Duration `mapstructure:"requestTimeout"`
-		LivezTimeout        time.Duration `mapstructure:"livezTimeout"`
-		ReadyzTimeout       time.Duration `mapstructure:"readyzTimeout"`
-		RememberBusyTimeout time.Duration `mapstructure:"rememberBusyTimeout"`
-		MetricsTimeout      time.Duration `mapstructure:"metricsTimeout"`
+		WebserverPort        int           `mapstructure:"webserverPort"`
+		WebserverPath        string        `mapstructure:"webserverPath"`
+		MonitoringPort       int           `mapstructure:"monitoringPort"`
+		MonitoringAddress    string        `mapstructure:"monitoringAddress"`
+		MonitoringPath       string        `mapstructure:"monitoringPath"`
+		EnableDebugEndpoints bool          `mapstructure:"enableDebugEndpoints"`
+		SocketPermissions    os.FileMode   `mapstructure:"socketPermissions"`
+		ReadTimeout          time.Duration `mapstructure:"readTimeout"`
+		IdleTimeout          time.Duration `mapstructure:"idleTimeout"`
+		DisableKeepalive     bool          `mapstructure:"disableKeepalive"`
+		RequestTimeout       time.Duration `mapstructure:"requestTimeout"`
+		LivezTimeout         time.Duration `mapstructure:"livezTimeout"`
+		ReadyzTimeout        time.Duration `mapstructure:"readyzTimeout"`
+		RememberBusyTimeout  time.Duration `mapstructure:"rememberBusyTimeout"`
+		MetricsTimeout       time.Duration `mapstructure:"metricsTimeout"`
 	}
 	Linter struct {
 		MaxQueueSize int `mapstructure:"maxQueueSize"`
@@ -176,6 +178,8 @@ func initViper() error {
 	// Set defaults for all values in-order to use env config for all options.
 	viper.SetDefault("server.webserverPort", 8080)
 	viper.SetDefault("server.monitoringPort", 8081)
+	viper.SetDefault("server.monitoringAddress", "")
+	viper.SetDefault("server.enableDebugEndpoints", false)
 	viper.SetDefault("server.socketPermissions", 0o600)
 	viper.SetDefault("server.readTimeout", 30*time.Second)
 	viper.SetDefault("server.idleTimeout", 30*time.Second)
