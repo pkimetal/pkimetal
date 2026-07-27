@@ -23,7 +23,7 @@ ENV PATH="/root/.local/bin:/root/.cargo/bin:${PATH}"
 # Build dependencies.
 WORKDIR /app
 COPY . .
-ARG gomodfile
+ARG gomodfile=go.mod
 RUN \
 	# Fetch repositories.
 	mkdir /usr/local/build && \
