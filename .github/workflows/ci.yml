@@ -1,0 +1,118 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Vet and test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Install C build dependencies
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libssl-dev
+
+      - name: Stage x509lint C sources
+        # x509lint is compiled in-process via cgo; its C sources live in the
+        # kroeckx/x509lint module (pinned in go.mod) and are copied in during the
+        # Docker build.  Reproduce that here so that the whole module compiles.
+        run: |
+          go mod download github.com/kroeckx/x509lint
+          X509LINT_DIR="$(go list -m -f '{{.Dir}}' github.com/kroeckx/x509lint)"
+          cp "$X509LINT_DIR"/asn1_time.c "$X509LINT_DIR"/asn1_time.h \
+             "$X509LINT_DIR"/checks.c "$X509LINT_DIR"/checks.h \
+             "$X509LINT_DIR"/messages.c "$X509LINT_DIR"/messages.h \
+             linter/x509lint/
+
+      - name: go vet
+        run: go vet ./...
+        env:
+          CGO_ENABLED: "1"
+
+      - name: go test
+        run: go test ./...
+        env:
+          CGO_ENABLED: "1"
+
+      - name: go test -race
+        run: go test -race ./...
+        env:
+          CGO_ENABLED: "1"
+
+  smoke:
+    name: Container smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Build Docker image
+        run: docker build -t pkimetal:ci .
+
+      - name: Run container
+        run: docker run -d --name pkimetal -p 8080:8080 -p 8081:8081 pkimetal:ci
+
+      - name: Wait for readiness
+        run: |
+          for i in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:8081/livez >/dev/null 2>&1 \
+               && curl -fsS http://127.0.0.1:8081/readyz >/dev/null 2>&1; then
+              echo "Service is ready."
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Service did not become ready in time." >&2
+          exit 1
+
+      - name: Smoke test endpoints
+        run: |
+          set -e
+          curl -fsS http://127.0.0.1:8081/livez >/dev/null
+          curl -fsS http://127.0.0.1:8081/readyz >/dev/null
+          curl -fsS http://127.0.0.1:8081/metrics >/dev/null
+          curl -fsS http://127.0.0.1:8080/ >/dev/null
+          # Lint a sample certificate and confirm a profile is reported.
+          req="$(mktemp)"
+          printf 'b64input=' > "$req"
+          openssl x509 -in testcases/tls_ov_certificate.crt -outform der \
+            | base64 -w0 | sed 's/+/%2B/g;s/\//%2F/g;s/=/%3D/g' >> "$req"
+          curl -fsS --data-binary "@$req" http://127.0.0.1:8080/lintcert \
+            | jq -e '.[0].Finding | startswith("Profile:")'
+
+      - name: Profile auto-detection
+        working-directory: testcases
+        run: |
+          expected="$(ls *.crt | wc -l)"
+          output="$(bash check_profile_autodetection.sh)"
+          echo "$output"
+          got="$(printf '%s\n' "$output" | grep -c 'Profile')"
+          echo "Reported a profile for ${got}/${expected} certificates."
+          test "$got" -ge "$expected"
+
+      - name: Dump container logs
+        if: always()
+        run: docker logs pkimetal || true
+
+      - name: Stop container
+        if: always()
+        run: docker rm -f pkimetal || true
