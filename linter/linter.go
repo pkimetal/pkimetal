@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"os"
 	"os/exec"
 	"runtime/debug"
 	"sort"
@@ -55,9 +56,15 @@ type LinterInstance struct {
 	Stdin          io.WriteCloser
 	Stdout         *bufio.Scanner
 	stderr         *bufio.Scanner
+	stdinFile      *os.File // Underlying STDIN pipe, retained so that write deadlines can be set.
+	stdoutFile     *os.File // Underlying STDOUT pipe, retained so that read deadlines can be set.
+	directory      string   // Retained so that the backend can be restarted after a failure.
+	cmd            string
+	args           []string
 }
 
 type LintingRequest struct {
+	Ctx            context.Context // Carries the per-request deadline through to the linter backends.
 	B64Input       string
 	DecodedInput   []byte
 	Cert           *x509.Certificate
@@ -164,6 +171,9 @@ func StartLinters(ctx context.Context) {
 }
 
 func (lin *LinterInstance) startInstance_external(directory, cmd string, arg ...string) {
+	// Retain the start parameters so that the backend can be restarted after a failure.
+	lin.directory, lin.cmd, lin.args = directory, cmd, arg
+
 	// Configure the linter backend so that it will run the linter in a forked process.
 	lin.command = exec.Command(cmd, arg...)
 	lin.command.Dir = directory
@@ -173,12 +183,14 @@ func (lin *LinterInstance) startInstance_external(directory, cmd string, arg ...
 	if lin.Stdin, err = lin.command.StdinPipe(); err != nil {
 		logger.Logger.Fatal("Cmd.StdinPipe() failed", zap.Error(err), zap.String("cmd", cmd), zap.String("directory", directory), zap.String("name", lin.Name))
 	}
+	lin.stdinFile, _ = lin.Stdin.(*os.File)
 
 	var stdout io.ReadCloser
 	if stdout, err = lin.command.StdoutPipe(); err != nil {
 		logger.Logger.Fatal("Cmd.StdoutPipe() failed", zap.Error(err), zap.String("cmd", cmd), zap.String("directory", directory), zap.String("name", lin.Name))
 	}
 	lin.Stdout = bufio.NewScanner(stdout)
+	lin.stdoutFile, _ = stdout.(*os.File)
 
 	var stderr io.ReadCloser
 	if stderr, err = lin.command.StderrPipe(); err != nil {
@@ -224,6 +236,31 @@ func (lin *LinterInstance) stopInstance_external() {
 	}
 }
 
+// restartInstance_external kills the current backend process (which has hung,
+// crashed, or desynced from the request/response protocol) and starts a fresh
+// one, so that subsequent requests to this instance are not affected.  The
+// caller must hold lin.Mutex.
+func (lin *LinterInstance) restartInstance_external() {
+	if lin.command != nil && lin.command.Process != nil {
+		_ = lin.command.Process.Kill()
+		_ = lin.command.Wait()
+	}
+	logger.Logger.Warn("Restarting Linter backend", zap.Int("instance#", lin.instanceNumber), zap.String("name", lin.Name))
+	lin.startInstance_external(lin.directory, lin.cmd, lin.args...)
+}
+
+// sendResult sends a linting result to the request's response channel, unless
+// the request's deadline is exceeded first.  It returns false if the deadline
+// was exceeded, in which case the caller should stop processing the request.
+func (lin *LinterInstance) sendResult(lreq *LintingRequest, lres LintingResult) bool {
+	select {
+	case lreq.RespChannel <- lres:
+		return true
+	case <-lreq.Ctx.Done():
+		return false
+	}
+}
+
 func (lin *LinterInstance) serverLoop(ctx context.Context, lif LinterInterface) {
 	for {
 		select {
@@ -231,25 +268,47 @@ func (lin *LinterInstance) serverLoop(ctx context.Context, lif LinterInterface) 
 			// Acquire mutex.  Each internal or external backend will only process one linting request at a time.
 			lin.Mutex.Lock()
 
+			// Skip requests whose deadline has already passed (e.g. whilst queued);
+			// the client has stopped waiting, so there is no point processing them.
+			if lreq.Ctx.Err() != nil {
+				lin.Mutex.Unlock()
+				continue
+			}
+
 			// Record how long this linting request was queued for.
 			queuedFor := time.Since(lreq.QueuedAt)
 			start := time.Now()
 
 			if lin.useHandleRequest {
-				// Process this linting request in-process.
-				for _, lres := range lif.HandleRequest(ctx, lin, &lreq) {
+				// Process this linting request in-process, bounded by the request's deadline.
+				for _, lres := range lif.HandleRequest(lreq.Ctx, lin, &lreq) {
 					lres.LinterName = lin.Name
-					lreq.RespChannel <- lres
+					if !lin.sendResult(&lreq, lres) {
+						break
+					}
 				}
 
 			} else {
+				// Bound the subprocess I/O by the request's deadline.
+				if deadline, ok := lreq.Ctx.Deadline(); ok {
+					if lin.stdinFile != nil {
+						_ = lin.stdinFile.SetWriteDeadline(deadline)
+					}
+					if lin.stdoutFile != nil {
+						_ = lin.stdoutFile.SetReadDeadline(deadline)
+					}
+				}
+
 				var err error
+				aborted := false
 			label_forloop:
 				// Write the request to the linter backend's STDIN.
 				for _, err = lin.Stdin.Write(utils.S2B(fmt.Sprintf("%d\n%s\n", lreq.ProfileId, strings.TrimSpace(lreq.B64Input)))); err == nil; {
 					// Scan the next token from the linter backend's STDOUT.
 					if !lin.Stdout.Scan() {
-						err = fmt.Errorf("stdout.Scan() => false")
+						if err = lin.Stdout.Err(); err == nil {
+							err = fmt.Errorf("stdout.Scan() => false")
+						}
 						break label_forloop
 					}
 
@@ -287,7 +346,10 @@ func (lin *LinterInstance) serverLoop(ctx context.Context, lif LinterInterface) 
 							break label_forloop
 						}
 						// Send this linting result to the response channel.
-						lreq.RespChannel <- lresult
+						if !lin.sendResult(&lreq, lresult) {
+							aborted = true
+							break label_forloop
+						}
 					} else if token[0] == '{' { // JSON response format.
 						type findingDescription struct {
 							Severity string `json:"severity"`
@@ -317,7 +379,10 @@ func (lin *LinterInstance) serverLoop(ctx context.Context, lif LinterInterface) 
 									}
 
 									// Send this linting result to the response channel.
-									lreq.RespChannel <- lif.ProcessResult(lresult)
+									if !lin.sendResult(&lreq, lif.ProcessResult(lresult)) {
+										aborted = true
+										break label_forloop
+									}
 								}
 							}
 						}
@@ -328,31 +393,50 @@ func (lin *LinterInstance) serverLoop(ctx context.Context, lif LinterInterface) 
 
 					}
 				}
+				// Clear the subprocess I/O deadlines.
+				if lin.stdinFile != nil {
+					_ = lin.stdinFile.SetWriteDeadline(time.Time{})
+				}
+				if lin.stdoutFile != nil {
+					_ = lin.stdoutFile.SetReadDeadline(time.Time{})
+				}
+
 				// Handle any errors that occurred during the request.
 				if err != nil {
-					lreq.RespChannel <- LintingResult{
+					finding := fmt.Sprintf("%s: %v", lin.Name, err)
+					if lreq.Ctx.Err() != nil {
+						finding = fmt.Sprintf("%s: linting deadline exceeded", lin.Name)
+					}
+					lin.sendResult(&lreq, LintingResult{
 						LinterName: PKIMETAL_NAME,
 						Severity:   SEVERITY_FATAL,
-						Finding:    fmt.Sprintf("%s: %v", lin.Name, err),
-					}
+						Finding:    finding,
+					})
+				}
+
+				// If the exchange did not complete cleanly, the request/response
+				// protocol may be desynced (or the backend has hung or crashed);
+				// restart the backend so that subsequent requests are unaffected.
+				if err != nil || aborted {
+					lin.restartInstance_external()
 				}
 			}
 			// Record meta information.
 			runtime := time.Since(start)
-			lreq.RespChannel <- LintingResult{
+			lin.sendResult(&lreq, LintingResult{
 				LinterName: lin.Name,
 				Severity:   SEVERITY_META,
 				Finding:    fmt.Sprintf("Queued: %v; Runtime: %v; Version: %s", queuedFor, runtime, VersionString(lin.Version)),
-			}
+			})
 			lin.queueTimeSummary.Observe(float64(queuedFor) / float64(time.Second))
 			lin.processingTimeSummary.Observe(float64(runtime) / float64(time.Second))
 
 			// Add a dummy linting result to signal the end of the results.
-			lreq.RespChannel <- LintingResult{
+			lin.sendResult(&lreq, LintingResult{
 				LinterName: PKIMETAL_NAME,
 				Severity:   SEVERITY_META,
 				Finding:    PKIMETAL_ENDOFRESULTS,
-			}
+			})
 
 			lin.Mutex.Unlock()
 

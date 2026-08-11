@@ -86,6 +86,7 @@ func POST(fhctx *fasthttp.RequestCtx, path string) int {
 		} else {
 			// Construct the linting request.
 			lreq := linter.LintingRequest{
+				Ctx:          ctxWithDeadline,
 				B64Input:     utils.B2S(ri.b64Input),
 				DecodedInput: ri.decodedInput,
 				Cert:         ri.cert,
@@ -110,13 +111,20 @@ func POST(fhctx *fasthttp.RequestCtx, path string) int {
 				}
 			}
 
-			// Wait for all of the used linters to finish writing results to the response channel.
+			// Wait for all of the used linters to finish writing results to the
+			// response channel, or for the request deadline to be exceeded.
 			for nlresp > 0 {
-				resp := <-lreq.RespChannel
-				if resp.LinterName == linter.PKIMETAL_NAME && resp.Finding == linter.PKIMETAL_ENDOFRESULTS {
-					nlresp--
-				} else {
-					lresp = append(lresp, resp)
+				select {
+				case resp := <-lreq.RespChannel:
+					if resp.LinterName == linter.PKIMETAL_NAME && resp.Finding == linter.PKIMETAL_ENDOFRESULTS {
+						nlresp--
+					} else {
+						lresp = append(lresp, resp)
+					}
+				case <-ctxWithDeadline.Done():
+					// The linter backends observe the same deadline and will stop
+					// writing to the response channel, so abandon the wait.
+					nlresp = 0
 				}
 			}
 
