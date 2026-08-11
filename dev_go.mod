@@ -6,7 +6,7 @@ require (
 	github.com/CVE-2008-0166/dwklint/v2 v2.1.0
 	github.com/crtsh/ccadb_data v1.20260807.131140
 	github.com/crtsh/ctlint v0.0.0-20260811102321-2bd759444523
-	github.com/crtsh/ctloglists v1.20260811.162500
+	github.com/crtsh/ctloglists v1.20260811.175610
 	github.com/goccy/go-json v0.10.6
 	github.com/google/certificate-transparency-go v1.3.3
 	github.com/prometheus/client_golang v1.24.1
@@ -18,7 +18,7 @@ require (
 	github.com/zmap/zlint/v3 v3.7.2-0.20260809155357-7d02b26ecaf0
 	go.uber.org/automaxprocs v1.6.0
 	go.uber.org/zap v1.28.0
-	golang.org/x/crypto v0.54.0
+	golang.org/x/crypto v0.55.0
 )
 
 require (
