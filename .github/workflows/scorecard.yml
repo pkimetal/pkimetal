@@ -1,0 +1,50 @@
+name: Scorecard supply-chain security
+
+on:
+  # Required for the Scorecard "Branch-Protection" check.
+  branch_protection_rule:
+  schedule:
+    - cron: "20 7 * * 1"
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+# Restrict the default token to read-only.
+permissions: read-all
+
+jobs:
+  analysis:
+    name: Scorecard analysis
+    runs-on: ubuntu-latest
+    permissions:
+      # Needed to upload the results to the code-scanning dashboard.
+      security-events: write
+      # Needed to publish results and get a badge (publish_results: true).
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Run analysis
+        uses: ossf/scorecard-action@v2.4.1
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          # Publish results to OpenSSF so the README badge resolves.
+          publish_results: true
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SARIF file
+          path: results.sarif
+          retention-days: 5
+
+      - name: Upload to code-scanning
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results.sarif
