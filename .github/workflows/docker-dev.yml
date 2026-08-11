@@ -81,3 +81,29 @@ jobs:
         run: |
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
+      # Verify the just-published image actually starts and serves health checks
+      # (a successful build only proves the image compiles and packages).
+      - name: Smoke test the published image
+        run: |
+          IMAGE="ghcr.io/pkimetal/pkimetal-dev:${{ env.CONTAINER_TIMESTAMP }}"
+          docker run -d --name pkimetal -p 8080:8080 -p 8081:8081 "$IMAGE"
+          for i in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:8081/livez >/dev/null 2>&1 \
+               && curl -fsS http://127.0.0.1:8081/readyz >/dev/null 2>&1; then
+              echo "Service is ready."
+              break
+            fi
+            if [ "$i" -eq 60 ]; then
+              echo "Service did not become ready in time." >&2
+              docker logs pkimetal || true
+              exit 1
+            fi
+            sleep 5
+          done
+          curl -fsS http://127.0.0.1:8081/metrics >/dev/null
+          curl -fsS http://127.0.0.1:8080/ >/dev/null
+
+      - name: Stop container
+        if: always()
+        run: docker rm -f pkimetal || true

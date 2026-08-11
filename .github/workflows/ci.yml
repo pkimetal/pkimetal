@@ -60,6 +60,9 @@ jobs:
 
   smoke:
     name: Container smoke test
+    # docker-dev.yml already builds and smoke-tests the image on main, so only run
+    # this (rebuilding) smoke test pre-merge on PRs and on manual dispatch.
+    if: github.event_name != 'push'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
