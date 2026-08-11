@@ -115,6 +115,7 @@ func Run() {
 		ReadTimeout:           config.Config.Server.ReadTimeout,
 		IdleTimeout:           config.Config.Server.IdleTimeout,
 		DisableKeepalive:      config.Config.Server.DisableKeepalive,
+		MaxRequestBodySize:    config.Config.Server.MaxRequestBodySize,
 		NoDefaultServerHeader: true,
 	}
 	if config.Config.Server.WebserverPort != 0 {
@@ -140,6 +141,7 @@ func Run() {
 		ReadTimeout:           config.Config.Server.ReadTimeout,
 		IdleTimeout:           config.Config.Server.IdleTimeout,
 		DisableKeepalive:      config.Config.Server.DisableKeepalive,
+		MaxRequestBodySize:    config.Config.Server.MaxRequestBodySize,
 		NoDefaultServerHeader: true,
 	}
 	if config.Config.Server.MonitoringPort != 0 {

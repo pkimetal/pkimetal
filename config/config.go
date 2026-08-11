@@ -25,6 +25,7 @@ type config struct {
 		MonitoringPath       string        `mapstructure:"monitoringPath"`
 		EnableDebugEndpoints bool          `mapstructure:"enableDebugEndpoints"`
 		SocketPermissions    os.FileMode   `mapstructure:"socketPermissions"`
+		MaxRequestBodySize   int           `mapstructure:"maxRequestBodySize"`
 		ReadTimeout          time.Duration `mapstructure:"readTimeout"`
 		IdleTimeout          time.Duration `mapstructure:"idleTimeout"`
 		DisableKeepalive     bool          `mapstructure:"disableKeepalive"`
@@ -181,6 +182,7 @@ func initViper() error {
 	viper.SetDefault("server.monitoringAddress", "")
 	viper.SetDefault("server.enableDebugEndpoints", false)
 	viper.SetDefault("server.socketPermissions", 0o600)
+	viper.SetDefault("server.maxRequestBodySize", 10*1024*1024) // 10 MiB.
 	viper.SetDefault("server.readTimeout", 30*time.Second)
 	viper.SetDefault("server.idleTimeout", 30*time.Second)
 	viper.SetDefault("server.disableKeepalive", false)
