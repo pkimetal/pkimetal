@@ -240,12 +240,12 @@ func (lin *LinterInstance) stopInstance_external() {
 // crashed, or desynced from the request/response protocol) and starts a fresh
 // one, so that subsequent requests to this instance are not affected.  The
 // caller must hold lin.Mutex.
-func (lin *LinterInstance) restartInstance_external() {
+func (lin *LinterInstance) restartInstance_external(reason error) {
 	if lin.command != nil && lin.command.Process != nil {
 		_ = lin.command.Process.Kill()
 		_ = lin.command.Wait()
 	}
-	logger.Logger.Warn("Restarting Linter backend", zap.Int("instance#", lin.instanceNumber), zap.String("name", lin.Name))
+	logger.Logger.Warn("Restarting Linter backend", zap.Int("instance#", lin.instanceNumber), zap.String("name", lin.Name), zap.Error(reason))
 	lin.startInstance_external(lin.directory, lin.cmd, lin.args...)
 }
 
@@ -370,18 +370,20 @@ func (lin *LinterInstance) serverLoop(ctx context.Context, lif LinterInterface) 
 				}
 
 			} else {
-				// Bound the subprocess I/O by the request's deadline.
-				if deadline, ok := lreq.Ctx.Deadline(); ok {
-					if lin.stdinFile != nil {
-						_ = lin.stdinFile.SetWriteDeadline(deadline)
-					}
-					if lin.stdoutFile != nil {
-						_ = lin.stdoutFile.SetReadDeadline(deadline)
-					}
+				// Bound the subprocess I/O by a backend timeout measured from now, so
+				// that time spent queued does not count against the backend and a
+				// slow-but-healthy backend is not restarted just because the client
+				// gave up.
+				backendDeadline := time.Now().Add(config.Config.Linter.BackendTimeout)
+				if lin.stdinFile != nil {
+					_ = lin.stdinFile.SetWriteDeadline(backendDeadline)
+				}
+				if lin.stdoutFile != nil {
+					_ = lin.stdoutFile.SetReadDeadline(backendDeadline)
 				}
 
 				var err error
-				aborted := false
+				clientGone := false
 			label_forloop:
 				// Write the request to the linter backend's STDIN.
 				for _, err = lin.Stdin.Write(utils.S2B(fmt.Sprintf("%d\n%s\n", lreq.ProfileId, strings.TrimSpace(lreq.B64Input)))); err == nil; {
@@ -400,10 +402,14 @@ func (lin *LinterInstance) serverLoop(ctx context.Context, lif LinterInterface) 
 						break label_forloop
 					}
 					for _, lresult := range results {
-						// Send this linting result to the response channel.
+						// Deliver results whilst the client is still waiting.  Once it
+						// has given up, keep reading the backend to completion so that
+						// the backend stays in sync and warm, but stop delivering.
+						if clientGone {
+							continue
+						}
 						if !lin.sendResult(&lreq, lif.ProcessResult(lresult)) {
-							aborted = true
-							break label_forloop
+							clientGone = true
 						}
 					}
 				}
@@ -415,24 +421,24 @@ func (lin *LinterInstance) serverLoop(ctx context.Context, lif LinterInterface) 
 					_ = lin.stdoutFile.SetReadDeadline(time.Time{})
 				}
 
-				// Handle any errors that occurred during the request.
+				// A non-nil error means the backend crashed, desynced, or exceeded the
+				// backend timeout: report it (if the client is still waiting) and
+				// restart the backend so that subsequent requests are unaffected.  A
+				// client that merely gave up whilst the backend was healthy does not
+				// trigger a restart.
 				if err != nil {
-					finding := fmt.Sprintf("%s: %v", lin.Name, err)
-					if lreq.Ctx.Err() != nil {
-						finding = fmt.Sprintf("%s: linting deadline exceeded", lin.Name)
+					if !clientGone {
+						finding := fmt.Sprintf("%s: %v", lin.Name, err)
+						if os.IsTimeout(err) {
+							finding = fmt.Sprintf("%s: linting backend timed out", lin.Name)
+						}
+						lin.sendResult(&lreq, LintingResult{
+							LinterName: PKIMETAL_NAME,
+							Severity:   SEVERITY_FATAL,
+							Finding:    finding,
+						})
 					}
-					lin.sendResult(&lreq, LintingResult{
-						LinterName: PKIMETAL_NAME,
-						Severity:   SEVERITY_FATAL,
-						Finding:    finding,
-					})
-				}
-
-				// If the exchange did not complete cleanly, the request/response
-				// protocol may be desynced (or the backend has hung or crashed);
-				// restart the backend so that subsequent requests are unaffected.
-				if err != nil || aborted {
-					lin.restartInstance_external()
+					lin.restartInstance_external(err)
 				}
 			}
 			// Record meta information.
