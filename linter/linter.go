@@ -261,6 +261,87 @@ func (lin *LinterInstance) sendResult(lreq *LintingRequest, lres LintingResult) 
 	}
 }
 
+// parseResultToken parses a single response token emitted by an external linter
+// backend on its STDOUT into zero or more linting results.  end is true for the
+// end-of-results sentinel.  Two wire formats are supported: the certlint /
+// x509lint "S: description" format and pkilint's JSON format.
+func parseResultToken(linterName, token string) (results []LintingResult, end bool, err error) {
+	if token == PKIMETAL_ENDOFRESULTS {
+		end = true
+		return
+	}
+	if len(token) < 2 {
+		err = fmt.Errorf("unexpected response token: '%s'", token)
+		return
+	}
+
+	if token[1] == ':' { // Certlint/x509lint response format.
+		if len(token) < 4 {
+			err = fmt.Errorf("description of finding is unexpectedly short: '%s'", token)
+			return
+		}
+		lresult := LintingResult{
+			LinterName: linterName,
+			Finding:    token[3:],
+		}
+		switch token[0:3] {
+		case "D: ":
+			lresult.Severity = SEVERITY_DEBUG
+		case "I: ":
+			lresult.Severity = SEVERITY_INFO
+		case "N: ":
+			lresult.Severity = SEVERITY_NOTICE
+		case "W: ":
+			lresult.Severity = SEVERITY_WARNING
+		case "E: ":
+			lresult.Severity = SEVERITY_ERROR
+		case "B: ":
+			lresult.Severity = SEVERITY_BUG
+		case "F: ":
+			lresult.Severity = SEVERITY_FATAL
+		default:
+			err = fmt.Errorf("unexpected linting result: '%s'", token)
+			return
+		}
+		results = append(results, lresult)
+		return
+
+	} else if token[0] == '{' { // JSON response format.
+		type findingDescription struct {
+			Severity string `json:"severity"`
+			Code     string `json:"code"`
+			Message  string `json:"message"`
+		}
+		type pkilintResult struct {
+			NodePath            string               `json:"node_path"`
+			Validator           string               `json:"validator"`
+			FindingDescriptions []findingDescription `json:"finding_descriptions"`
+		}
+		type pkilintResults struct {
+			Results []pkilintResult `json:"results"`
+		}
+		var pr pkilintResults
+		if err = json.Unmarshal(utils.S2B(token), &pr); err != nil {
+			return
+		}
+		for _, r := range pr.Results {
+			for _, fd := range r.FindingDescriptions {
+				results = append(results, LintingResult{
+					LinterName: linterName,
+					Finding:    fd.Code,
+					Field:      r.NodePath,
+					Code:       fd.Code,
+					Severity:   Severity[strings.ToLower(fd.Severity)],
+				})
+			}
+		}
+		return
+	}
+
+	err = fmt.Errorf("unknown response format: '%s'", token)
+	return
+}
+
 func (lin *LinterInstance) serverLoop(ctx context.Context, lif LinterInterface) {
 	for {
 		select {
@@ -312,85 +393,18 @@ func (lin *LinterInstance) serverLoop(ctx context.Context, lif LinterInterface) 
 						break label_forloop
 					}
 
-					// Read the scanned response token from the linter backend's STDOUT.
-					token := lin.Stdout.Text()
-					// Process this response token, and produce linting result(s).
-					if token == PKIMETAL_ENDOFRESULTS {
+					// Parse the response token from the linter backend's STDOUT into linting result(s).
+					var results []LintingResult
+					var end bool
+					if results, end, err = parseResultToken(lin.Name, lin.Stdout.Text()); err != nil || end {
 						break label_forloop
-					} else if token[1] == ':' { // Certlint/x509lint response format.
-						if len(token) < 4 {
-							err = fmt.Errorf("description of finding is unexpectedly short: '%s'", token)
-							break label_forloop
-						}
-						lresult := LintingResult{
-							LinterName: lin.Name,
-							Finding:    token[3:],
-						}
-						switch token[0:3] {
-						case "D: ":
-							lresult.Severity = SEVERITY_DEBUG
-						case "I: ":
-							lresult.Severity = SEVERITY_INFO
-						case "N: ":
-							lresult.Severity = SEVERITY_NOTICE
-						case "W: ":
-							lresult.Severity = SEVERITY_WARNING
-						case "E: ":
-							lresult.Severity = SEVERITY_ERROR
-						case "B: ":
-							lresult.Severity = SEVERITY_BUG
-						case "F: ":
-							lresult.Severity = SEVERITY_FATAL
-						default:
-							err = fmt.Errorf("unexpected linting result: '%s'", token)
-							break label_forloop
-						}
+					}
+					for _, lresult := range results {
 						// Send this linting result to the response channel.
-						if !lin.sendResult(&lreq, lresult) {
+						if !lin.sendResult(&lreq, lif.ProcessResult(lresult)) {
 							aborted = true
 							break label_forloop
 						}
-					} else if token[0] == '{' { // JSON response format.
-						type findingDescription struct {
-							Severity string `json:"severity"`
-							Code     string `json:"code"`
-							Message  string `json:"message"`
-						}
-						type pkilintResult struct {
-							NodePath            string               `json:"node_path"`
-							Validator           string               `json:"validator"`
-							FindingDescriptions []findingDescription `json:"finding_descriptions"`
-						}
-						type pkilintResults struct {
-							Results []pkilintResult `json:"results"`
-						}
-						var pr pkilintResults
-						if err = json.Unmarshal(utils.S2B(token), &pr); err != nil {
-							break label_forloop
-						} else {
-							for _, r := range pr.Results {
-								for _, fd := range r.FindingDescriptions {
-									lresult := LintingResult{
-										LinterName: lin.Name,
-										Finding:    fd.Code,
-										Field:      r.NodePath,
-										Code:       fd.Code,
-										Severity:   Severity[strings.ToLower(fd.Severity)],
-									}
-
-									// Send this linting result to the response channel.
-									if !lin.sendResult(&lreq, lif.ProcessResult(lresult)) {
-										aborted = true
-										break label_forloop
-									}
-								}
-							}
-						}
-
-					} else {
-						err = fmt.Errorf("unknown response format: '%s'", token)
-						break label_forloop
-
 					}
 				}
 				// Clear the subprocess I/O deadlines.
