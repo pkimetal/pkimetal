@@ -174,6 +174,10 @@ func TestHelperProcess(t *testing.T) {
 	if !slices.Contains(os.Args, helperArg) {
 		return
 	}
+	if slices.Contains(os.Args, "warmup") {
+		time.Sleep(400 * time.Millisecond) // Simulate slow initialisation.
+		fmt.Println(PKIMETAL_READY)
+	}
 	in := bufio.NewScanner(os.Stdin)
 	for in.Scan() { // Profile-id line.
 		if !in.Scan() { // Input line.
@@ -204,19 +208,21 @@ func (stubBackend) ProcessResult(r LintingResult) LintingResult { return r }
 
 // startStubBackend spawns the stub backend, runs serverLoop against it, and
 // returns a stop function that tears both down.
-func startStubBackend(t *testing.T) (lin *LinterInstance, stop func()) {
+func startStubBackend(t *testing.T, readySignal string, extraArgs ...string) (lin *LinterInstance, stop func()) {
 	t.Helper()
 	lin = &LinterInstance{
 		Linter: &Linter{
 			Name:                  "stub",
 			Version:               "v0",
 			ReqChannel:            make(chan LintingRequest, 8),
+			ReadySignal:           readySignal,
 			queueTimeSummary:      prometheus.NewSummary(prometheus.SummaryOpts{Name: "stub_queue"}),
 			processingTimeSummary: prometheus.NewSummary(prometheus.SummaryOpts{Name: "stub_processing"}),
 		},
 		Mutex: &sync.Mutex{},
 	}
-	lin.startInstance_external(".", os.Args[0], "-test.run=TestHelperProcess", helperArg)
+	args := append([]string{"-test.run=TestHelperProcess", helperArg}, extraArgs...)
+	lin.startInstance_external(".", os.Args[0], args...)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	ShutdownWG.Add(1)
@@ -275,7 +281,7 @@ func hasResult(results []LintingResult, severity SeverityLevel, findingSubstr st
 }
 
 func TestBackend_CleanRequest(t *testing.T) {
-	lin, stop := startStubBackend(t)
+	lin, stop := startStubBackend(t, "")
 	defer stop()
 	pid := backendPID(lin)
 
@@ -292,7 +298,7 @@ func TestBackend_CleanRequest(t *testing.T) {
 }
 
 func TestBackend_RestartsOnCrash(t *testing.T) {
-	lin, stop := startStubBackend(t)
+	lin, stop := startStubBackend(t, "")
 	defer stop()
 	pid := backendPID(lin)
 
@@ -320,7 +326,7 @@ func TestBackend_RestartsOnBackendTimeout(t *testing.T) {
 	config.Config.Linter.BackendTimeout = 200 * time.Millisecond
 	defer func() { config.Config.Linter.BackendTimeout = saved }()
 
-	lin, stop := startStubBackend(t)
+	lin, stop := startStubBackend(t, "")
 	defer stop()
 	pid := backendPID(lin)
 
@@ -337,7 +343,7 @@ func TestBackend_RestartsOnBackendTimeout(t *testing.T) {
 }
 
 func TestBackend_ClientGoneKeepsBackendWarm(t *testing.T) {
-	lin, stop := startStubBackend(t)
+	lin, stop := startStubBackend(t, "")
 	defer stop()
 	pid := backendPID(lin)
 
@@ -355,5 +361,34 @@ func TestBackend_ClientGoneKeepsBackendWarm(t *testing.T) {
 	}
 	if backendPID(lin) != pid {
 		t.Error("backend should NOT restart when only the client gave up")
+	}
+}
+
+func TestBackend_WarmUpAbsorbsSlowInit(t *testing.T) {
+	savedTimeout := config.Config.Linter.BackendTimeout
+	savedStartup := config.Config.Linter.BackendStartupTimeout
+	// A per-request timeout shorter than the stub's init, but a generous startup timeout.
+	config.Config.Linter.BackendTimeout = 200 * time.Millisecond
+	config.Config.Linter.BackendStartupTimeout = 5 * time.Second
+	defer func() {
+		config.Config.Linter.BackendTimeout = savedTimeout
+		config.Config.Linter.BackendStartupTimeout = savedStartup
+	}()
+
+	lin, stop := startStubBackend(t, PKIMETAL_READY, "warmup")
+	defer stop()
+	pid := backendPID(lin)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// Warm-up absorbs the slow init, so the request completes within the short
+	// per-request backend timeout without a restart.
+	results := runLint(lin, ctx, "hello")
+	if !hasResult(results, SEVERITY_ERROR, "ok") {
+		t.Errorf("expected an 'ok' result, got %+v", results)
+	}
+	if backendPID(lin) != pid {
+		t.Error("backend should not have restarted; warm-up should absorb slow init")
 	}
 }

@@ -39,6 +39,7 @@ type Linter struct {
 	Unsupported           []ProfileId
 	NumInstances          int
 	ReqChannel            chan LintingRequest
+	ReadySignal           string // If set, an external backend emits this line once it has finished initialising.
 	external              bool
 	useHandleRequest      bool
 	queueTimeSummary      prometheus.Summary
@@ -92,6 +93,7 @@ var (
 const (
 	PKIMETAL_NAME         = "pkimetal"
 	PKIMETAL_ENDOFRESULTS = "[EndOfResults]"
+	PKIMETAL_READY        = "[Ready]"
 	NOT_INSTALLED         = "not installed"
 )
 
@@ -247,6 +249,27 @@ func (lin *LinterInstance) restartInstance_external(reason error) {
 	}
 	logger.Logger.Warn("Restarting Linter backend", zap.Int("instance#", lin.instanceNumber), zap.String("name", lin.Name), zap.Error(reason))
 	lin.startInstance_external(lin.directory, lin.cmd, lin.args...)
+	lin.warmUp()
+}
+
+// warmUp waits for an external backend that advertises a readiness signal to
+// finish its (potentially slow) initialisation before it is sent any requests,
+// so that start-up cost is not charged against a request's backend timeout.  It
+// is a no-op for in-process backends and for backends with no ReadySignal.
+func (lin *LinterInstance) warmUp() {
+	if lin.ReadySignal == "" || lin.stdoutFile == nil {
+		return
+	}
+	_ = lin.stdoutFile.SetReadDeadline(time.Now().Add(config.Config.Linter.BackendStartupTimeout))
+	for lin.Stdout.Scan() {
+		if lin.Stdout.Text() == lin.ReadySignal {
+			break
+		}
+	}
+	if err := lin.Stdout.Err(); err != nil {
+		logger.Logger.Error("Linter backend warm-up failed", zap.Int("instance#", lin.instanceNumber), zap.String("name", lin.Name), zap.Error(err))
+	}
+	_ = lin.stdoutFile.SetReadDeadline(time.Time{})
 }
 
 // sendResult sends a linting result to the request's response channel, unless
@@ -343,6 +366,11 @@ func parseResultToken(linterName, token string) (results []LintingResult, end bo
 }
 
 func (lin *LinterInstance) serverLoop(ctx context.Context, lif LinterInterface) {
+	// Wait for a slow-initialising backend to become ready before serving, so that
+	// its one-time start-up cost is not charged against the first request's backend
+	// timeout (which would otherwise cause a restart, re-init, timeout cascade).
+	lin.warmUp()
+
 	for {
 		select {
 		case lreq := <-lin.ReqChannel: // Multiple backends can share the same request channel, but only one backend will receive each request.

@@ -34,6 +34,7 @@ func init() {
 		Url:          "https://github.com/digicert/pkilint",
 		Unsupported:  nil,
 		NumInstances: config.Config.Linter.Pkilint.NumProcesses,
+		ReadySignal:  linter.PKIMETAL_READY,
 		Interface:    func() linter.LinterInterface { return &Pkilint{} },
 	}).Register()
 }
@@ -191,6 +192,7 @@ try:
 	init_smime_validators()
 	init_serverauth_validators_and_filters()
 	init_etsi_validators_and_filters()
+	print("` + linter.PKIMETAL_READY + `", flush=True)
 	for line in stdin:
 		if profile_id == -1:
 			profile_id = int(line.strip())
