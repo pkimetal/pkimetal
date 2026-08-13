@@ -1,4 +1,5 @@
 #!/bin/bash
-cd "$(dirname "$(readlink -f "$0")")"
-npm list @redocly/cli || npm i @redocly/cli@latest
-npx @redocly/cli@latest build-docs ../doc/openapi.yaml -o ../doc/openapi.html
+# Run from the repo root so npm uses the checked-in package-lock.json.
+cd "$(dirname "$(readlink -f "$0")")/.."
+npm ci
+./node_modules/.bin/redocly build-docs doc/openapi.yaml -o doc/openapi.html
