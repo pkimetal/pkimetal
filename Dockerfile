@@ -1,5 +1,5 @@
 # BUILD.
-FROM docker.io/library/golang:1.26.5-alpine3.24 AS build
+FROM docker.io/library/golang:1.26.5-alpine3.24@sha256:0178a641fbb4858c5f1b48e34bdaabe0350a330a1b1149aabd498d0699ff5fb2 AS build
 
 # Install build dependencies.
 RUN apk add --no-cache busybox && \
@@ -94,7 +94,7 @@ RUN \
 
 
 # RUNTIME.
-FROM alpine:3.24 AS runtime
+FROM alpine:3.24@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b AS runtime
 
 # Configure environment.
 CMD ["/app/pkimetal"]
