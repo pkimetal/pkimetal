@@ -36,10 +36,9 @@ type config struct {
 		MetricsTimeout       time.Duration `mapstructure:"metricsTimeout"`
 	}
 	Linter struct {
-		MaxQueueSize          int           `mapstructure:"maxQueueSize"`
-		BackendTimeout        time.Duration `mapstructure:"backendTimeout"`
-		BackendStartupTimeout time.Duration `mapstructure:"backendStartupTimeout"`
-		Badkeys               struct {
+		MaxQueueSize   int           `mapstructure:"maxQueueSize"`
+		BackendTimeout time.Duration `mapstructure:"backendTimeout"`
+		Badkeys        struct {
 			NumProcesses int    `mapstructure:"numProcesses"`
 			PythonDir    string `mapstructure:"pythonDir"`
 		}
@@ -195,7 +194,6 @@ func initViper() error {
 	viper.SetDefault("server.metricsTimeout", 8*time.Second)
 	viper.SetDefault("linter.maxQueueSize", 8192)
 	viper.SetDefault("linter.backendTimeout", 30*time.Second)
-	viper.SetDefault("linter.backendStartupTimeout", 120*time.Second)
 	viper.SetDefault("linter.badkeys.numProcesses", 1)
 	viper.SetDefault("linter.badkeys.pythonDir", "autodetect")
 	viper.SetDefault("linter.certlint.numProcesses", 1)

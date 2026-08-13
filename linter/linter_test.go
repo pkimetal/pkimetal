@@ -366,14 +366,9 @@ func TestBackend_ClientGoneKeepsBackendWarm(t *testing.T) {
 
 func TestBackend_WarmUpAbsorbsSlowInit(t *testing.T) {
 	savedTimeout := config.Config.Linter.BackendTimeout
-	savedStartup := config.Config.Linter.BackendStartupTimeout
-	// A per-request timeout shorter than the stub's init, but a generous startup timeout.
+	// A per-request timeout shorter than the stub's init; warm-up must absorb the init.
 	config.Config.Linter.BackendTimeout = 200 * time.Millisecond
-	config.Config.Linter.BackendStartupTimeout = 5 * time.Second
-	defer func() {
-		config.Config.Linter.BackendTimeout = savedTimeout
-		config.Config.Linter.BackendStartupTimeout = savedStartup
-	}()
+	defer func() { config.Config.Linter.BackendTimeout = savedTimeout }()
 
 	lin, stop := startStubBackend(t, PKIMETAL_READY, "warmup")
 	defer stop()

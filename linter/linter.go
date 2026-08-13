@@ -260,16 +260,19 @@ func (lin *LinterInstance) warmUp() {
 	if lin.ReadySignal == "" || lin.stdoutFile == nil {
 		return
 	}
-	_ = lin.stdoutFile.SetReadDeadline(time.Now().Add(config.Config.Linter.BackendStartupTimeout))
+	logger.Logger.Info("Warming up Linter backend", zap.Int("instance#", lin.instanceNumber), zap.String("name", lin.Name))
+	// Wait (without a read deadline) for the backend to finish initialising and emit
+	// its readiness signal.  A slow init - e.g. several backends initialising at once
+	// under CPU contention - must not be cut short, otherwise the instance would be
+	// restarted, re-initialised, and time out again in a cascade.  A backend that
+	// crashes during init closes its STDOUT, which ends the scan.
 	for lin.Stdout.Scan() {
 		if lin.Stdout.Text() == lin.ReadySignal {
-			break
+			logger.Logger.Info("Linter backend ready", zap.Int("instance#", lin.instanceNumber), zap.String("name", lin.Name))
+			return
 		}
 	}
-	if err := lin.Stdout.Err(); err != nil {
-		logger.Logger.Error("Linter backend warm-up failed", zap.Int("instance#", lin.instanceNumber), zap.String("name", lin.Name), zap.Error(err))
-	}
-	_ = lin.stdoutFile.SetReadDeadline(time.Time{})
+	logger.Logger.Error("Linter backend exited during warm-up", zap.Int("instance#", lin.instanceNumber), zap.String("name", lin.Name), zap.Error(lin.Stdout.Err()))
 }
 
 // sendResult sends a linting result to the request's response channel, unless
