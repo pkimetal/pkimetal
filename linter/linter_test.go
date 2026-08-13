@@ -225,16 +225,55 @@ func startStubBackend(t *testing.T, readySignal string, extraArgs ...string) (li
 	lin.startInstance_external(".", os.Args[0], args...)
 
 	ctx, cancel := context.WithCancel(context.Background())
+	done := make(chan struct{})
 	ShutdownWG.Add(1)
-	go lin.serverLoop(ctx, stubBackend{})
+	go func() {
+		lin.serverLoop(ctx, stubBackend{})
+		close(done)
+	}()
 
 	return lin, func() {
 		cancel()
-		ShutdownWG.Wait()
+		<-done
 		if lin.command != nil && lin.command.Process != nil {
 			_ = lin.command.Process.Kill()
 			_ = lin.command.Wait()
 		}
+	}
+}
+
+// startExternalStub runs a stub backend via serverLoop's own (serialised) start
+// path (external = true) rather than starting it manually, so serverLoop owns the
+// process lifecycle and the returned stop function only cancels the loop.
+func startExternalStub(t *testing.T, readySignal string, extraArgs ...string) (lin *LinterInstance, stop func()) {
+	t.Helper()
+	lin = &LinterInstance{
+		Linter: &Linter{
+			Name:                  "stub",
+			Version:               "v0",
+			ReqChannel:            make(chan LintingRequest, 8),
+			ReadySignal:           readySignal,
+			queueTimeSummary:      prometheus.NewSummary(prometheus.SummaryOpts{Name: "stub_queue"}),
+			processingTimeSummary: prometheus.NewSummary(prometheus.SummaryOpts{Name: "stub_processing"}),
+		},
+		Mutex: &sync.Mutex{},
+	}
+	lin.external = true
+	lin.directory = "."
+	lin.cmd = os.Args[0]
+	lin.args = append([]string{"-test.run=TestHelperProcess", helperArg}, extraArgs...)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	done := make(chan struct{})
+	ShutdownWG.Add(1)
+	go func() {
+		lin.serverLoop(ctx, stubBackend{})
+		close(done)
+	}()
+
+	return lin, func() {
+		cancel()
+		<-done
 	}
 }
 
@@ -385,5 +424,49 @@ func TestBackend_WarmUpAbsorbsSlowInit(t *testing.T) {
 	}
 	if backendPID(lin) != pid {
 		t.Error("backend should not have restarted; warm-up should absorb slow init")
+	}
+}
+
+func TestBackend_ExternalLifecycle(t *testing.T) {
+	lin, stop := startExternalStub(t, PKIMETAL_READY, "warmup")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// serverLoop forks and warms up the backend before serving.
+	r := runLint(lin, ctx, "hello")
+	stop() // Cancels the loop, which tears down the backend process.
+
+	if !hasResult(r, SEVERITY_ERROR, "ok") {
+		t.Errorf("expected an 'ok' result via the external path, got %+v", r)
+	}
+	if lin.command == nil || lin.command.ProcessState == nil {
+		t.Error("backend process should have been torn down on shutdown")
+	}
+}
+
+func TestBackend_InitialisationIsSerialised(t *testing.T) {
+	// Two backends that each sleep ~400ms during init.  Serialised initialisation
+	// takes ~800ms; if it ran in parallel it would take ~400ms.
+	start := time.Now()
+	lin1, stop1 := startExternalStub(t, PKIMETAL_READY, "warmup")
+	defer stop1()
+	lin2, stop2 := startExternalStub(t, PKIMETAL_READY, "warmup")
+	defer stop2()
+
+	var wg sync.WaitGroup
+	for _, lin := range []*LinterInstance{lin1, lin2} {
+		wg.Add(1)
+		go func(l *LinterInstance) {
+			defer wg.Done()
+			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+			defer cancel()
+			runLint(l, ctx, "hello")
+		}(lin)
+	}
+	wg.Wait()
+
+	if elapsed := time.Since(start); elapsed < 700*time.Millisecond {
+		t.Errorf("initialisation does not appear serialised: both backends ready in %v (expected >= ~800ms)", elapsed)
 	}
 }

@@ -85,9 +85,10 @@ type LintingResult struct {
 }
 
 var (
-	Linters         LinterSlice
-	linterInstances []*LinterInstance
-	ShutdownWG      sync.WaitGroup
+	Linters          LinterSlice
+	linterInstances  []*LinterInstance
+	ShutdownWG       sync.WaitGroup
+	backendInitMutex sync.Mutex // Serialises external backend initialisation so that simultaneous (re)starts do not thrash the CPU.
 )
 
 const (
@@ -156,13 +157,13 @@ func StartLinters(ctx context.Context) {
 		if lif := lin.Interface(); lif != nil {
 			logger.Logger.Info("Starting Linter", zap.Int("instance#", lin.instanceNumber), zap.String("name", lin.Name))
 
-			// Start the linter backend.
+			// Determine whether this backend runs as an external process; if so, it is
+			// started (and warmed up) by the server loop, serialised across all backends.
 			var directory, cmd string
 			var args []string
 			if lin.useHandleRequest, directory, cmd, args = lif.StartInstance(); len(cmd) > 0 {
-				ShutdownWG.Add(1)
 				lin.external = true
-				lin.startInstance_external(directory, cmd, args...)
+				lin.directory, lin.cmd, lin.args = directory, cmd, args
 			}
 
 			// Run the linter server loop.
@@ -215,16 +216,12 @@ func (lin *LinterInstance) startInstance_external(directory, cmd string, arg ...
 }
 
 func StopLinters(ctx context.Context) {
-	// Stop the linter backends.
+	// Signal the linter backends to stop.  External backend processes are torn down
+	// by their own server loops (see serverLoop); here we only run interface-level
+	// cleanup.
 	for _, lin := range linterInstances {
 		if lif := lin.Interface(); lif != nil {
-			if lin.external {
-				lin.stopInstance_external()
-				ShutdownWG.Done()
-			}
-
 			lif.StopInstance(lin)
-
 			logger.Logger.Info("Stopped Linter", zap.Int("instance#", lin.instanceNumber), zap.String("name", lin.Name))
 		}
 	}
@@ -369,10 +366,27 @@ func parseResultToken(linterName, token string) (results []LintingResult, end bo
 }
 
 func (lin *LinterInstance) serverLoop(ctx context.Context, lif LinterInterface) {
-	// Wait for a slow-initialising backend to become ready before serving, so that
-	// its one-time start-up cost is not charged against the first request's backend
-	// timeout (which would otherwise cause a restart, re-init, timeout cascade).
-	lin.warmUp()
+	defer ShutdownWG.Done()
+
+	if lin.external {
+		// Start and warm up the backend before serving.  Initialisation is serialised
+		// across all backends so that several slow-initialising backends cannot start
+		// at once and thrash the CPU.  Bail out if shutdown is already in progress.
+		backendInitMutex.Lock()
+		select {
+		case <-ctx.Done():
+			backendInitMutex.Unlock()
+			return
+		default:
+		}
+		lin.startInstance_external(lin.directory, lin.cmd, lin.args...)
+		lin.warmUp()
+		backendInitMutex.Unlock()
+		defer lin.stopInstance_external()
+	} else {
+		// The backend (if any) has already been started by the caller.
+		lin.warmUp()
+	}
 
 	for {
 		select {
@@ -493,7 +507,6 @@ func (lin *LinterInstance) serverLoop(ctx context.Context, lif LinterInterface) 
 
 		// Respond to graceful shutdown requests.
 		case <-ctx.Done():
-			ShutdownWG.Done()
 			return
 		}
 	}
