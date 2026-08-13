@@ -28,9 +28,23 @@ pkimetal runs two HTTP servers:
 | Server | Default Port | Purpose |
 |---|---|---|
 | Web | 8080 | REST API and web interface |
-| Monitoring | 8081 | Health probes, Prometheus metrics, and debug endpoints |
+| Monitoring | 8081 | Health probes, Prometheus metrics, and (optional) debug endpoints |
 
 Both servers can alternatively listen on Unix sockets (see `server.webserverPath` and `server.monitoringPath` below).
+
+By default the monitoring server binds to all interfaces. Set `server.monitoringAddress` to restrict it to a specific address (e.g. `127.0.0.1`).
+
+### Debug endpoints
+
+The monitoring server can expose the following debug endpoints:
+
+| Endpoint | Purpose |
+|---|---|
+| `/debug/build` | Build information |
+| `/debug/config` | Effective runtime configuration |
+| `/debug/pprof/` | Go [pprof](https://pkg.go.dev/net/http/pprof) profiling handlers |
+
+These endpoints are **disabled by default**. Set `server.enableDebugEndpoints` to `true` to enable them; while disabled they return `404 Not Found`.
 
 ## Configuration
 
@@ -59,7 +73,10 @@ Here is an example `config.yaml` file that demonstrates some of the highlights:
 ```yaml
 server:
   webserverPort: 12345  # Change the webserver port to 12345 (from the default 8080).
+  maxRequestBodySize: 20971520  # Accept request bodies up to 20 MiB (default is 10 MiB).
+  enableDebugEndpoints: true  # Expose the /debug/* endpoints on the monitoring server (disabled by default).
 linter:
+  backendTimeout: 60s  # Allow each linter backend up to 60s per request (default is 30s).
   certlint:
     numProcesses: 2  # Run certlint in 2 processes (instead of the default 1).
   ftfy:
