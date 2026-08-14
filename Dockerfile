@@ -1,5 +1,5 @@
 # BUILD.
-FROM docker.io/library/golang:1.26.5-alpine3.24@sha256:0178a641fbb4858c5f1b48e34bdaabe0350a330a1b1149aabd498d0699ff5fb2 AS build
+FROM docker.io/library/golang:1.27rc3-alpine3.24@sha256:1960ad72510580cb8f7bc18e0e8c6e703ece95ee0a745d535cfa7d4337d48c1b AS build
 
 # Install build dependencies.
 RUN apk add --no-cache busybox && \
