@@ -17,11 +17,3 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
-    ignore:
-      # golang publishes prereleases as non-SemVer tags (e.g. "1.27rc2-alpine3.24")
-      # that Dependabot can't filter via `versions`; restricting to patch + digest
-      # updates excludes them (minor/major base-image bumps stay manual).
-      - dependency-name: "*"
-        update-types:
-          - "version-update:semver-major"
-          - "version-update:semver-minor"
