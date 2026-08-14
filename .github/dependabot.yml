@@ -13,3 +13,7 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+  - package-ecosystem: "docker" # Keeps the digest-pinned base images in the Dockerfile up to date.
+    directory: "/"
+    schedule:
+      interval: "daily"
