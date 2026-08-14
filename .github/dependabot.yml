@@ -17,3 +17,8 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    ignore:
+      # Skip prerelease base images (e.g. golang's "1.27rc2-alpine3.24"), whose
+      # non-SemVer tag form defeats Dependabot's built-in prerelease detection.
+      - dependency-name: "*"
+        versions: ["*rc*", "*alpha*", "*beta*"]
