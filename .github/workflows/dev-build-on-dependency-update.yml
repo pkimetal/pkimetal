@@ -57,6 +57,7 @@ jobs:
       with:
         add-paths: |
           dev_go.*
+          Dockerfile
         token: ${{ secrets.GITHUB_TOKEN }}
         base: main
         branch: auto-dev-update

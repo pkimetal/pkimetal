@@ -7,6 +7,10 @@ go mod tidy
 # Track the Go toolchain version used to run this update in the go directive.
 go mod edit -go=$(go env GOVERSION | sed 's/^go//')
 
+# Keep the Dockerfile's golang builder image in step with the go directive.
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+"$SCRIPT_DIR/update_go_base_image.sh"
+
 # Add other non-Go dependencies, which "go mod tidy" will have removed.
 # The redundant "-modfile=go.mod" (go.mod is already the default) keeps OpenSSF
 # Scorecard's Pinned-Dependencies parser from flagging these intentional
