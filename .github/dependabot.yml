@@ -17,3 +17,8 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    cooldown:
+      # Update Go base images with no cooldown; other images keep the 3-day default.
+      default-days: 3
+      exclude:
+        - "*golang*"
