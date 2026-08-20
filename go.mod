@@ -4,7 +4,7 @@ go 1.27.0
 
 require (
 	github.com/CVE-2008-0166/dwklint/v2 v2.1.0
-	github.com/crtsh/ccadb_data v1.20260819.203227
+	github.com/crtsh/ccadb_data v1.20260820.193505
 	github.com/crtsh/ctlint v0.0.0-20260817094843-94c331609a5e
 	github.com/crtsh/ctloglists v1.20260820.153158
 	github.com/goccy/go-json v0.10.6
@@ -24,7 +24,7 @@ require (
 require (
 	github.com/CVE-2008-0166/dwk_blocklists_sqlite3 v0.0.0-20250725083057-d37481c06d85 // indirect
 	github.com/andybalholm/brotli v1.2.2 // indirect
-	github.com/badkeys/badkeys v0.0.19 // indirect
+	github.com/badkeys/badkeys v0.0.20 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/certlint/certlint v1.8.5 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
