@@ -1,11 +1,11 @@
 module github.com/pkimetal/pkimetal
 
-go 1.26.7
+go 1.27.0
 
 require (
 	github.com/CVE-2008-0166/dwklint/v2 v2.1.0
 	github.com/crtsh/ccadb_data v1.20260820.193505
-	github.com/crtsh/ctlint v0.0.0-20260817094843-94c331609a5e
+	github.com/crtsh/ctlint v0.0.0-20260824083903-63094aacbb99
 	github.com/crtsh/ctloglists v1.20260820.153158
 	github.com/goccy/go-json v0.10.6
 	github.com/google/certificate-transparency-go v1.3.3
@@ -26,7 +26,7 @@ require (
 	github.com/andybalholm/brotli v1.2.2 // indirect
 	github.com/badkeys/badkeys v0.0.21-0.20260823081702-7f6f975e8e54 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
-	github.com/certlint/certlint v1.8.5 // indirect
+	github.com/certlint/certlint v1.8.6 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/digicert/pkilint v0.13.3 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
