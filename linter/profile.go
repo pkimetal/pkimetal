@@ -280,10 +280,12 @@ func init() {
 
 	// Second pass.  NonCabforumProfileIDs intersects with other lists, and TbrTevgCertificateProfileIDs requires CrlProfileIDs to be populated first.
 	for k, v := range AllProfiles {
+		// These are independent (not else-if) because QWAC-l profiles are both CABForum EV compliant and ETSI QWAC compliant, so they belong in both buckets.
+		if (strings.HasPrefix(v.Name, "tbr_") || strings.HasPrefix(v.Name, "tevg_") || (strings.HasPrefix(v.Name, "etsi_leaf_tlsserver_") && !strings.Contains(v.Name, "person"))) && !slices.Contains(CrlProfileIDs, k) && !slices.Contains(OcspProfileIDs, k) {
+			TbrTevgCertificateProfileIDs = append(TbrTevgCertificateProfileIDs, k)
+		}
 		if !strings.HasPrefix(v.Name, "tbr_") && !strings.HasPrefix(v.Name, "tevg_") && !strings.HasPrefix(v.Name, "sbr_") && !strings.HasPrefix(v.Name, "csbr_") {
 			NonCabforumProfileIDs = append(NonCabforumProfileIDs, k)
-		} else if (strings.HasPrefix(v.Name, "tbr_") || strings.HasPrefix(v.Name, "tevg_") || (strings.HasPrefix(v.Name, "etsi_leaf_tlsserver_") && !strings.Contains(v.Name, "person"))) && !slices.Contains(CrlProfileIDs, k) && !slices.Contains(OcspProfileIDs, k) {
-			TbrTevgCertificateProfileIDs = append(TbrTevgCertificateProfileIDs, k)
 		}
 
 		if strings.HasPrefix(v.Name, "etsi_") {
