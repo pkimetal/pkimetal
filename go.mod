@@ -6,15 +6,15 @@ require (
 	github.com/CVE-2008-0166/dwklint/v2 v2.1.0
 	github.com/crtsh/ccadb_data v1.20260902.132537
 	github.com/crtsh/ctlint v0.0.0-20260904105526-3e459385daf1
-	github.com/crtsh/ctloglists v1.20260902.131539
+	github.com/crtsh/ctloglists v1.20260907.85823
 	github.com/goccy/go-json v0.10.6
 	github.com/google/certificate-transparency-go v1.3.3
 	github.com/prometheus/client_golang v1.24.1
 	github.com/sergi/go-diff v1.4.0
 	github.com/spf13/viper v1.21.0
 	github.com/titanous/rocacheck v0.0.0-20171023193734-afe73141d399
-	github.com/valyala/fasthttp v1.73.0
-	github.com/zmap/zcrypto v0.0.0-20260831034402-0452b53f6c1b
+	github.com/valyala/fasthttp v1.74.0
+	github.com/zmap/zcrypto v0.0.0-20260906180147-3ed30b1e9340
 	github.com/zmap/zlint/v3 v3.7.1
 	go.uber.org/automaxprocs v1.6.0
 	go.uber.org/zap v1.28.0
@@ -23,7 +23,6 @@ require (
 
 require (
 	github.com/CVE-2008-0166/dwk_blocklists_sqlite3 v0.0.0-20250725083057-d37481c06d85 // indirect
-	github.com/andybalholm/brotli v1.2.3 // indirect
 	github.com/badkeys/badkeys v0.0.20 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/certlint/certlint v1.8.6 // indirect
@@ -37,6 +36,7 @@ require (
 	github.com/klauspost/compress v1.20.0 // indirect
 	github.com/kroeckx/x509lint v0.0.0-20260109123110-103c92f2f1ad // indirect
 	github.com/mattn/go-isatty v0.0.24 // indirect
+	github.com/molecule-man/go-brrr v1.0.1 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/ncruces/go-strftime v1.0.0 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
@@ -52,7 +52,7 @@ require (
 	github.com/spf13/pflag v1.0.10 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	github.com/weppos/publicsuffix-go v0.50.4-0.20260715080728-6ed62ce99a4a // indirect
+	github.com/weppos/publicsuffix-go v0.50.4-0.20260821095816-b0fdb5c2d345 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
 	golang.org/x/net v0.58.0 // indirect
