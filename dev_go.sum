@@ -18,8 +18,8 @@ github.com/crtsh/ctloglists v1.20260908.182013 h1:mGKZiuVDpa81Px4uN2R5iUqWJSW4gF
 github.com/crtsh/ctloglists v1.20260908.182013/go.mod h1:qico6//22OeMcK1VuwMQvsyKrXqtpAvHjzSfHx+RMmo=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/digicert/pkilint v0.13.4-0.20260908152219-f8e4c3d3316f h1:Z5nshB4jsZnIabUGm345WB41xRjjWy1gexF/lZdiZ5I=
-github.com/digicert/pkilint v0.13.4-0.20260908152219-f8e4c3d3316f/go.mod h1:7xsqkDdi3sVsaYHDyeKZtI2WNd0Dd2EPQL+d9g48smY=
+github.com/digicert/pkilint v0.13.4-0.20260909045138-aafdf179602f h1:uc+ZRUTKoxDpxm+AI+wDGFsj+3BOs+TzfJgarQY7hpc=
+github.com/digicert/pkilint v0.13.4-0.20260909045138-aafdf179602f/go.mod h1:7xsqkDdi3sVsaYHDyeKZtI2WNd0Dd2EPQL+d9g48smY=
 github.com/dustin/go-humanize v1.0.1 h1:GzkhY7T5VNhEkwH0PVJgjz+fX1rhBrR7pRT3mDkpeCY=
 github.com/dustin/go-humanize v1.0.1/go.mod h1:Mu1zIs6XwVuF/gI1OepvI0qD18qycQx+mFykh5fBlto=
 github.com/frankban/quicktest v1.14.6 h1:7Xjx+VpznH+oBnejlPUj8oUpdxnVs4f8XU8WnHkI4W8=
