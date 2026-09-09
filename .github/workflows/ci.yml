@@ -63,6 +63,9 @@ jobs:
         env:
           CGO_ENABLED: "1"
 
+      - name: Python input protocol tests
+        run: python3 -m unittest discover -s linter/pkilint -p 'test_*.py'
+
   smoke:
     name: Container smoke test
     # docker-dev.yml already builds and smoke-tests the image on main, so only run

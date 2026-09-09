@@ -2,6 +2,7 @@ package pkilint
 
 import (
 	"context"
+	_ "embed"
 	"fmt"
 
 	"github.com/pkimetal/pkimetal/config"
@@ -11,6 +12,9 @@ import (
 type Pkilint struct{}
 
 var Version, PythonDir string
+
+//go:embed pem_input.py
+var pemInputReader string
 
 func init() {
 	// Get pkilint package details, either embedded during the build process or from pipx; if requested in the config, autodetect the site-packages directory.
@@ -54,6 +58,7 @@ from pkilint.etsi import etsi_constants
 from pkilint.pkix import certificate, crl, extension, name, ocsp
 from pkilint.report import ReportGeneratorJson
 
+` + pemInputReader + `
 
 # lint_cabf_smime_cert:
 ` + smime_profile_dictionary + `
@@ -186,35 +191,26 @@ def lint_ocsp_response(pem_data):
 		return "F: Exception: " + str(e)
 
 
-profile_id = -1
-pem_data = ""
 try:
 	init_smime_validators()
 	init_serverauth_validators_and_filters()
 	init_etsi_validators_and_filters()
 	print("` + linter.PKIMETAL_READY + `", flush=True)
-	for line in stdin:
-		if profile_id == -1:
-			profile_id = int(line.strip())
+	for profile_id, pem_data in read_pem_requests(stdin):
+		if profile_id in etsi_profile_ids:
+			print(lint_etsi_cert(profile_id, profile_id not in etsi_non_browser_profile_ids, pem_data))
+		elif profile_id in sbr_profile_ids:
+			print(lint_cabf_smime_cert(profile_id, pem_data))
+		elif profile_id in tbr_tevg_profile_ids:
+			print(lint_cabf_serverauth_cert(profile_id, pem_data))
+		elif profile_id in crl_profile_ids:
+			print(lint_crl(pem_data, profile_id))
+		elif profile_id in ocspresponse_profile_ids:
+			print(lint_ocsp_response(pem_data))
 		else:
-			pem_data = pem_data + line.strip() + "\n"
-
-		if "END CERTIFICATE" in line or "END X509 CRL" in line or "END OCSP RESPONSE" in line:
-			if profile_id in etsi_profile_ids:
-				print(lint_etsi_cert(profile_id, profile_id not in etsi_non_browser_profile_ids, pem_data))
-			elif profile_id in sbr_profile_ids:
-				print(lint_cabf_smime_cert(profile_id, pem_data))
-			elif profile_id in tbr_tevg_profile_ids:
-				print(lint_cabf_serverauth_cert(profile_id, pem_data))
-			elif profile_id in crl_profile_ids:
-				print(lint_crl(pem_data, profile_id))
-			elif profile_id in ocspresponse_profile_ids:
-				print(lint_ocsp_response(pem_data))
-			else:
-				print(lint_pkix_cert(pem_data))
-			print("` + linter.PKIMETAL_ENDOFRESULTS + `", flush=True)
-			profile_id = -1
-			pem_data = ""
+			print(lint_pkix_cert(pem_data))
+		print("` + linter.PKIMETAL_ENDOFRESULTS + `", flush=True)
+		del pem_data
 except KeyboardInterrupt:
 	pass
 `}
