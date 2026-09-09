@@ -96,6 +96,7 @@ Here are some projects/CAs that are known to use or integrate with pkimetal:
 - [Let's Encrypt](https://letsencrypt.org): [Continuous integration](https://github.com/letsencrypt/boulder/pull/8063)
 - [pkimet.al](https://pkimet.al) (Sectigo): The two [Public instances](#public-instances) listed above
 - [Sectigo](https://sectigo.com/): Pre-issuance linting
+- [TrustAsia](https://www.trustasia.com/)
 
 Please submit a pull request to update README.md if you are aware of another CA/project that uses or integrates with pkimetal.
 
