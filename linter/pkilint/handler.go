@@ -6,7 +6,7 @@ import (
 
 	"github.com/pkimetal/pkimetal/config"
 	"github.com/pkimetal/pkimetal/linter"
-	"github.com/pkimetal/pkimetal/linter/pkilint/pemreader"
+	"github.com/pkimetal/pkimetal/linter/pemreader"
 )
 
 type Pkilint struct{}

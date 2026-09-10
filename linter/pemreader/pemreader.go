@@ -1,6 +1,7 @@
-// Package pemreader holds the Python source for pkilint's PEM request reader.
-// It is kept in its own package so it can be unit-tested without triggering the
-// pkilint package's init(), which requires a configured pkilint install.
+// Package pemreader holds the Python source for the shared profile/PEM request
+// reader used by linter workers (e.g. pkilint, badkeys).  It lives in its own
+// package so it can be unit-tested without triggering those packages' init(),
+// which require a configured interpreter install.
 package pemreader
 
 // Reader is the Python generator that reads the profile/PEM request protocol

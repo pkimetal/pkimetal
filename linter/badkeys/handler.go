@@ -5,6 +5,7 @@ import (
 
 	"github.com/pkimetal/pkimetal/config"
 	"github.com/pkimetal/pkimetal/linter"
+	"github.com/pkimetal/pkimetal/linter/pemreader"
 )
 
 type Badkeys struct{}
@@ -62,20 +63,12 @@ def printresults(key):
 		else:
 			print(f"E: {check}{sub} vulnerability")
 
-profile_id = -1
-pem_data = ""
+` + pemreader.Reader + `
 try:
-	for line in stdin:
-		if profile_id == -1:
-			profile_id = int(line.strip())
-		else:
-			pem_data = pem_data + line.strip() + "\n"
-
-		if "END CERTIFICATE" in line:
-			printresults(checkcrt(pem_data, checks=allchecks))
-			print("` + linter.PKIMETAL_ENDOFRESULTS + `", flush=True)
-			profile_id = -1
-			pem_data = ""
+	for profile_id, pem_data in read_pem_requests(stdin):
+		printresults(checkcrt(pem_data, checks=allchecks))
+		print("` + linter.PKIMETAL_ENDOFRESULTS + `", flush=True)
+		del pem_data
 except KeyboardInterrupt:
 	pass
 `}
