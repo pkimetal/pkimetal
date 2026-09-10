@@ -5,8 +5,8 @@ go 1.26.7
 require (
 	github.com/CVE-2008-0166/dwklint/v2 v2.1.0
 	github.com/crtsh/ccadb_data v1.20260909.204222
-	github.com/crtsh/ctlint v0.0.0-20260909131141-e129ad1cd5c0
-	github.com/crtsh/ctloglists v1.20260909.173522
+	github.com/crtsh/ctlint v0.0.0-20260910105708-980f3b3e5a4a
+	github.com/crtsh/ctloglists v1.20260910.104223
 	github.com/goccy/go-json v0.10.6
 	github.com/google/certificate-transparency-go v1.3.3
 	github.com/prometheus/client_golang v1.24.1
@@ -36,7 +36,7 @@ require (
 	github.com/klauspost/compress v1.20.0 // indirect
 	github.com/kroeckx/x509lint v0.0.0-20260109123110-103c92f2f1ad // indirect
 	github.com/mattn/go-isatty v0.0.24 // indirect
-	github.com/molecule-man/go-brrr v1.0.1 // indirect
+	github.com/molecule-man/go-brrr v1.1.0 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/ncruces/go-strftime v1.0.0 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
