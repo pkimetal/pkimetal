@@ -11,8 +11,8 @@ set -euo pipefail
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 dockerfile="$SCRIPT_DIR/Dockerfile"
 
-# Temporary cap: some CI tooling doesn't support Go 1.27 yet.
-max_goversion_majmin="1.26"
+# Temporary cap: some CI tooling doesn't support Go 1.28 yet.
+max_goversion_majmin="1.27"
 
 goversion=$(go env GOVERSION | sed 's/^go//')
 current=$(sed -nE 's|^FROM docker\.io/library/golang:([0-9]+(\.[0-9]+)*)-.* AS build$|\1|p' "$dockerfile")
