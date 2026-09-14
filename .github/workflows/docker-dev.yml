@@ -47,7 +47,7 @@ jobs:
       - name: Cache main image layers
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
-          path: /tmp/.buildx-main-cache
+          path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-main-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-main-
