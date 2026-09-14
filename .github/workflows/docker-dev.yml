@@ -115,3 +115,30 @@ jobs:
       - name: Stop container
         if: always()
         run: docker rm -f pkimetal || true
+
+      # Verify the arm64 manifest entry actually runs (QEMU emulation catches a
+      # wrong-arch binary being shipped in the arm64 image). Emulated startup is
+      # slower, so allow a longer readiness window.
+      - name: Smoke test the published image (arm64)
+        run: |
+          IMAGE="ghcr.io/pkimetal/pkimetal-dev:${{ env.CONTAINER_TIMESTAMP }}"
+          docker run -d --name pkimetal-arm64 --platform linux/arm64 -p 8090:8080 -p 8091:8081 "$IMAGE"
+          for i in $(seq 1 120); do
+            if curl -fsS http://127.0.0.1:8091/livez >/dev/null 2>&1 \
+               && curl -fsS http://127.0.0.1:8091/readyz >/dev/null 2>&1; then
+              echo "Service is ready."
+              break
+            fi
+            if [ "$i" -eq 120 ]; then
+              echo "Service did not become ready in time." >&2
+              docker logs pkimetal-arm64 || true
+              exit 1
+            fi
+            sleep 5
+          done
+          curl -fsS http://127.0.0.1:8091/metrics >/dev/null
+          curl -fsS http://127.0.0.1:8090/ >/dev/null
+
+      - name: Stop container (arm64)
+        if: always()
+        run: docker rm -f pkimetal-arm64 || true
