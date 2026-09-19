@@ -106,10 +106,10 @@ github.com/valyala/bytebufferpool v1.0.0 h1:GqA5TC/0021Y/b9FG4Oi9Mr3q7XYx6Kllzaw
 github.com/valyala/bytebufferpool v1.0.0/go.mod h1:6bBcMArwyJ5K/AmCkWv1jt77kVWyCJ6HpOuEn7z0Csc=
 github.com/valyala/fasthttp v1.74.0 h1:wMS9fnO2QTALozYx5pId2Vi7ZwU/epUkY8i/KPWCHoU=
 github.com/valyala/fasthttp v1.74.0/go.mod h1:3ARmLamUcw7ElxVtC8PXaGzQ6VEuvnetlkrwIklQBSE=
-github.com/weppos/publicsuffix-go v0.50.4-0.20260821095816-b0fdb5c2d345 h1:hJZP+OOgu8pORqJKySfSrzEzMmyJUfG9/Khm/Jom0E8=
-github.com/weppos/publicsuffix-go v0.50.4-0.20260821095816-b0fdb5c2d345/go.mod h1:/rOa781xBykZhHK/I3QeHo92qdDKVmKZKF7s8qAEM/4=
-github.com/zmap/zcrypto v0.0.0-20260906180147-3ed30b1e9340 h1:DzCAn4KcjdDOAyvwhB6z7BL7oRKvALWBwvQ0BApOdI0=
-github.com/zmap/zcrypto v0.0.0-20260906180147-3ed30b1e9340/go.mod h1:q7N4dwTU1frjgmnTIFxCyAC8mYz32ONxjkbch7whBzo=
+github.com/weppos/publicsuffix-go v0.50.4-0.20260918082853-3c3d7dc4a0cb h1:QIW0GHVTSubm3VxkKpn1FnFAgins6N8FiGTvUQwpXzw=
+github.com/weppos/publicsuffix-go v0.50.4-0.20260918082853-3c3d7dc4a0cb/go.mod h1:/rOa781xBykZhHK/I3QeHo92qdDKVmKZKF7s8qAEM/4=
+github.com/zmap/zcrypto v0.0.0-20260919232836-751f288b7287 h1:FHX1aP8m3NbnrENtdZ8YVuMmbKgx+XcNfdGjZ0j00DI=
+github.com/zmap/zcrypto v0.0.0-20260919232836-751f288b7287/go.mod h1:9O2aSz1l9fUHTFxJMYCoFsZBy6yGlz3nrOp4dHue5qw=
 github.com/zmap/zlint/v3 v3.7.2 h1:dSGo8HtE3nyWJKsXDklwO/fL5cflOb/X6J4GenAXJmk=
 github.com/zmap/zlint/v3 v3.7.2/go.mod h1:SJRJ3yZl8GEfvopKxx7atsTmsKGsh838dhMPzD0t3ss=
 go.uber.org/automaxprocs v1.6.0 h1:O3y2/QNTOdbF+e/dpXNNW7Rx2hZ4sTIPyybbxyNqTUs=
