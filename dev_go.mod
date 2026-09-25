@@ -33,7 +33,7 @@ require (
 	github.com/go-logr/logr v1.4.4 // indirect
 	github.com/go-viper/mapstructure/v2 v2.5.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
-	github.com/klauspost/compress v1.20.0 // indirect
+	github.com/klauspost/compress v1.20.1 // indirect
 	github.com/kroeckx/x509lint v0.0.0-20260109123110-103c92f2f1ad // indirect
 	github.com/mattn/go-isatty v0.0.24 // indirect
 	github.com/molecule-man/go-brrr v1.1.1 // indirect
