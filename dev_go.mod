@@ -23,7 +23,7 @@ require (
 
 require (
 	github.com/CVE-2008-0166/dwk_blocklists_sqlite3 v0.0.0-20250725083057-d37481c06d85 // indirect
-	github.com/badkeys/badkeys v0.0.21-0.20260928160844-9ba5d2dcf74f // indirect
+	github.com/badkeys/badkeys v0.0.21 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/certlint/certlint v1.8.7-0.20260904143208-ac8528534b7c // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
@@ -63,6 +63,6 @@ require (
 	modernc.org/libc v1.77.1 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.12.1 // indirect
-	modernc.org/sqlite v1.59.0 // indirect
+	modernc.org/sqlite v1.60.0 // indirect
 	zombiezen.com/go/sqlite v1.4.2 // indirect
 )
