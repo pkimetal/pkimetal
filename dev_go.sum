@@ -12,8 +12,8 @@ github.com/cespare/xxhash/v2 v2.3.0 h1:UL815xU9SqsFlibzuggzjXhog7bL6oX9BbNZnL2UF
 github.com/cespare/xxhash/v2 v2.3.0/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XLFGgcrjCOs=
 github.com/crtsh/ccadb_data v1.20260927.74847 h1:3JM3FCVjxCrMvFfiKQj7GQobgstRYMOH17DkT7ISq5M=
 github.com/crtsh/ccadb_data v1.20260927.74847/go.mod h1:avWCZWp3bwPa5XuUWNoCeHgMUdOW2tccdnUJHvfmc74=
-github.com/crtsh/ctlint v0.0.0-20260922114041-9c9228820e45 h1:x3jdGDrwlhzSeboKCYG/V/T2SGmLtqDJtvqjUROw9Ck=
-github.com/crtsh/ctlint v0.0.0-20260922114041-9c9228820e45/go.mod h1:7OWSnlhcpR+XeZ6sDk3m+iG1HP8HFYvfHphRe78iUvs=
+github.com/crtsh/ctlint v0.0.0-20260928224506-581a879eeb29 h1:TqIliBwkYm9owZVrYkKLgus1WY08bm74+QTFFPa++D0=
+github.com/crtsh/ctlint v0.0.0-20260928224506-581a879eeb29/go.mod h1:mA6g/NtpRymaPGZdKGX5yFgIL5NM9HGL2A6y4g/2XMY=
 github.com/crtsh/ctloglists v1.20260918.205400 h1:G4u9b9BOe4NAH5HG/PvvkUp/0ZQwbDNjibLi+9PB/NA=
 github.com/crtsh/ctloglists v1.20260918.205400/go.mod h1:SN3CxwD8H6GmChecpUpO+ShasXNH3eVSuIMXbJ8jQ1s=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
