@@ -2,6 +2,8 @@ package zlint
 
 import (
 	"context"
+	"crypto/ecdsa"
+	"crypto/elliptic"
 	"crypto/rand"
 	"crypto/rsa"
 	cryptox509 "crypto/x509"
@@ -11,6 +13,8 @@ import (
 	"time"
 
 	"github.com/pkimetal/pkimetal/linter"
+
+	"golang.org/x/crypto/ocsp"
 )
 
 func testCRLDER(t *testing.T, thisUpdate, nextUpdate time.Time) []byte {
@@ -92,5 +96,57 @@ func TestTBRARLUsesCACRLNextUpdateLimit(t *testing.T) {
 	})
 	if hasFinding(arlResults, "e_crl_next_update_invalid") {
 		t.Fatal("TBR ARL reported subscriber nextUpdate limit violation")
+	}
+}
+
+func TestTBROCSPResponseRunsCABFLints(t *testing.T) {
+	key, err := ecdsa.GenerateKey(elliptic.P384(), rand.Reader)
+	if err != nil {
+		t.Fatalf("failed to generate test key: %v", err)
+	}
+	thisUpdate := time.Date(2026, time.June, 24, 13, 0, 0, 0, time.UTC)
+	issuerDER, err := cryptox509.CreateCertificate(rand.Reader, &cryptox509.Certificate{
+		SerialNumber:          big.NewInt(1),
+		Subject:               pkix.Name{CommonName: "test issuer"},
+		NotBefore:             thisUpdate.Add(-time.Hour),
+		NotAfter:              thisUpdate.AddDate(1, 0, 0),
+		KeyUsage:              cryptox509.KeyUsageCertSign | cryptox509.KeyUsageCRLSign,
+		IsCA:                  true,
+		BasicConstraintsValid: true,
+	}, &cryptox509.Certificate{Subject: pkix.Name{CommonName: "test issuer"}}, key.Public(), key)
+	if err != nil {
+		t.Fatalf("failed to generate test issuer: %v", err)
+	}
+	issuer, err := cryptox509.ParseCertificate(issuerDER)
+	if err != nil {
+		t.Fatalf("failed to parse test issuer: %v", err)
+	}
+
+	// P-384 key with ECDSA-SHA256 violates the TLS BRs' signature AlgorithmIdentifier rules.
+	ocspDER, err := ocsp.CreateResponse(issuer, issuer, ocsp.Response{
+		Status:             ocsp.Good,
+		SerialNumber:       big.NewInt(2),
+		ThisUpdate:         thisUpdate,
+		NextUpdate:         thisUpdate.AddDate(0, 0, 4),
+		SignatureAlgorithm: cryptox509.ECDSAWithSHA256,
+	}, key)
+	if err != nil {
+		t.Fatalf("failed to generate test OCSP response: %v", err)
+	}
+
+	rfcResults := (&Zlint{}).HandleRequest(context.Background(), nil, &linter.LintingRequest{
+		DecodedInput: ocspDER,
+		ProfileId:    linter.RFC6960_OCSPRESPONSE,
+	})
+	if hasFinding(rfcResults, "e_ocsp_ecdsa_signature_encoding_correct") {
+		t.Fatal("RFC6960 OCSP response profile ran a CABForum lint")
+	}
+
+	tbrResults := (&Zlint{}).HandleRequest(context.Background(), nil, &linter.LintingRequest{
+		DecodedInput: ocspDER,
+		ProfileId:    linter.TBR_OCSPRESPONSE,
+	})
+	if !hasFinding(tbrResults, "e_ocsp_ecdsa_signature_encoding_correct") {
+		t.Fatal("TBR OCSP response profile did not report ECDSA signature encoding violation")
 	}
 }
