@@ -104,8 +104,8 @@ github.com/titanous/rocacheck v0.0.0-20171023193734-afe73141d399 h1:e/5i7d4oYZ+C
 github.com/titanous/rocacheck v0.0.0-20171023193734-afe73141d399/go.mod h1:LdwHTNJT99C5fTAzDz0ud328OgXz+gierycbcIx2fRs=
 github.com/valyala/bytebufferpool v1.0.0 h1:GqA5TC/0021Y/b9FG4Oi9Mr3q7XYx6KllzawFIhcdPw=
 github.com/valyala/bytebufferpool v1.0.0/go.mod h1:6bBcMArwyJ5K/AmCkWv1jt77kVWyCJ6HpOuEn7z0Csc=
-github.com/valyala/fasthttp v1.74.0 h1:wMS9fnO2QTALozYx5pId2Vi7ZwU/epUkY8i/KPWCHoU=
-github.com/valyala/fasthttp v1.74.0/go.mod h1:3ARmLamUcw7ElxVtC8PXaGzQ6VEuvnetlkrwIklQBSE=
+github.com/valyala/fasthttp v1.75.0 h1:W3xrvNJHG60j2ZCjxpP8kkB+oPG8kh9/g1n4+3xUwNA=
+github.com/valyala/fasthttp v1.75.0/go.mod h1:JiVkPRZU124PuPsreV/s9dZRgG2lRK7wNEikdQ0Rk4s=
 github.com/weppos/publicsuffix-go v0.50.4-0.20260918082853-3c3d7dc4a0cb h1:QIW0GHVTSubm3VxkKpn1FnFAgins6N8FiGTvUQwpXzw=
 github.com/weppos/publicsuffix-go v0.50.4-0.20260918082853-3c3d7dc4a0cb/go.mod h1:/rOa781xBykZhHK/I3QeHo92qdDKVmKZKF7s8qAEM/4=
 github.com/zmap/zcrypto v0.0.0-20260919232836-751f288b7287 h1:FHX1aP8m3NbnrENtdZ8YVuMmbKgx+XcNfdGjZ0j00DI=
