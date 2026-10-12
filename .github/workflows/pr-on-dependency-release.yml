@@ -27,6 +27,14 @@ jobs:
     - name: Checkout this repo
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
+    # Keep in step with max_goversion_majmin in update_go_base_image.sh.
+    - name: Setup Go
+      uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
+      with:
+        go-version: '1.27.x'
+        check-latest: true
+        cache: false
+
     - name: Setup git
       run: |
           git config --global user.email "gh@pkimet.al"
