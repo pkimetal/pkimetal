@@ -1,10 +1,10 @@
 module github.com/pkimetal/pkimetal
 
-go 1.27.1
+go 1.27.2
 
 require (
 	github.com/CVE-2008-0166/dwklint/v2 v2.1.0
-	github.com/crtsh/ccadb_data v1.20261009.204307
+	github.com/crtsh/ccadb_data v1.20261012.173332
 	github.com/crtsh/ctlint v0.0.0-20261012104436-90cc1c3a5da6
 	github.com/crtsh/ctloglists v1.20260918.205400
 	github.com/goccy/go-json v0.11.2
