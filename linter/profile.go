@@ -53,6 +53,7 @@ const (
 	TBR_LEAF_OCSPSIGNING
 	TBR_CRL
 	TBR_ARL
+	TBR_OCSPRESPONSE
 	// CABForum TLS Extended Validation Guidelines.
 	TEVG_ROOT_TLSSERVER
 	TEVG_SUBORDINATE_TLSSERVER
@@ -170,6 +171,7 @@ var (
 		TBR_LEAF_OCSPSIGNING:                             {Name: "tbr_leaf_ocspsigning", Source: "TLS BRs", Description: "OCSP Signing Certificate"},
 		TBR_CRL:                                          {Name: "tbr_crl", Source: "TLS BRs", Description: "Certificate Revocation List"},
 		TBR_ARL:                                          {Name: "tbr_arl", Source: "TLS BRs", Description: "Authority Revocation List"},
+		TBR_OCSPRESPONSE:                                 {Name: "tbr_ocspresponse", Source: "TLS BRs", Description: "OCSP Response"},
 		// CABForum TLS Extended Validation Guidelines.
 		TEVG_ROOT_TLSSERVER:                               {Name: "tevg_root_tlsserver", Source: "TLS EVGs", Description: "EV TLS Server Root CA Certificate"},
 		TEVG_SUBORDINATE_TLSSERVER:                        {Name: "tevg_subordinate_tlsserver", Source: "TLS EVGs", Description: "EV TLS Subordinate CA Certificate"},
