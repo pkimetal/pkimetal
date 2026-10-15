@@ -108,8 +108,8 @@ github.com/valyala/fasthttp v1.75.0 h1:W3xrvNJHG60j2ZCjxpP8kkB+oPG8kh9/g1n4+3xUw
 github.com/valyala/fasthttp v1.75.0/go.mod h1:JiVkPRZU124PuPsreV/s9dZRgG2lRK7wNEikdQ0Rk4s=
 github.com/weppos/publicsuffix-go v0.50.4-0.20260918082853-3c3d7dc4a0cb h1:QIW0GHVTSubm3VxkKpn1FnFAgins6N8FiGTvUQwpXzw=
 github.com/weppos/publicsuffix-go v0.50.4-0.20260918082853-3c3d7dc4a0cb/go.mod h1:/rOa781xBykZhHK/I3QeHo92qdDKVmKZKF7s8qAEM/4=
-github.com/zmap/zcrypto v0.0.0-20261015081852-f1c8781d10fb h1:7PEKA5itzNkSfV9khvcgzGvJDHqX4uC9etHKOtN5hv4=
-github.com/zmap/zcrypto v0.0.0-20261015081852-f1c8781d10fb/go.mod h1:PirJ5BfLlaLJCHpsOsvt9RtmsOA4kuU6G5rTHoeM0Eg=
+github.com/zmap/zcrypto v0.0.0-20261015200212-7e1570bbd845 h1:nnrVJbRVPQvBX5AV5O1rFPf6BbhrXThEoWT/DLnPFD4=
+github.com/zmap/zcrypto v0.0.0-20261015200212-7e1570bbd845/go.mod h1:b9PxZW/4W2DsWVwbQdh3e2v/LB+EcZp1oG3oQDYm4Jg=
 github.com/zmap/zlint/v3 v3.7.3-0.20261011160856-5b33989f07ed h1:YE9Ve5QNP+Mz2LFOvcRu9A4lEqHsgnhTFTKJFhLqWZM=
 github.com/zmap/zlint/v3 v3.7.3-0.20261011160856-5b33989f07ed/go.mod h1:SJRJ3yZl8GEfvopKxx7atsTmsKGsh838dhMPzD0t3ss=
 go.uber.org/automaxprocs v1.6.0 h1:O3y2/QNTOdbF+e/dpXNNW7Rx2hZ4sTIPyybbxyNqTUs=
