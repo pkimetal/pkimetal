@@ -10,8 +10,8 @@ github.com/certlint/certlint v1.8.7-0.20260904143208-ac8528534b7c h1:qjH7Y1MvAMy
 github.com/certlint/certlint v1.8.7-0.20260904143208-ac8528534b7c/go.mod h1:o1y8jZXOgB34WoUCkuQrxd+3TgXDdMdJDdPwQZoMyhU=
 github.com/cespare/xxhash/v2 v2.3.0 h1:UL815xU9SqsFlibzuggzjXhog7bL6oX9BbNZnL2UFvs=
 github.com/cespare/xxhash/v2 v2.3.0/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XLFGgcrjCOs=
-github.com/crtsh/ccadb_data v1.20261013.210414 h1:sP564NiwAUPrJLwB2eHiUuB8dEBdSyCqZySmBtdJXxI=
-github.com/crtsh/ccadb_data v1.20261013.210414/go.mod h1:avWCZWp3bwPa5XuUWNoCeHgMUdOW2tccdnUJHvfmc74=
+github.com/crtsh/ccadb_data v1.20261015.35201 h1:WxzikXNu78KoTVs7cASC3fQVJt2AO254Q6B2gT4Ljlc=
+github.com/crtsh/ccadb_data v1.20261015.35201/go.mod h1:avWCZWp3bwPa5XuUWNoCeHgMUdOW2tccdnUJHvfmc74=
 github.com/crtsh/ctlint v0.0.0-20261013151429-369be866c00b h1:NXpCLr1qEQ7UFDa63PHYzbv/sYvmHIOL14tWDqSzsds=
 github.com/crtsh/ctlint v0.0.0-20261013151429-369be866c00b/go.mod h1:c8N/KHvK/yNx9c93kcT/t07fQtk5fJpy45BHtw9iZIc=
 github.com/crtsh/ctloglists v1.20261013.190400 h1:uUTVr6cpSCi63ZKaChXLfPSDwe4TzWEb9reilxS9w7E=
@@ -108,8 +108,8 @@ github.com/valyala/fasthttp v1.75.0 h1:W3xrvNJHG60j2ZCjxpP8kkB+oPG8kh9/g1n4+3xUw
 github.com/valyala/fasthttp v1.75.0/go.mod h1:JiVkPRZU124PuPsreV/s9dZRgG2lRK7wNEikdQ0Rk4s=
 github.com/weppos/publicsuffix-go v0.50.4-0.20260918082853-3c3d7dc4a0cb h1:QIW0GHVTSubm3VxkKpn1FnFAgins6N8FiGTvUQwpXzw=
 github.com/weppos/publicsuffix-go v0.50.4-0.20260918082853-3c3d7dc4a0cb/go.mod h1:/rOa781xBykZhHK/I3QeHo92qdDKVmKZKF7s8qAEM/4=
-github.com/zmap/zcrypto v0.0.0-20260919232836-751f288b7287 h1:FHX1aP8m3NbnrENtdZ8YVuMmbKgx+XcNfdGjZ0j00DI=
-github.com/zmap/zcrypto v0.0.0-20260919232836-751f288b7287/go.mod h1:9O2aSz1l9fUHTFxJMYCoFsZBy6yGlz3nrOp4dHue5qw=
+github.com/zmap/zcrypto v0.0.0-20261015050653-aa1de3126e87 h1:B9sBGvtHjiGOOemAh0cCGTzub76DXlxmOh3Qtx3TkRs=
+github.com/zmap/zcrypto v0.0.0-20261015050653-aa1de3126e87/go.mod h1:9O2aSz1l9fUHTFxJMYCoFsZBy6yGlz3nrOp4dHue5qw=
 github.com/zmap/zlint/v3 v3.7.3-0.20261011160856-5b33989f07ed h1:YE9Ve5QNP+Mz2LFOvcRu9A4lEqHsgnhTFTKJFhLqWZM=
 github.com/zmap/zlint/v3 v3.7.3-0.20261011160856-5b33989f07ed/go.mod h1:SJRJ3yZl8GEfvopKxx7atsTmsKGsh838dhMPzD0t3ss=
 go.uber.org/automaxprocs v1.6.0 h1:O3y2/QNTOdbF+e/dpXNNW7Rx2hZ4sTIPyybbxyNqTUs=
