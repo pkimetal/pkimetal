@@ -213,7 +213,7 @@ components:
           $ref: '#/components/schemas/ResponseFormat'
         profile:
           type: string
-          description: The name of a profile
+          description: The name of a profile, which must be for the type of input (certificate, CRL, or OCSP response) that the endpoint accepts
           default: autodetect
         severity:
           $ref: '#/components/schemas/FindingSeverity'

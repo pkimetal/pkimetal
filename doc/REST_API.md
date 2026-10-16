@@ -23,7 +23,7 @@ The response `format` must be one of the following options:
 - json
 - text
 
-Use the [profiles](#get-endpoints) GET endpoint to list the supported values for `profile`.
+Use the [profiles](#get-endpoints) GET endpoint to list the supported values for `profile`. The profile must be for the type of input that the endpoint accepts (e.g., a CRL profile for `/lintcrl` and `/linttbscrl`); otherwise, the response contains a single fatal finding: "Profile not applicable to this endpoint".
 
 The minimum `severity` must be one of the following options:
 

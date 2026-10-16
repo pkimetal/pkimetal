@@ -81,6 +81,8 @@ func POST(fhctx *fasthttp.RequestCtx, path string) int {
 			errorMessage = "Unrecognised input"
 		} else if !ri.GetProfile(paramS(fhctx, "profile")) {
 			errorMessage = "Unrecognised profile"
+		} else if !ri.ProfileMatchesEndpoint() {
+			errorMessage = "Profile not applicable to this endpoint"
 		} else if ri.minimumSeverity, ok = linter.Severity[paramS(fhctx, "severity")]; !ok {
 			errorMessage = "Unrecognised severity"
 		} else {
