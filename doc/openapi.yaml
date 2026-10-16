@@ -159,14 +159,10 @@ components:
 
   responses:
     BadRequest:
-      description: Invalid request (e.g., empty body, unrecognised input/profile/severity/format)
-      content:
-        text/plain:
-          schema:
-            type: string
+      description: Unrecognised response format. The response body is empty.
 
     LintingSuccessful:
-      description: The response for the specified linting request
+      description: The response for the specified linting request. If the request is otherwise invalid (e.g., empty body, unrecognised input/profile/severity, or profile not applicable to the endpoint), the response contains a single fatal finding from pkimetal that describes the problem.
       content:
         application/json:
           schema:
