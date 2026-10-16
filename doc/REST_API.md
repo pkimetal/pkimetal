@@ -38,6 +38,10 @@ The minimum `severity` must be one of the following options:
 
 The "meta" severity level includes informational "findings" added by pkimetal itself. The other severity levels are used for the findings of the various linters.
 
+If the request is invalid (e.g., empty body, or unrecognised input, profile, or severity), the HTTP status is 200 and the response contains a single fatal finding from pkimetal that describes the problem. The exception is an unrecognised `format`, for which the HTTP status is 400 and the response body is empty.
+
+If the request is not completed within the server's request timeout (`server.requestTimeout`, default 30s), the HTTP status is 503.
+
 ## POST endpoints
 
 Endpoint | Description | Alternative name for b64input
