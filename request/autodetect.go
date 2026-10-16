@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"encoding/base64"
+	"slices"
 
 	"github.com/pkimetal/pkimetal/linter"
 
@@ -213,6 +214,18 @@ func (ri *RequestInfo) GetProfile(profileName string) bool {
 	}
 
 	return true
+}
+
+// ProfileMatchesEndpoint reports whether the profile is for the type of input (certificate, CRL, or OCSP response) that the endpoint accepts.
+func (ri *RequestInfo) ProfileMatchesEndpoint() bool {
+	switch ri.endpoint {
+	case ENDPOINT_LINTCRL, ENDPOINT_LINTTBSCRL:
+		return slices.Contains(linter.CrlProfileIDs, ri.profileId)
+	case ENDPOINT_LINTOCSP, ENDPOINT_LINTTBSOCSP:
+		return slices.Contains(linter.OcspProfileIDs, ri.profileId)
+	default:
+		return !slices.Contains(linter.NonCertificateProfileIDs, ri.profileId)
+	}
 }
 
 func (ri *RequestInfo) detectCRLProfile() linter.ProfileId {

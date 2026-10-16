@@ -1,6 +1,7 @@
 package request
 
 import (
+	"net/url"
 	"testing"
 
 	"github.com/pkimetal/pkimetal/linter"
@@ -24,6 +25,54 @@ func TestGetProfile_OCSPAutodetect(t *testing.T) {
 		if !ri.GetProfile("") || ri.profileId != linter.RFC6960_OCSPRESPONSE {
 			t.Errorf("endpoint %d: got profileId %d, want RFC6960_OCSPRESPONSE", ep, ri.profileId)
 		}
+	}
+}
+
+func TestProfileMatchesEndpoint(t *testing.T) {
+	cases := []struct {
+		endpoint Endpoint
+		profile  string
+		want     bool
+	}{
+		{ENDPOINT_LINTCERT, "rfc5280_leaf", true},
+		{ENDPOINT_LINTTBSCERT, "tbr_leaf_tlsserver_dv", true},
+		{ENDPOINT_LINTCERT, "rfc5280_crl", false},
+		{ENDPOINT_LINTTBSCERT, "rfc6960_ocspresponse", false},
+		{ENDPOINT_LINTCRL, "rfc5280_crl", true},
+		{ENDPOINT_LINTTBSCRL, "tbr_arl", true},
+		{ENDPOINT_LINTCRL, "rfc5280_leaf", false},
+		{ENDPOINT_LINTTBSCRL, "rfc5280_leaf", false},
+		{ENDPOINT_LINTTBSCRL, "rfc6960_ocspresponse", false},
+		{ENDPOINT_LINTOCSP, "rfc6960_ocspresponse", true},
+		{ENDPOINT_LINTTBSOCSP, "rfc5280_crl", false},
+		{ENDPOINT_LINTOCSP, "rfc5280_root", false},
+	}
+	for _, c := range cases {
+		ri := RequestInfo{endpoint: c.endpoint}
+		if !ri.GetProfile(c.profile) {
+			t.Fatalf("%s: GetProfile returned false", c.profile)
+		}
+		if got := ri.ProfileMatchesEndpoint(); got != c.want {
+			t.Errorf("endpoint %d, profile %s: got %v, want %v", c.endpoint, c.profile, got, c.want)
+		}
+	}
+}
+
+// Regression test for https://github.com/pkimetal/pkimetal/issues/2057.
+func TestProfileMatchesEndpoint_TBSCRLWithCertificateProfile(t *testing.T) {
+	form := url.Values{}
+	form.Set("b64input", "MIGJAgEBMAoGCCqGSM49BAMCMBIxEDAOBgNVBAMMB1Rlc3QgQ0EXDTI2MTAxNjAwMDAwMFoXDTI2MTAyMzAwMDAwMFowFTATAgISNBcNMjYxMDE2MDAwMDAwWqAvMC0wCgYDVR0UBAMCAQEwHwYDVR0jBBgwFoAUJFxUjU16tdpwXm84Ol0wQ5oJ20U=")
+	ctx := newPostCtx("application/x-www-form-urlencoded", []byte(form.Encode()))
+
+	ri := RequestInfo{endpoint: ENDPOINT_LINTTBSCRL}
+	if err := ri.GetInput(ctx); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if !ri.GetProfile("rfc5280_leaf") {
+		t.Fatal("GetProfile returned false")
+	}
+	if ri.ProfileMatchesEndpoint() {
+		t.Error("a certificate profile must not be accepted for a TBSCertList")
 	}
 }
 

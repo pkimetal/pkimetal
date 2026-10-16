@@ -365,6 +365,20 @@ func parseResultToken(linterName, token string) (results []LintingResult, end bo
 	return
 }
 
+// handleRequest runs an in-process linter, converting a panic into a FATAL finding so that it cannot crash pkimetal.
+func (lin *LinterInstance) handleRequest(lif LinterInterface, lreq *LintingRequest) (lresults []LintingResult) {
+	defer func() {
+		if r := recover(); r != nil {
+			logger.Logger.Error("Recovered from panic in Linter", zap.Int("instance#", lin.instanceNumber), zap.String("name", lin.Name), zap.Any("panic", r), zap.ByteString("stack", debug.Stack()))
+			lresults = []LintingResult{{
+				Severity: SEVERITY_FATAL,
+				Finding:  fmt.Sprintf("Recovered from panic: %v", r),
+			}}
+		}
+	}()
+	return lif.HandleRequest(lreq.Ctx, lin, lreq)
+}
+
 func (lin *LinterInstance) serverLoop(ctx context.Context, lif LinterInterface) {
 	defer ShutdownWG.Done()
 
@@ -407,7 +421,7 @@ func (lin *LinterInstance) serverLoop(ctx context.Context, lif LinterInterface) 
 
 			if lin.useHandleRequest {
 				// Process this linting request in-process, bounded by the request's deadline.
-				for _, lres := range lif.HandleRequest(lreq.Ctx, lin, &lreq) {
+				for _, lres := range lin.handleRequest(lif, &lreq) {
 					lres.LinterName = lin.Name
 					if !lin.sendResult(&lreq, lres) {
 						break

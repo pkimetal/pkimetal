@@ -206,6 +206,51 @@ func (stubBackend) HandleRequest(context.Context, *LinterInstance, *LintingReque
 }
 func (stubBackend) ProcessResult(r LintingResult) LintingResult { return r }
 
+type panickingBackend struct{ stubBackend }
+
+func (panickingBackend) HandleRequest(_ context.Context, _ *LinterInstance, lreq *LintingRequest) []LintingResult {
+	if lreq.B64Input == "PANIC" {
+		panic("boom")
+	}
+	return []LintingResult{{Severity: SEVERITY_ERROR, Finding: "ok"}}
+}
+
+func TestInProcess_RecoversFromPanic(t *testing.T) {
+	lin := &LinterInstance{
+		Linter: &Linter{
+			Name:                  "inproc",
+			Version:               "v0",
+			ReqChannel:            make(chan LintingRequest, 8),
+			useHandleRequest:      true,
+			queueTimeSummary:      prometheus.NewSummary(prometheus.SummaryOpts{Name: "inproc_queue"}),
+			processingTimeSummary: prometheus.NewSummary(prometheus.SummaryOpts{Name: "inproc_processing"}),
+		},
+		Mutex: &sync.Mutex{},
+	}
+	ctx, cancel := context.WithCancel(context.Background())
+	done := make(chan struct{})
+	ShutdownWG.Add(1)
+	go func() {
+		lin.serverLoop(ctx, panickingBackend{})
+		close(done)
+	}()
+	defer func() {
+		cancel()
+		<-done
+	}()
+
+	reqCtx, reqCancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer reqCancel()
+	if r := runLint(lin, reqCtx, "PANIC"); !hasResult(r, SEVERITY_FATAL, "Recovered from panic") {
+		t.Errorf("expected a FATAL panic result, got %+v", r)
+	}
+
+	// The instance must still serve the next request.
+	if r := runLint(lin, reqCtx, "hello"); !hasResult(r, SEVERITY_ERROR, "ok") {
+		t.Errorf("instance did not serve the next request: %+v", r)
+	}
+}
+
 // startStubBackend spawns the stub backend, runs serverLoop against it, and
 // returns a stop function that tears both down.
 func startStubBackend(t *testing.T, readySignal string, extraArgs ...string) (lin *LinterInstance, stop func()) {
