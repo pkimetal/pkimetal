@@ -14,7 +14,7 @@ require (
 	github.com/spf13/viper v1.21.0
 	github.com/titanous/rocacheck v0.0.0-20171023193734-afe73141d399
 	github.com/valyala/fasthttp v1.75.0
-	github.com/zmap/zcrypto v0.0.0-20261015200212-7e1570bbd845
+	github.com/zmap/zcrypto v0.0.0-20261015235857-7cf9a461cf78
 	github.com/zmap/zlint/v3 v3.7.3-0.20261011160856-5b33989f07ed
 	go.uber.org/automaxprocs v1.6.0
 	go.uber.org/zap v1.28.0
@@ -52,7 +52,7 @@ require (
 	github.com/spf13/pflag v1.0.10 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	github.com/weppos/publicsuffix-go v0.50.4-0.20260918082853-3c3d7dc4a0cb // indirect
+	github.com/weppos/publicsuffix-go v0.50.4-0.20261008072451-fc2bc5756b8d // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
 	golang.org/x/net v0.61.0 // indirect
