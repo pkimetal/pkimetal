@@ -110,8 +110,8 @@ github.com/weppos/publicsuffix-go v0.50.4-0.20261008072451-fc2bc5756b8d h1:pWXYv
 github.com/weppos/publicsuffix-go v0.50.4-0.20261008072451-fc2bc5756b8d/go.mod h1:/rOa781xBykZhHK/I3QeHo92qdDKVmKZKF7s8qAEM/4=
 github.com/zmap/zcrypto v0.0.0-20261015235857-7cf9a461cf78 h1:2dA+d/Z18AGp5Wkt1LvbWD0vM4zqmCjOU1qoeN3DtBQ=
 github.com/zmap/zcrypto v0.0.0-20261015235857-7cf9a461cf78/go.mod h1:75l0fNklcf7H3so8iOvo32g335oPk3El/vHntkXNdvs=
-github.com/zmap/zlint/v3 v3.7.3-0.20261011160856-5b33989f07ed h1:YE9Ve5QNP+Mz2LFOvcRu9A4lEqHsgnhTFTKJFhLqWZM=
-github.com/zmap/zlint/v3 v3.7.3-0.20261011160856-5b33989f07ed/go.mod h1:SJRJ3yZl8GEfvopKxx7atsTmsKGsh838dhMPzD0t3ss=
+github.com/zmap/zlint/v3 v3.7.3-0.20261017193605-5aff22ec1510 h1:lSvye3DwAJ7j0K2oUFnie761S1/2FVKLElKL4MCi7jQ=
+github.com/zmap/zlint/v3 v3.7.3-0.20261017193605-5aff22ec1510/go.mod h1:SJRJ3yZl8GEfvopKxx7atsTmsKGsh838dhMPzD0t3ss=
 go.uber.org/automaxprocs v1.6.0 h1:O3y2/QNTOdbF+e/dpXNNW7Rx2hZ4sTIPyybbxyNqTUs=
 go.uber.org/automaxprocs v1.6.0/go.mod h1:ifeIMSnPZuznNm6jmdzmU3/bfk01Fe2fotchwEFJ8r8=
 go.uber.org/goleak v1.3.0 h1:2K3zAYmnTNqV73imy9J1T3WC+gmCePx2hEGkimedGto=
