@@ -8,7 +8,7 @@ require (
 	github.com/crtsh/ctlint v0.0.0-20261019111025-e07bc1ad9889
 	github.com/crtsh/ctloglists v1.20261019.165700
 	github.com/goccy/go-json v0.11.2
-	github.com/google/certificate-transparency-go v1.3.3
+	github.com/google/certificate-transparency-go v1.4.0
 	github.com/prometheus/client_golang v1.25.0
 	github.com/sergi/go-diff v1.4.0
 	github.com/spf13/viper v1.21.0
