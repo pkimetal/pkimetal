@@ -14,8 +14,8 @@ github.com/crtsh/ccadb_data v1.20261018.175420 h1:14I3UONQimceX5A/RMOHwSrkyZH3pQ
 github.com/crtsh/ccadb_data v1.20261018.175420/go.mod h1:avWCZWp3bwPa5XuUWNoCeHgMUdOW2tccdnUJHvfmc74=
 github.com/crtsh/ctlint v0.0.0-20261019111025-e07bc1ad9889 h1:r+MKprxueRMO05UWoF/Zm+b7zUNBAt4GWBkPQ6uQUg8=
 github.com/crtsh/ctlint v0.0.0-20261019111025-e07bc1ad9889/go.mod h1:6caMIcPiUHISSXI8DuIP33wQH94YUALzwcGzcYkDTN0=
-github.com/crtsh/ctloglists v1.20261013.190400 h1:uUTVr6cpSCi63ZKaChXLfPSDwe4TzWEb9reilxS9w7E=
-github.com/crtsh/ctloglists v1.20261013.190400/go.mod h1:SN3CxwD8H6GmChecpUpO+ShasXNH3eVSuIMXbJ8jQ1s=
+github.com/crtsh/ctloglists v1.20261019.165700 h1:kG0kh7kwD3ZDeDAxaswakAbWOmDWByjFhyn8YRKlYcs=
+github.com/crtsh/ctloglists v1.20261019.165700/go.mod h1:SN3CxwD8H6GmChecpUpO+ShasXNH3eVSuIMXbJ8jQ1s=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/digicert/pkilint v0.13.3 h1:jOuBh80LhIjkz+F7HsCLr1PF1ebA9DvWpBq6uHH9qu8=
@@ -32,8 +32,8 @@ github.com/go-viper/mapstructure/v2 v2.5.0 h1:vM5IJoUAy3d7zRSVtIwQgBj7BiWtMPfmPE
 github.com/go-viper/mapstructure/v2 v2.5.0/go.mod h1:oJDH3BJKyqBA2TXFhDsKDGDTlndYOZ6rGS0BRZIxGhM=
 github.com/goccy/go-json v0.11.2 h1:jdZv93Tt4ioR8yW1CoNsvSxrcZlCXAUU1aZXN7gpXUA=
 github.com/goccy/go-json v0.11.2/go.mod h1:3NdmfEkZlB7YI5UFw/qdFKq8XN1aiWR0YyRPWZNQltY=
-github.com/google/certificate-transparency-go v1.3.3 h1:hq/rSxztSkXN2tx/3jQqF6Xc0O565UQPdHrOWvZwybo=
-github.com/google/certificate-transparency-go v1.3.3/go.mod h1:iR17ZgSaXRzSa5qvjFl8TnVD5h8ky2JMVio+dzoKMgA=
+github.com/google/certificate-transparency-go v1.4.0 h1:78uNaR2knzCoKKXXDSAGVkz9XPkDg5xXJRP9tP6+rr0=
+github.com/google/certificate-transparency-go v1.4.0/go.mod h1:iR17ZgSaXRzSa5qvjFl8TnVD5h8ky2JMVio+dzoKMgA=
 github.com/google/go-cmp v0.7.0 h1:wk8382ETsv4JYUZwIsn6YpYiWiBsYLSJiTsyBybVuN8=
 github.com/google/go-cmp v0.7.0/go.mod h1:pXiqmnSA92OHEEa9HXL2W4E7lf9JzCmGVUdgjX3N/iU=
 github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
