@@ -14,19 +14,22 @@ type Pkilint struct{}
 var Version, PythonDir string
 
 func init() {
-	// Get pkilint package details, either embedded during the build process or from pipx; if requested in the config, autodetect the site-packages directory.
-	if Version != "" {
-		config.Config.Linter.Pkilint.PythonDir = PythonDir
-	} else {
-		Version, config.Config.Linter.Pkilint.PythonDir = linter.GetPackageDetailsFromPipx("pkilint", config.Config.Linter.Pkilint.PythonDir)
-	}
-	switch config.Config.Linter.Pkilint.PythonDir {
-	case "", "autodetect":
-		panic("pkilint: PythonDir must be set")
-	}
+	if config.Config.Linter.Pkilint.NumProcesses > 0 {
+		// Get pkilint package details, either embedded during the build process or from pipx; if requested in the config, autodetect the site-packages directory.
+		if Version != "" {
+			config.Config.Linter.Pkilint.PythonDir = PythonDir
+		} else {
+			Version, config.Config.Linter.Pkilint.PythonDir = linter.GetPackageDetailsFromPipx("pkilint", config.Config.Linter.Pkilint.PythonDir)
+		}
 
-	// Load pkilint's finding_metadata.csv files, if available.
-	loadFindingMetadata()
+		switch config.Config.Linter.Pkilint.PythonDir {
+		case "", "autodetect":
+			panic("pkilint: PythonDir must be set")
+		}
+
+		// Load pkilint's finding_metadata.csv files, if available.
+		loadFindingMetadata()
+	}
 
 	// Register pkilint.
 	(&linter.Linter{

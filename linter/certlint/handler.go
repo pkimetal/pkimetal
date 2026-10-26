@@ -17,15 +17,18 @@ type Certlint struct{}
 var Version, RubyDir string
 
 func init() {
-	// Determine certlint installation directory.
-	if config.Config.Linter.Certlint.RubyDir == "autodetect" {
-		if config.Config.Linter.Certlint.RubyDir = RubyDir; RubyDir == "" {
-			config.Config.Linter.Certlint.RubyDir = "/usr/local/certlint"
+	if config.Config.Linter.Certlint.NumProcesses > 0 {
+		// Determine certlint installation directory.
+		if config.Config.Linter.Certlint.RubyDir == "autodetect" {
+			if config.Config.Linter.Certlint.RubyDir = RubyDir; RubyDir == "" {
+				config.Config.Linter.Certlint.RubyDir = "/usr/local/certlint"
+			}
 		}
-	}
-	// Get certlint version, either embedded during the build process or with the help of the Ruby interpreter.
-	if Version == "" {
-		Version = getCertlintVersion()
+
+		// Get certlint version, either embedded during the build process or with the help of the Ruby interpreter.
+		if Version == "" {
+			Version = getCertlintVersion()
+		}
 	}
 
 	// Register certlint.

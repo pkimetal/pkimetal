@@ -34,9 +34,11 @@ var retryAfterMutex sync.RWMutex
 var retryAfter time.Time
 
 func init() {
-	httpClient = http.Client{
-		Timeout:   config.Config.Linter.Pwnedkeys.HTTPTimeout,
-		Transport: &PwnedkeysTransport{RoundTripper: http.DefaultTransport},
+	if config.Config.Linter.Pwnedkeys.NumGoroutines > 0 {
+		httpClient = http.Client{
+			Timeout:   config.Config.Linter.Pwnedkeys.HTTPTimeout,
+			Transport: &PwnedkeysTransport{RoundTripper: http.DefaultTransport},
+		}
 	}
 
 	// Register pwnedkeys.

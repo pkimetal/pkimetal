@@ -29,6 +29,50 @@ var (
 )
 
 func init() {
+	if config.Config.Linter.Zlint.NumGoroutines > 0 {
+		defaultRegistry = lint.GlobalRegistry()
+
+		// RFC5280's "MUST mark this extension as critical" for Name Constraints in intermediate certificates is superseded by the TLS BRs' "MAY be marked non‐critical".
+		var err error
+		if cabforumTLSSubordinateRegistry, err = defaultRegistry.Filter(lint.FilterOptions{
+			ExcludeNames: []string{"e_ext_name_constraints_not_critical"},
+		}); err != nil {
+			logger.Logger.Fatal("Failed to configure filtered zlint registry for BR/EVG TLS Server subordinate certificates", zap.Error(err))
+		}
+
+		// RFC5280's "SHOULD be present" for SKI in end-entity certificates is superseded by the TLS BRs' "NOT RECOMMENDED".
+		if cabforumTLSLeafRegistry, err = defaultRegistry.Filter(lint.FilterOptions{
+			ExcludeNames: []string{"w_ext_subject_key_identifier_missing_sub_cert"},
+		}); err != nil {
+			logger.Logger.Fatal("Failed to configure filtered zlint registry for BR/EVG TLS Server leaf certificates", zap.Error(err))
+		}
+
+		if cabforumTLSArlRegistry, err = defaultRegistry.Filter(lint.FilterOptions{
+			IncludeNames: defaultRegistry.Names(),
+		}); err != nil {
+			logger.Logger.Fatal("Failed to configure filtered zlint registry for BR TLS Server authority revocation lists", zap.Error(err))
+		}
+		arlConfig, err := lint.NewConfigFromString(`
+[e_crl_next_update_invalid]
+SubscriberCRL = false
+`)
+		if err != nil {
+			logger.Logger.Fatal("Failed to configure zlint CRL nextUpdate lint for BR TLS Server authority revocation lists", zap.Error(err))
+		}
+		cabforumTLSArlRegistry.SetConfiguration(arlConfig)
+
+		// Filter out CABForum lints for non-CABForum profiles.
+		if notCabforumRegistry, err = defaultRegistry.Filter(lint.FilterOptions{
+			ExcludeSources: []lint.LintSource{
+				lint.CABFBaselineRequirements,
+				lint.CABFEVGuidelines,
+				lint.CABFSMIMEBaselineRequirements,
+			},
+		}); err != nil {
+			logger.Logger.Fatal("Failed to configure filtered zlint registry for disabling CABForum lints", zap.Error(err))
+		}
+	}
+
 	// Register zlint.
 	(&linter.Linter{
 		Name:         "zlint",
@@ -38,48 +82,6 @@ func init() {
 		NumInstances: config.Config.Linter.Zlint.NumGoroutines,
 		Interface:    func() linter.LinterInterface { return &Zlint{} },
 	}).Register()
-
-	defaultRegistry = lint.GlobalRegistry()
-
-	// RFC5280's "MUST mark this extension as critical" for Name Constraints in intermediate certificates is superseded by the TLS BRs' "MAY be marked non‐critical".
-	var err error
-	if cabforumTLSSubordinateRegistry, err = defaultRegistry.Filter(lint.FilterOptions{
-		ExcludeNames: []string{"e_ext_name_constraints_not_critical"},
-	}); err != nil {
-		logger.Logger.Fatal("Failed to configure filtered zlint registry for BR/EVG TLS Server subordinate certificates", zap.Error(err))
-	}
-
-	// RFC5280's "SHOULD be present" for SKI in end-entity certificates is superseded by the TLS BRs' "NOT RECOMMENDED".
-	if cabforumTLSLeafRegistry, err = defaultRegistry.Filter(lint.FilterOptions{
-		ExcludeNames: []string{"w_ext_subject_key_identifier_missing_sub_cert"},
-	}); err != nil {
-		logger.Logger.Fatal("Failed to configure filtered zlint registry for BR/EVG TLS Server leaf certificates", zap.Error(err))
-	}
-
-	if cabforumTLSArlRegistry, err = defaultRegistry.Filter(lint.FilterOptions{
-		IncludeNames: defaultRegistry.Names(),
-	}); err != nil {
-		logger.Logger.Fatal("Failed to configure filtered zlint registry for BR TLS Server authority revocation lists", zap.Error(err))
-	}
-	arlConfig, err := lint.NewConfigFromString(`
-[e_crl_next_update_invalid]
-SubscriberCRL = false
-`)
-	if err != nil {
-		logger.Logger.Fatal("Failed to configure zlint CRL nextUpdate lint for BR TLS Server authority revocation lists", zap.Error(err))
-	}
-	cabforumTLSArlRegistry.SetConfiguration(arlConfig)
-
-	// Filter out CABForum lints for non-CABForum profiles.
-	if notCabforumRegistry, err = defaultRegistry.Filter(lint.FilterOptions{
-		ExcludeSources: []lint.LintSource{
-			lint.CABFBaselineRequirements,
-			lint.CABFEVGuidelines,
-			lint.CABFSMIMEBaselineRequirements,
-		},
-	}); err != nil {
-		logger.Logger.Fatal("Failed to configure filtered zlint registry for disabling CABForum lints", zap.Error(err))
-	}
 }
 
 func (l *Zlint) StartInstance() (useHandleRequest bool, directory, cmd string, args []string) {

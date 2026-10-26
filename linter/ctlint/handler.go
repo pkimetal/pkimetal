@@ -18,22 +18,24 @@ import (
 
 type Ctlint struct{}
 
-var _ = promauto.NewGaugeFunc(prometheus.GaugeOpts{
-	Namespace: config.ApplicationNamespace,
-	Subsystem: "loglist",
-	Name:      "oldest_timestamp_age_seconds",
-	Help:      "Age in seconds of the oldest log list timestamp among lists with a 70-day enforcement cut-off.",
-}, func() float64 {
-	oldest := ctloglists.OldestTimestampForLogListWithEnforcementCutOff()
-	if oldest.IsZero() {
-		return 0
-	}
-	return time.Since(oldest).Seconds()
-})
-
 func init() {
-	if err := ctloglists.LoadLogLists(); err != nil {
-		logger.Logger.Fatal("ctlint: " + err.Error())
+	if config.Config.Linter.Ctlint.NumGoroutines > 0 {
+		if err := ctloglists.LoadLogLists(); err != nil {
+			logger.Logger.Fatal("ctlint: " + err.Error())
+		}
+
+		promauto.NewGaugeFunc(prometheus.GaugeOpts{
+			Namespace: config.ApplicationNamespace,
+			Subsystem: "loglist",
+			Name:      "oldest_timestamp_age_seconds",
+			Help:      "Age in seconds of the oldest log list timestamp among lists with a 70-day enforcement cut-off.",
+		}, func() float64 {
+			oldest := ctloglists.OldestTimestampForLogListWithEnforcementCutOff()
+			if oldest.IsZero() {
+				return 0
+			}
+			return time.Since(oldest).Seconds()
+		})
 	}
 
 	// Register ctlint.

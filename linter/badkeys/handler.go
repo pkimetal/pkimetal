@@ -13,15 +13,18 @@ type Badkeys struct{}
 var Version, PythonDir string
 
 func init() {
-	// Get badkeys package details, either embedded during the build process or from pipx; if requested in the config, autodetect the site-packages directory.
-	if Version != "" {
-		config.Config.Linter.Badkeys.PythonDir = PythonDir
-	} else {
-		Version, config.Config.Linter.Badkeys.PythonDir = linter.GetPackageDetailsFromPipx("badkeys", config.Config.Linter.Badkeys.PythonDir)
-	}
-	switch config.Config.Linter.Badkeys.PythonDir {
-	case "", "autodetect":
-		panic("badkeys: PythonDir must be set")
+	if config.Config.Linter.Badkeys.NumProcesses > 0 {
+		// Get badkeys package details, either embedded during the build process or from pipx; if requested in the config, autodetect the site-packages directory.
+		if Version != "" {
+			config.Config.Linter.Badkeys.PythonDir = PythonDir
+		} else {
+			Version, config.Config.Linter.Badkeys.PythonDir = linter.GetPackageDetailsFromPipx("badkeys", config.Config.Linter.Badkeys.PythonDir)
+		}
+
+		switch config.Config.Linter.Badkeys.PythonDir {
+		case "", "autodetect":
+			panic("badkeys: PythonDir must be set")
+		}
 	}
 
 	// Register badkeys.

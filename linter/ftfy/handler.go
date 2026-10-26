@@ -20,15 +20,18 @@ var Version, PythonDir string
 var dmp *diffmatchpatch.DiffMatchPatch = diffmatchpatch.New()
 
 func init() {
-	// Get ftfy package details, either embedded during the build process or from pipx; if requested in the config, autodetect the site-packages directory.
-	if Version != "" {
-		config.Config.Linter.Ftfy.PythonDir = PythonDir
-	} else {
-		Version, config.Config.Linter.Ftfy.PythonDir = linter.GetPackageDetailsFromPipx("ftfy", config.Config.Linter.Ftfy.PythonDir)
-	}
-	switch config.Config.Linter.Ftfy.PythonDir {
-	case "", "autodetect":
-		panic("ftfy: PythonDir must be set")
+	if config.Config.Linter.Ftfy.NumProcesses > 0 {
+		// Get ftfy package details, either embedded during the build process or from pipx; if requested in the config, autodetect the site-packages directory.
+		if Version != "" {
+			config.Config.Linter.Ftfy.PythonDir = PythonDir
+		} else {
+			Version, config.Config.Linter.Ftfy.PythonDir = linter.GetPackageDetailsFromPipx("ftfy", config.Config.Linter.Ftfy.PythonDir)
+		}
+
+		switch config.Config.Linter.Ftfy.PythonDir {
+		case "", "autodetect":
+			panic("ftfy: PythonDir must be set")
+		}
 	}
 
 	// Register ftfy.
