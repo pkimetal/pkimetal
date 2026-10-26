@@ -29,6 +29,13 @@ import (
 	"golang.org/x/crypto/ocsp"
 )
 
+var _ = func() bool {
+	if PythonDir == "" {
+		PythonDir = "."
+	}
+	return true
+}()
+
 func TestUnsupportedProfiles(t *testing.T) {
 	for mask := 0; mask < 16; mask++ {
 		enableCA, enableLeaf, enableCRL, enableOCSP := mask&1 != 0, mask&2 != 0, mask&4 != 0, mask&8 != 0
