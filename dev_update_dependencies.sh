@@ -20,4 +20,5 @@ go get -modfile=dev_go.mod github.com/certlint/certlint@master
 go get -modfile=dev_go.mod github.com/CVE-2008-0166/dwk_blocklists_sqlite3@main
 go get -modfile=dev_go.mod github.com/rspeer/python-ftfy@main
 go get -modfile=dev_go.mod github.com/digicert/pkilint@main
+go get -modfile=dev_go.mod github.com/google/paranoid_crypto@main
 go get -modfile=dev_go.mod github.com/kroeckx/x509lint@master

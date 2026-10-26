@@ -16,6 +16,7 @@ import (
 	_ "github.com/pkimetal/pkimetal/linter/badkeys"
 	_ "github.com/pkimetal/pkimetal/linter/certlint"
 	_ "github.com/pkimetal/pkimetal/linter/ftfy"
+	_ "github.com/pkimetal/pkimetal/linter/paranoid"
 	_ "github.com/pkimetal/pkimetal/linter/pkilint"
 
 	// Internal:

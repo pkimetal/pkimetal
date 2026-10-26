@@ -1,0 +1,30 @@
+[project]
+name = "paranoid_crypto"
+version = "1.1.1"
+description = "Paranoid checks for cryptographic weaknesses"
+requires-python = ">=3.11,<4"
+
+[tool.poetry]
+packages = [{ include = "paranoid_crypto" }]
+include = [
+  { path = "paranoid_crypto/lib/data/*.dat", format = ["sdist", "wheel"] },
+  { path = "paranoid_crypto/lib/data/*.lzma", format = ["sdist", "wheel"] },
+]
+
+[tool.poetry.dependencies]
+python = ">=3.11,<4"
+absl-py = ">=1"
+cryptography = ">=43"
+protobuf = ">=3.20,<8"
+numpy = ">=1.23"
+sympy = ">=1.10"
+gmpy2 = ">=2.1"
+fpylll = ">=0.6"
+cysignals = [
+  { version = ">=1.11", python = "<3.13" },
+  { version = ">=1.13.1", python = ">=3.13" },
+]
+
+[build-system]
+requires = ["poetry-core>=2"]
+build-backend = "poetry.core.masonry.api"

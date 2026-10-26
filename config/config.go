@@ -61,6 +61,14 @@ type config struct {
 			NumProcesses int    `mapstructure:"numProcesses"`
 			PythonDir    string `mapstructure:"pythonDir"`
 		}
+		Paranoid struct {
+			NumProcesses           int    `mapstructure:"numProcesses"`
+			PythonDir              string `mapstructure:"pythonDir"`
+			EnableCACertificates   bool   `mapstructure:"enableCACertificates"`
+			EnableLeafCertificates bool   `mapstructure:"enableLeafCertificates"`
+			EnableCRLs             bool   `mapstructure:"enableCRLs"`
+			EnableOCSPResponses    bool   `mapstructure:"enableOCSPResponses"`
+		}
 		Pwnedkeys struct {
 			NumGoroutines     int           `mapstructure:"numGoroutines"`
 			APIErrorSeverity  string        `mapstructure:"apiErrorSeverity"`
@@ -205,6 +213,12 @@ func initViper() error {
 	viper.SetDefault("linter.ftfy.pythonDir", "autodetect")
 	viper.SetDefault("linter.pkilint.numProcesses", 1)
 	viper.SetDefault("linter.pkilint.pythonDir", "autodetect")
+	viper.SetDefault("linter.paranoid.numProcesses", 1)
+	viper.SetDefault("linter.paranoid.pythonDir", "autodetect")
+	viper.SetDefault("linter.paranoid.enableCACertificates", true)
+	viper.SetDefault("linter.paranoid.enableLeafCertificates", false)
+	viper.SetDefault("linter.paranoid.enableCRLs", false)
+	viper.SetDefault("linter.paranoid.enableOCSPResponses", false)
 	viper.SetDefault("linter.pwnedkeys.numGoroutines", 0)
 	viper.SetDefault("linter.pwnedkeys.apiErrorSeverity", "bug")
 	viper.SetDefault("linter.pwnedkeys.rateLimitSeverity", "notice")

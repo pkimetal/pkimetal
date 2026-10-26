@@ -5,7 +5,7 @@ FROM docker.io/library/golang:1.27.3-alpine3.24@sha256:f2c872bcee949b7be9c490efd
 RUN apk add --no-cache busybox && \
 	apk add --no-cache --update \
 	# Common.
-	g++ gcc git make musl-dev pkgconfig \
+	binutils g++ gcc git make musl-dev pkgconfig \
 	# badkeys (for rsakeys/fermat.py).
 	gmp-dev mpfr-dev mpc1-dev python3-dev \
 	# badkeys, ftfy, and pkilint.
@@ -14,6 +14,8 @@ RUN apk add --no-cache busybox && \
 	ruby ruby-dev \
 	# pkilint (for pyasn1-fasder).
 	rustup \
+	# paranoid (lattice checks and protobuf generation).
+	fplll-dev protobuf \
 	# x509lint.
 	openssl-dev
 
@@ -40,6 +42,8 @@ RUN \
 	cp -R $(go list -modfile=$gomodfile -m -f '{{.Dir}}' github.com/rspeer/python-ftfy) /usr/local/build/ftfy/ && \
 	go mod download -modfile=$gomodfile github.com/digicert/pkilint && \
 	cp -R $(go list -modfile=$gomodfile -m -f '{{.Dir}}' github.com/digicert/pkilint) /usr/local/build/pkilint/ && \
+	go mod download -modfile=$gomodfile github.com/google/paranoid_crypto && \
+	cp -R $(go list -modfile=$gomodfile -m -f '{{.Dir}}' github.com/google/paranoid_crypto) /usr/local/build/paranoid/ && \
 	go mod download -modfile=$gomodfile github.com/kroeckx/x509lint && \
 	cp -R $(go list -modfile=$gomodfile -m -f '{{.Dir}}' github.com/kroeckx/x509lint) /usr/local/build/x509lint/ && \
 	# Install poetry (for building Python-based linters).
@@ -64,6 +68,17 @@ RUN \
 	cp /app/linter/ftfy/pyproject.toml . && \
 	poetry lock && \
 	poetry bundle venv --python=/usr/bin/python3 --only=main /usr/local/pkimetal/ftfy && \
+	# Build paranoid's key/signature checks (the optional randomness extension is not used).
+	cd /usr/local/build/paranoid && \
+	protoc -I. --python_out=. paranoid_crypto/paranoid.proto paranoid_crypto/lib/data/data.proto && \
+	cp /app/linter/paranoid/pyproject.toml . && \
+	poetry lock && \
+	poetry bundle venv --python=/usr/bin/python3 --only=main /usr/local/pkimetal/paranoid && \
+	find /usr/local/pkimetal/paranoid/lib/python*/site-packages -type f -name '*.so*' -exec strip --strip-unneeded {} + && \
+	find /usr/local/pkimetal/paranoid/lib/python*/site-packages -type d -name tests -prune -exec rm -rf {} + && \
+	rm -rf /usr/local/pkimetal/paranoid/lib/python*/site-packages/pip \
+		/usr/local/pkimetal/paranoid/lib/python*/site-packages/pip-*.dist-info \
+		/usr/local/pkimetal/paranoid/bin/pip* && \
 	# Install rust + cargo using rustup (for pyasn1-fasder).
 	rustup-init -y && \
 	source "$HOME/.cargo/env" && \
@@ -90,6 +105,8 @@ RUN \
 	-X github.com/pkimetal/pkimetal/linter/dwklint.BlocklistDBPath=/usr/local/pkimetal/dwk_blocklists_sqlite3/dwk_blocklists.sqlite3 \
 	-X github.com/pkimetal/pkimetal/linter/ftfy.Version=`go list -modfile=$gomodfile -m -f '{{.Version}}' github.com/rspeer/python-ftfy | sed 's/+incompatible//g'` \
 	-X github.com/pkimetal/pkimetal/linter/ftfy.PythonDir=`find /usr/local/pkimetal/ftfy/lib/python*/site-packages -maxdepth 0` \
+	-X github.com/pkimetal/pkimetal/linter/paranoid.Version=`go list -modfile=$gomodfile -m -f '{{.Version}}' github.com/google/paranoid_crypto` \
+	-X github.com/pkimetal/pkimetal/linter/paranoid.PythonDir=`find /usr/local/pkimetal/paranoid/lib/python*/site-packages -maxdepth 0` \
 	-X github.com/pkimetal/pkimetal/linter/pkilint.Version=`go list -modfile=$gomodfile -m -f '{{.Version}}' github.com/digicert/pkilint | sed 's/+incompatible//g'` \
 	-X github.com/pkimetal/pkimetal/linter/pkilint.PythonDir=`find /usr/local/pkimetal/pkilint/lib/python*/site-packages -maxdepth 0` \
 	-X github.com/pkimetal/pkimetal/linter/x509lint.Version=`go list -modfile=$gomodfile -m -f '{{.Version}}' github.com/kroeckx/x509lint | sed 's/+incompatible//g'`" /app/.
@@ -109,7 +126,7 @@ RUN apk add --no-cache --update \
 	gmp mpfr mpc1 \
 	# certlint.
 	openssl ruby \
-	# pkilint and ftfy.
+	# badkeys, ftfy, paranoid, and pkilint.
 	python3 && \
 	# certlint.
 	gem install base64 public_suffix simpleidn && \
