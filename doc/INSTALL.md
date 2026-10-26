@@ -84,6 +84,12 @@ linter:
   pkilint:
     numProcesses: 4  # Run pkilint in 4 processes (instead of the default 1).
     pythonDir: "/root/pkilint"  # Run pkilint from this directory (instead of autodetecting the directory using pipx).
+  paranoid:
+    numProcesses: 1
+    enableCACertificates: true
+    enableLeafCertificates: false
+    enableCRLs: false
+    enableOCSPResponses: false
 response:
   defaultFormat: text
 ```
