@@ -74,11 +74,6 @@ RUN \
 	cp /app/linter/paranoid/pyproject.toml . && \
 	poetry lock && \
 	poetry bundle venv --python=/usr/bin/python3 --only=main /usr/local/pkimetal/paranoid && \
-	find /usr/local/pkimetal/paranoid/lib/python*/site-packages -type f -name '*.so*' -exec strip --strip-unneeded {} + && \
-	find /usr/local/pkimetal/paranoid/lib/python*/site-packages -type d -name tests -prune -exec rm -rf {} + && \
-	rm -rf /usr/local/pkimetal/paranoid/lib/python*/site-packages/pip \
-		/usr/local/pkimetal/paranoid/lib/python*/site-packages/pip-*.dist-info \
-		/usr/local/pkimetal/paranoid/bin/pip* && \
 	# Install rust + cargo using rustup (for pyasn1-fasder).
 	rustup-init -y && \
 	source "$HOME/.cargo/env" && \
@@ -90,6 +85,13 @@ RUN \
 	cp pkilint/cabf/smime/finding_metadata.csv /app/finding_metadata.csv.smime && \
 	cp pkilint/cabf/serverauth/finding_metadata.csv /app/finding_metadata.csv.serverauth && \
 	cp pkilint/etsi/finding_metadata.csv /app/finding_metadata.csv.etsi && \
+	# Remove backend build artifacts and runtime-unneeded Python installers.
+	find /usr/local/pkimetal -type f -name '*.so*' -exec strip --strip-unneeded {} + && \
+	find /usr/local/pkimetal/certlint/ext -type f -name '*.o' -delete && \
+	find /usr/local/pkimetal/*/lib/python*/site-packages -type d -name tests -prune -exec rm -rf {} + && \
+	rm -rf /usr/local/pkimetal/*/lib/python*/site-packages/pip \
+		/usr/local/pkimetal/*/lib/python*/site-packages/pip-*.dist-info \
+		/usr/local/pkimetal/*/bin/pip* && \
 	# Prepare x509lint.
 	cd /usr/local/build/x509lint && \
 	cp asn1_time.c asn1_time.h checks.c checks.h messages.c messages.h /app/linter/x509lint && \
