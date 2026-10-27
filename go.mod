@@ -4,8 +4,8 @@ go 1.27.3
 
 require (
 	github.com/CVE-2008-0166/dwklint/v2 v2.1.0
-	github.com/crtsh/ccadb_data v1.20261023.91613
-	github.com/crtsh/ctlint v0.0.0-20261026090943-5a9345830166
+	github.com/crtsh/ccadb_data v1.20261027.141032
+	github.com/crtsh/ctlint v0.0.0-20261027141744-c766457c8f7c
 	github.com/crtsh/ctloglists v1.20261019.165700
 	github.com/goccy/go-json v0.11.2
 	github.com/google/certificate-transparency-go v1.4.0
@@ -56,7 +56,7 @@ require (
 	github.com/weppos/publicsuffix-go v0.50.4-0.20261018191641-fa5685825dd4 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
-	golang.org/x/net v0.61.0 // indirect
+	golang.org/x/net v0.62.0 // indirect
 	golang.org/x/sys v0.49.0 // indirect
 	golang.org/x/text v0.43.0 // indirect
 	google.golang.org/protobuf v1.36.12 // indirect
