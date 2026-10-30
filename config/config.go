@@ -79,6 +79,10 @@ type config struct {
 		Rocacheck struct {
 			NumGoroutines int `mapstructure:"numGoroutines"`
 		}
+		Section7 struct {
+			NumGoroutines int    `mapstructure:"numGoroutines"`
+			ProfilesDir   string `mapstructure:"profilesDir"`
+		}
 		X509lint struct {
 			NumGoroutines int `mapstructure:"numGoroutines"`
 		}
@@ -225,6 +229,8 @@ func initViper() error {
 	viper.SetDefault("linter.pwnedkeys.timeoutSeverity", "notice")
 	viper.SetDefault("linter.pwnedkeys.httpTimeout", 5*time.Second)
 	viper.SetDefault("linter.rocacheck.numGoroutines", 1)
+	viper.SetDefault("linter.section7.numGoroutines", 0)
+	viper.SetDefault("linter.section7.profilesDir", "")
 	viper.SetDefault("linter.x509lint.numGoroutines", 1)
 	viper.SetDefault("linter.zlint.numGoroutines", 1)
 	viper.SetDefault("response.defaultFormat", "json")

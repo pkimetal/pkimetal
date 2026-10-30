@@ -90,6 +90,13 @@ linter:
     enableLeafCertificates: false
     enableCRLs: false
     enableOCSPResponses: false
+  section7:
+    numGoroutines: 1  # Enable section7 (default is 0, disabled).
+    profilesDir: "/config/profiles"  # Directory containing your CPS certificate profiles.
 response:
   defaultFormat: text
 ```
+
+### Linter Integrations
+
+See the [linter integration documentation](linters/) for setup requirements, configuration details, and usage notes specific to individual backends.
