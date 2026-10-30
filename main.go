@@ -24,6 +24,7 @@ import (
 	_ "github.com/pkimetal/pkimetal/linter/dwklint"
 	_ "github.com/pkimetal/pkimetal/linter/pwnedkeys"
 	_ "github.com/pkimetal/pkimetal/linter/rocacheck"
+	_ "github.com/pkimetal/pkimetal/linter/section7"
 	_ "github.com/pkimetal/pkimetal/linter/x509lint"
 	_ "github.com/pkimetal/pkimetal/linter/zlint"
 )

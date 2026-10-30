@@ -69,6 +69,7 @@ Special-purpose linters:
 - [paranoid](https://github.com/google/paranoid_crypto): Checks RSA/EC public keys and ECDSA signatures for cryptographic weaknesses. (NOTE: Since this linter is typically 50x slower than any of the other linters, it is **enabled by default only for CA certificate profiles**; it can be enabled for leaf certificate, CRL, and OCSP response profiles via configuration).
 - [pwnedkeys](https://pwnedkeys.com): Detects compromised keys, where the private key was found "in the wild" and reported to the Pwnedkeys service. (NOTE: Since this linter currently involve calling an external API over the internet, it is **disabled by default**; to enable it via an environment variable, set `PKIMETAL_LINTER_PWNEDKEYS_NUMGOROUTINES=<n>` where `<n>` is an integer greater than zero).
 - [rocacheck](https://github.com/titanous/rocacheck): Detects ROCA weak keys (CVE-2017-15361), as required by CABForum Ballot [SC-73](https://github.com/cabforum/servercert/pull/500/files#diff-e0ac1bd190515a4f2ec09139d395ef6a8c7e9e5b612957c1f5a2dea80c6a6cfeR1706).
+- [section7](https://github.com/cps-kit/section7): Checks certificates and precertificates against operator-supplied CPS certificate profiles. Disabled by default; enable it and configure a profile directory as described in the [section7 integration guide](doc/linters/section7.md).
 
 ## Docker containers
 
