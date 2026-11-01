@@ -12,8 +12,8 @@ github.com/cespare/xxhash/v2 v2.3.0 h1:UL815xU9SqsFlibzuggzjXhog7bL6oX9BbNZnL2UF
 github.com/cespare/xxhash/v2 v2.3.0/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XLFGgcrjCOs=
 github.com/cps-kit/section7 v0.1.0 h1:9WmArBEGkPLw9Sm/jpr34e6ELpXsAio/F8L2ujhrMD8=
 github.com/cps-kit/section7 v0.1.0/go.mod h1:QAM2nXqKpy/xL5tMts8XadCwBL9y4UP8EnK221DSpe0=
-github.com/crtsh/ccadb_data v1.20261031.222137 h1:3oSAx6DtJtpjYzcK39pFeRGE7W0vwOJJTBm+q8oYyM8=
-github.com/crtsh/ccadb_data v1.20261031.222137/go.mod h1:072Cnka3SX9eS4ORmXVv2erH2qklsDSCnzTzqCz+VTM=
+github.com/crtsh/ccadb_data v1.20261101.15940 h1:G5VRV3U5GXWjTxsBsf2D1S9Mu9l2IRUKSZY7QR171/c=
+github.com/crtsh/ccadb_data v1.20261101.15940/go.mod h1:072Cnka3SX9eS4ORmXVv2erH2qklsDSCnzTzqCz+VTM=
 github.com/crtsh/ctlint v0.0.0-20261027141744-c766457c8f7c h1:aifVI35vT8qF/yH/ItganNiQrcaltUvZYweP3mln2Vw=
 github.com/crtsh/ctlint v0.0.0-20261027141744-c766457c8f7c/go.mod h1:QfGExRCj+C4j8nFX9qumVbJledFd2uu6ZkdU8TR5lgo=
 github.com/crtsh/ctloglists v1.20261030.194600 h1:RkOkm9gnqcj8F88Yk8EnD8Y/RD4f4U3Kw6OcI302uWM=
