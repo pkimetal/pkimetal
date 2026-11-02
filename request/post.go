@@ -80,6 +80,8 @@ func POST(fhctx *fasthttp.RequestCtx, path string) int {
 			errorMessage = "Empty request body"
 		} else if err = ri.GetInput(fhctx); err != nil {
 			errorMessage = "Unrecognised input"
+		} else if n := findOversizedInteger(ri.decodedInput, config.Config.Linter.MaxIntegerBits); n > 0 {
+			errorMessage = fmt.Sprintf("Input contains a %d-bit INTEGER, which exceeds the %d-bit limit", n, config.Config.Linter.MaxIntegerBits)
 		} else if !ri.GetProfile(paramS(fhctx, "profile")) {
 			errorMessage = "Unrecognised profile"
 		} else if !ri.ProfileMatchesEndpoint() {
