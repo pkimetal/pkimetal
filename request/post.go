@@ -3,6 +3,7 @@ package request
 import (
 	"context"
 	"fmt"
+	"html"
 	"slices"
 	"sort"
 	"strings"
@@ -270,11 +271,11 @@ func sendHTMLResponse(fhctx *fasthttp.RequestCtx, lrespFiltered []LintResult) in
 			}
 			response.WriteString(`
 		<TR style="` + style + `">
-		  <TD>` + lres.Linter + `</TD>
-		  <TD>` + strings.ToUpper(lres.Severity) + `</TD>
-		  <TD>` + lres.Finding + `</TD>
-		  <TD>` + lres.Field + `</TD>
-		  <TD>` + lres.Code + `</TD>
+		  <TD>` + html.EscapeString(lres.Linter) + `</TD>
+		  <TD>` + html.EscapeString(strings.ToUpper(lres.Severity)) + `</TD>
+		  <TD>` + html.EscapeString(lres.Finding) + `</TD>
+		  <TD>` + html.EscapeString(lres.Field) + `</TD>
+		  <TD>` + html.EscapeString(lres.Code) + `</TD>
 		</TR>`)
 		}
 	}
