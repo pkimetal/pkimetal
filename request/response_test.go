@@ -94,3 +94,31 @@ func TestSendHTMLResponse_NonEmpty(t *testing.T) {
 		}
 	}
 }
+
+func TestSendHTMLResponse_EscapesLintResultFields(t *testing.T) {
+	ctx := &fasthttp.RequestCtx{}
+	sendHTMLResponse(ctx, []LintResult{{
+		Linter:   "lin<ter",
+		Severity: "in<fo",
+		Finding:  "finding <script>&",
+		Field:    "field <value>",
+		Code:     `code "quoted"`,
+	}})
+	body := string(ctx.Response.Body())
+	for _, want := range []string{
+		"lin&lt;ter",
+		"IN&lt;FO",
+		"finding &lt;script&gt;&amp;",
+		"field &lt;value&gt;",
+		"code &#34;quoted&#34;",
+	} {
+		if !strings.Contains(body, want) {
+			t.Errorf("expected escaped value %q in HTML response", want)
+		}
+	}
+	for _, unescaped := range []string{"lin<ter", "IN<FO", "<script>", "field <value>", `"quoted"`} {
+		if strings.Contains(body, unescaped) {
+			t.Errorf("HTML response contains unescaped value %q", unescaped)
+		}
+	}
+}
