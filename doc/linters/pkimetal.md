@@ -33,9 +33,19 @@ A request that is still queued when its deadline passes is discarded without bei
 
 `backendTimeout` bounds each exchange with a worker process: sending a request to the worker's STDIN and reading its results from STDOUT. The timer starts when an instance begins processing the request, so time spent queued does not count against it. Worker start-up and warm-up are also excluded: a worker that signals readiness is not sent requests until it is ready, however long initialisation takes.
 
-`backendTimeout` does not apply to linters that run as goroutines within the pkimetal process, except for any parts of them that communicate with a worker process (e.g. [FTFY](ftfy.md)).
+`backendTimeout` does not limit linters that run as goroutines within the pkimetal process, except for any parts of them that communicate with a worker process (e.g. [FTFY](ftfy.md)); for those linters, it is instead the threshold beyond which an instance is reported as [stuck](#stuck-in-process-linters).
 
 If a worker crashes, times out, or produces output that does not follow the response protocol, pkimetal reports a fatal finding for that request (see [Findings](#findings)), then kills and restarts the worker so that subsequent requests are unaffected. A worker that keeps running correctly is not restarted merely because the client stopped waiting; its remaining output is read and discarded instead.
+
+#### Stuck in-process linters
+
+A linter that runs as a goroutine within the pkimetal process cannot be interrupted or killed, so pkimetal does not time it out or start a replacement; doing so could let hung goroutines accumulate without bound. Instead, an in-process linter instance that has been processing one request for longer than `backendTimeout` is reported as *stuck*:
+
+- pkimetal logs an error naming the linter and instance (and a warning if the instance later finishes its request);
+- the `pkimetal_linter_stuck_instances` metric counts the linter's stuck instances (see [Metrics](#metrics));
+- `/livez` on the monitoring server returns HTTP 503, so that an orchestrator such as Kubernetes can restart pkimetal, which is the only way to reclaim a stuck goroutine.
+
+Whilst all of a linter's instances are stuck, requests to which that linter applies cannot complete and will time out with HTTP 503.
 
 ### `maxIntegerBits`
 
@@ -69,9 +79,10 @@ Linter workers that encounter an unexpected error whilst linting an input report
 
 ## Metrics
 
-pkimetal exposes the following Prometheus summaries on its monitoring server, each labelled with `linter_name`:
+pkimetal exposes the following Prometheus metrics on its monitoring server, each labelled with `linter_name`:
 
-Metric | Description
---- | ---
-`pkimetal_linter_queue_time` | Seconds that a request waited in the linter's queue.
-`pkimetal_linter_processing_time` | Seconds that the linter took to process a request.
+Metric | Type | Description
+--- | --- | ---
+`pkimetal_linter_queue_time` | summary | Seconds that a request waited in the linter's queue.
+`pkimetal_linter_processing_time` | summary | Seconds that the linter took to process a request.
+`pkimetal_linter_stuck_instances` | gauge | Number of the linter's in-process instances that are [stuck](#stuck-in-process-linters). Always 0 for linters that run as worker processes.

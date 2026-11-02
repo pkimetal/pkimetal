@@ -11,6 +11,7 @@ import (
 	"sort"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/pkimetal/pkimetal/config"
@@ -66,6 +67,7 @@ type LinterInstance struct {
 	directory      string         // Retained so that the backend can be restarted after a failure.
 	cmd            string
 	args           []string
+	busySince      atomic.Int64 // UnixNano time at which an in-process request started, or 0 if idle.
 }
 
 type writeDeadliner interface {
@@ -144,6 +146,7 @@ func (l *Linter) Register() {
 			Help:        "Number of seconds to process a linting request.",
 			ConstLabels: map[string]string{"linter_name": l.Name},
 		})
+		l.registerStuckInstancesMetric()
 	} else {
 		logger.Logger.Info("Unused Linter", zap.String("name", l.Name))
 	}
@@ -185,6 +188,8 @@ func StartLinters(ctx context.Context) {
 			go lin.serverLoop(ctx, lif)
 		}
 	}
+
+	go runWatchdog(ctx, watchdogInterval)
 }
 
 func (lin *LinterInstance) startInstance_external(directory, cmd string, arg ...string) {
@@ -458,6 +463,7 @@ func (lin *LinterInstance) serverLoop(ctx context.Context, lif LinterInterface) 
 			if lin.useHandleRequest {
 				var lresults []LintingResult
 				var err error
+				lin.busySince.Store(time.Now().UnixNano())
 				if _, ok := lif.(LinterInterfaceWithError); ok {
 					// Bound pipe I/O for in-process handlers that use an external worker.
 					backendDeadline := time.Now().Add(config.Config.Linter.BackendTimeout)
@@ -477,6 +483,7 @@ func (lin *LinterInstance) serverLoop(ctx context.Context, lif LinterInterface) 
 				} else {
 					lresults = lin.handleRequest(lif, &lreq)
 				}
+				lin.busySince.Store(0)
 				for _, lres := range lresults {
 					lres.LinterName = lin.Name
 					if !lin.sendResult(&lreq, lres) {
