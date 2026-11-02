@@ -6,6 +6,7 @@ import (
 
 	"github.com/pkimetal/pkimetal/config"
 	"github.com/pkimetal/pkimetal/health"
+	"github.com/pkimetal/pkimetal/linter"
 	"github.com/pkimetal/pkimetal/utils"
 
 	"github.com/valyala/fasthttp"
@@ -23,7 +24,7 @@ func livez(ctx *fasthttp.RequestCtx) int {
 	doneChan := make(chan int, 1)
 	go func() {
 		statusCode := fasthttp.StatusOK
-		if !health.IsAlive(ctx) {
+		if !health.IsAlive(ctx) || linter.AnyInstanceStuck() {
 			statusCode = fasthttp.StatusServiceUnavailable
 		}
 
