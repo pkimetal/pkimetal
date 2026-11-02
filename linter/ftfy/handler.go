@@ -218,6 +218,9 @@ func (l *Ftfy) HandleRequestWithError(_ context.Context, lin *linter.LinterInsta
 		}
 		return lres, io.ErrUnexpectedEOF
 	}
+	if lin.Stdout.Oversized() {
+		return lres, linter.ErrResponseTooLong
+	}
 	ftfyOutput, err := parseFtfyResponse(lin.Stdout.Text(), requestID)
 	if err != nil {
 		return lres, err

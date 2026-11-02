@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"slices"
 	"strings"
@@ -126,6 +127,29 @@ func TestParseResultToken_Malformed(t *testing.T) {
 	}
 }
 
+func TestLineScannerOversizedLineDrainsAndContinues(t *testing.T) {
+	scanner := newLineScanner(strings.NewReader("12345678901234567\n[EndOfResults]\nnext"), 16)
+
+	if !scanner.Scan() || !scanner.Oversized() {
+		t.Fatal("expected the first line to be reported as oversized")
+	}
+	if scanner.Err() != nil {
+		t.Fatalf("unexpected scanner error after oversized line: %v", scanner.Err())
+	}
+	if !scanner.Scan() || scanner.Oversized() || scanner.Text() != PKIMETAL_ENDOFRESULTS {
+		t.Fatalf("scanner did not resume at end-of-results: text=%q oversized=%v", scanner.Text(), scanner.Oversized())
+	}
+	if !scanner.Scan() || scanner.Oversized() || scanner.Text() != "next" {
+		t.Fatalf("scanner did not continue after end-of-results: text=%q oversized=%v", scanner.Text(), scanner.Oversized())
+	}
+	if scanner.Scan() {
+		t.Fatal("scanner returned an unexpected line after the final line")
+	}
+	if scanner.Err() != io.EOF {
+		t.Fatalf("expected EOF after final line, got %v", scanner.Err())
+	}
+}
+
 // --- sendResult ---
 
 func TestSendResult_DeadlineExceeded(t *testing.T) {
@@ -186,6 +210,8 @@ func TestHelperProcess(t *testing.T) {
 		switch in.Text() {
 		case "CRASH": // Exit without emitting the sentinel (simulates a crash/desync).
 			os.Exit(1)
+		case "OVERSIZED": // Emit a response line beyond the production stdout limit.
+			fmt.Println(strings.Repeat("x", maxStdoutLineSize+1))
 		case "SLEEP": // Never respond in time (simulates a hang).
 			time.Sleep(2 * time.Second)
 		case "SLOWOK": // Respond, but only after the client is likely to have given up.
@@ -442,6 +468,26 @@ func TestBackend_CleanRequest(t *testing.T) {
 	}
 	if backendPID(lin) != pid {
 		t.Error("backend should not have restarted on a clean request")
+	}
+}
+
+func TestBackend_OversizedResponseDoesNotRestart(t *testing.T) {
+	lin, stop := startStubBackend(t, "")
+	defer stop()
+	pid := backendPID(lin)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	results := runLint(lin, ctx, "OVERSIZED")
+	if !hasResult(results, SEVERITY_FATAL, ErrResponseTooLong.Error()) {
+		t.Fatalf("expected a FATAL result for oversized response, got %+v", results)
+	}
+	if backendPID(lin) != pid {
+		t.Fatal("backend should not have restarted after an oversized response")
+	}
+	if results = runLint(lin, ctx, "hello"); !hasResult(results, SEVERITY_ERROR, "ok") {
+		t.Errorf("backend did not serve the next request after an oversized response: %+v", results)
 	}
 }
 

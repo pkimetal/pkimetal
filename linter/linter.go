@@ -3,6 +3,7 @@ package linter
 import (
 	"bufio"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -59,7 +60,7 @@ type LinterInstance struct {
 	command        *exec.Cmd
 	Mutex          *sync.Mutex
 	Stdin          io.WriteCloser
-	Stdout         *bufio.Scanner
+	Stdout         *lineScanner
 	stderr         *bufio.Scanner
 	stdinFile      *os.File // Underlying STDIN pipe, retained so that write deadlines can be set.
 	stdoutFile     *os.File // Underlying STDOUT pipe, retained so that read deadlines can be set.
@@ -101,6 +102,8 @@ const (
 	PKIMETAL_READY        = "[Ready]"
 	NOT_INSTALLED         = "not installed"
 )
+
+var ErrResponseTooLong = errors.New("stdout response line exceeds 16 MiB limit")
 
 func (l *Linter) Register() {
 	Linters = append(Linters, l)
@@ -196,7 +199,7 @@ func (lin *LinterInstance) startInstance_external(directory, cmd string, arg ...
 	if stdout, err = lin.command.StdoutPipe(); err != nil {
 		logger.Logger.Fatal("Cmd.StdoutPipe() failed", zap.Error(err), zap.String("cmd", cmd), zap.String("directory", directory), zap.String("name", lin.Name))
 	}
-	lin.Stdout = bufio.NewScanner(stdout)
+	lin.Stdout = newLineScanner(stdout, maxStdoutLineSize)
 	lin.stdoutFile, _ = stdout.(*os.File)
 
 	var stderr io.ReadCloser
@@ -480,7 +483,7 @@ func (lin *LinterInstance) serverLoop(ctx context.Context, lif LinterInterface) 
 							Finding:    finding,
 						})
 					}
-					if lin.external {
+					if lin.external && !errors.Is(err, ErrResponseTooLong) {
 						lin.restartInstance_external(err)
 					}
 				}
@@ -500,6 +503,7 @@ func (lin *LinterInstance) serverLoop(ctx context.Context, lif LinterInterface) 
 
 				var err error
 				clientGone := false
+				responseTooLong := false
 			label_forloop:
 				// Write the request to the linter backend's STDIN.
 				for _, err = lin.Stdin.Write(utils.S2B(fmt.Sprintf("%d\n%s\n", lreq.ProfileId, strings.TrimSpace(lreq.B64Input)))); err == nil; {
@@ -509,6 +513,17 @@ func (lin *LinterInstance) serverLoop(ctx context.Context, lif LinterInterface) 
 							err = fmt.Errorf("stdout.Scan() => false")
 						}
 						break label_forloop
+					}
+					if lin.Stdout.Oversized() {
+						responseTooLong = true
+						continue
+					}
+					if responseTooLong {
+						if lin.Stdout.Text() == PKIMETAL_ENDOFRESULTS {
+							err = ErrResponseTooLong
+							break label_forloop
+						}
+						continue
 					}
 
 					// Parse the response token from the linter backend's STDOUT into linting result(s).
@@ -554,7 +569,9 @@ func (lin *LinterInstance) serverLoop(ctx context.Context, lif LinterInterface) 
 							Finding:    finding,
 						})
 					}
-					lin.restartInstance_external(err)
+					if !errors.Is(err, ErrResponseTooLong) {
+						lin.restartInstance_external(err)
+					}
 				}
 			}
 			// Record meta information.
