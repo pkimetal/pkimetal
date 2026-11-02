@@ -5,7 +5,7 @@ import (
 
 	"github.com/pkimetal/pkimetal/config"
 	"github.com/pkimetal/pkimetal/linter"
-	"github.com/pkimetal/pkimetal/linter/pemreader"
+	"github.com/pkimetal/pkimetal/linter/badkeys/worker"
 )
 
 type Badkeys struct{}
@@ -40,41 +40,8 @@ func init() {
 
 func (l *Badkeys) StartInstance() (useHandleRequest bool, directory, cmd string, args []string) {
 	// Start badkeys server and configure STDIN/STDOUT pipes.
-	// The printresults function is adapted from the _printresults function defined by https://github.com/badkeys/badkeys/blob/main/badkeys/runcli.py.
 	return false, config.Config.Linter.Badkeys.PythonDir, "python3",
-		[]string{"-c", `#!/usr/bin/python3
-from sys import stdin
-from badkeys.allkeys import urllookup
-from badkeys.checks import allchecks, checkcrt
-
-def printresults(key):
-	if key["type"] == "unsupported":
-		print(f"W: Unsupported key type")
-	elif key["type"] == "unparseable":
-		print(f"F: Unparseable input")
-	elif key["type"] == "notfound":
-		print(f"W: No key found")
-	else:
-		if key["results"] == {}:
-			print(f"I: Key ok")
-	for check, result in key["results"].items():
-		sub = ""
-		if "subtest" in result:
-			sub = f"/{result['subtest']}"
-		if sub.startswith(tuple(["/unusual_keysize", "/exponent_"])):
-			print(f"I: {check}{sub}")
-		else:
-			print(f"E: {check}{sub} vulnerability")
-
-` + pemreader.Reader + `
-try:
-	for profile_id, pem_data in read_pem_requests(stdin):
-		printresults(checkcrt(pem_data, checks=allchecks))
-		print("` + linter.PKIMETAL_ENDOFRESULTS + `", flush=True)
-		del pem_data
-except KeyboardInterrupt:
-	pass
-`}
+		[]string{"-c", worker.Script}
 }
 
 func (l *Badkeys) StopInstance(lin *linter.LinterInstance) {

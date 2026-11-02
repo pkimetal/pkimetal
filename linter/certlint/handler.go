@@ -92,11 +92,19 @@ begin
 			pem_cert << line
 		end
 		if line.include? "END CERTIFICATE"
-			m, der_cert = CertLint::PEMLint.lint(pem_cert, 'CERTIFICATE')
-			if tbr_tevg_profile_ids.include?(profile_id)
-				m << CertLint::CABLint.lint(der_cert)
-			else
-				m << CertLint.lint(der_cert)
+			begin
+				m, der_cert = CertLint::PEMLint.lint(pem_cert, 'CERTIFICATE')
+				if tbr_tevg_profile_ids.include?(profile_id)
+					m << CertLint::CABLint.lint(der_cert)
+				else
+					m << CertLint.lint(der_cert)
+				end
+			rescue SignalException, SystemExit, NoMemoryError
+				raise
+			rescue Exception => e
+				# Report any other exception (including SystemStackError, which is not a
+				# StandardError) as a single bounded line, so that the response stays in sync.
+				m = [("F: Exception: " + "#{e.class}: #{e.message}".scrub.split.join(" "))[0, 1024]]
 			end
 			m << "` + linter.PKIMETAL_ENDOFRESULTS + `"
 			$stdout.puts(m)
