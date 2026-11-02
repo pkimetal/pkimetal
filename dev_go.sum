@@ -15,8 +15,8 @@ github.com/cps-kit/section7 v0.1.0 h1:9WmArBEGkPLw9Sm/jpr34e6ELpXsAio/F8L2ujhrMD
 github.com/cps-kit/section7 v0.1.0/go.mod h1:QAM2nXqKpy/xL5tMts8XadCwBL9y4UP8EnK221DSpe0=
 github.com/crtsh/ccadb_data v1.20261101.163949 h1:nI0/qvpSIReTgTcCqDqg/mxu9qW7i2IWgtgRxFVlwwI=
 github.com/crtsh/ccadb_data v1.20261101.163949/go.mod h1:072Cnka3SX9eS4ORmXVv2erH2qklsDSCnzTzqCz+VTM=
-github.com/crtsh/ctlint v0.0.0-20261027141744-c766457c8f7c h1:aifVI35vT8qF/yH/ItganNiQrcaltUvZYweP3mln2Vw=
-github.com/crtsh/ctlint v0.0.0-20261027141744-c766457c8f7c/go.mod h1:QfGExRCj+C4j8nFX9qumVbJledFd2uu6ZkdU8TR5lgo=
+github.com/crtsh/ctlint v0.0.0-20261102111801-45f5f65cb30e h1:8Q2+tQrZZgSw4OMxAbE/dnWN6xPhwCBeNN5pY7JVDz8=
+github.com/crtsh/ctlint v0.0.0-20261102111801-45f5f65cb30e/go.mod h1:NcASY/EVCVfkZL9QsJok4zcZBPQovO/8GlMI3GCINsE=
 github.com/crtsh/ctloglists v1.20261030.194600 h1:RkOkm9gnqcj8F88Yk8EnD8Y/RD4f4U3Kw6OcI302uWM=
 github.com/crtsh/ctloglists v1.20261030.194600/go.mod h1:1GsnfImJl+3iY9tFoaMxXJ5qzKraZ06lcC2LtSFgEvk=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
