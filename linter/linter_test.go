@@ -215,6 +215,23 @@ func (panickingBackend) HandleRequest(_ context.Context, _ *LinterInstance, lreq
 	return []LintingResult{{Severity: SEVERITY_ERROR, Finding: "ok"}}
 }
 
+type failingInProcessBackend struct {
+	stubBackend
+	calls        int
+	initialPID   int
+	restartedPID int
+}
+
+func (b *failingInProcessBackend) HandleRequestWithError(_ context.Context, lin *LinterInstance, _ *LintingRequest) ([]LintingResult, error) {
+	b.calls++
+	if b.calls == 1 {
+		b.initialPID = lin.command.Process.Pid
+		return nil, fmt.Errorf("worker response mismatch")
+	}
+	b.restartedPID = lin.command.Process.Pid
+	return []LintingResult{{Severity: SEVERITY_ERROR, Finding: "ok"}}, nil
+}
+
 func TestInProcess_RecoversFromPanic(t *testing.T) {
 	lin := &LinterInstance{
 		Linter: &Linter{
@@ -248,6 +265,53 @@ func TestInProcess_RecoversFromPanic(t *testing.T) {
 	// The instance must still serve the next request.
 	if r := runLint(lin, reqCtx, "hello"); !hasResult(r, SEVERITY_ERROR, "ok") {
 		t.Errorf("instance did not serve the next request: %+v", r)
+	}
+}
+
+func TestInProcess_RestartsExternalWorkerOnHandlerError(t *testing.T) {
+	backend := &failingInProcessBackend{}
+	lin := &LinterInstance{
+		Linter: &Linter{
+			Name:                  "stub",
+			Version:               "v0",
+			ReqChannel:            make(chan LintingRequest, 8),
+			useHandleRequest:      true,
+			external:              true,
+			queueTimeSummary:      prometheus.NewSummary(prometheus.SummaryOpts{Name: "stub_error_queue"}),
+			processingTimeSummary: prometheus.NewSummary(prometheus.SummaryOpts{Name: "stub_error_processing"}),
+		},
+		Mutex:     &sync.Mutex{},
+		directory: ".",
+		cmd:       os.Args[0],
+		args:      []string{"-test.run=TestHelperProcess", helperArg},
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	done := make(chan struct{})
+	ShutdownWG.Add(1)
+	go func() {
+		lin.serverLoop(ctx, backend)
+		close(done)
+	}()
+	defer func() {
+		cancel()
+		<-done
+		if lin.command != nil && lin.command.Process != nil {
+			_ = lin.command.Process.Kill()
+			_ = lin.command.Wait()
+		}
+	}()
+
+	reqCtx, reqCancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer reqCancel()
+	if results := runLint(lin, reqCtx, "first"); !hasResult(results, SEVERITY_FATAL, "worker response mismatch") {
+		t.Fatalf("expected a fatal handler error, got %+v", results)
+	}
+	if results := runLint(lin, reqCtx, "second"); !hasResult(results, SEVERITY_ERROR, "ok") {
+		t.Fatalf("instance did not serve a request after restart: %+v", results)
+	}
+	if backend.initialPID == backend.restartedPID {
+		t.Errorf("worker process was not restarted: pid %d", backend.initialPID)
 	}
 }
 
