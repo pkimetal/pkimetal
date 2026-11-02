@@ -1,7 +1,6 @@
 package linter
 
 import (
-	"bufio"
 	"context"
 	"errors"
 	"fmt"
@@ -61,7 +60,7 @@ type LinterInstance struct {
 	Mutex          *sync.Mutex
 	Stdin          io.WriteCloser
 	Stdout         *lineScanner
-	stderr         *bufio.Scanner
+	stderr         *lineScanner
 	stdinFile      *os.File // Underlying STDIN pipe, retained so that write deadlines can be set.
 	stdoutFile     *os.File // Underlying STDOUT pipe, retained so that read deadlines can be set.
 	directory      string   // Retained so that the backend can be restarted after a failure.
@@ -206,14 +205,19 @@ func (lin *LinterInstance) startInstance_external(directory, cmd string, arg ...
 	if stderr, err = lin.command.StderrPipe(); err != nil {
 		logger.Logger.Fatal("Cmd.StderrPipe() failed", zap.Error(err), zap.String("cmd", cmd), zap.String("directory", directory), zap.String("name", lin.Name))
 	}
-	lin.stderr = bufio.NewScanner(stderr)
+	lin.stderr = newLineScanner(stderr, maxStderrLineSize)
 
-	// Continuously log STDERR output as it is produced.
-	go func(lin *LinterInstance) {
-		for lin.stderr.Scan() {
-			logger.Logger.Info("From stderr", zap.Int("instance#", lin.instanceNumber), zap.String("name", lin.Name), zap.String("text", lin.stderr.Text()))
+	// Continuously log STDERR output as it is produced.  The scanner is passed in
+	// so that a restart, which replaces lin.stderr, cannot race with this reader.
+	go func(lin *LinterInstance, stderr *lineScanner) {
+		for stderr.Scan() {
+			if stderr.Oversized() {
+				logger.Logger.Info("From stderr (truncated)", zap.Int("instance#", lin.instanceNumber), zap.String("name", lin.Name), zap.Int("length", stderr.Size()), zap.String("text", stderr.Text()))
+			} else {
+				logger.Logger.Info("From stderr", zap.Int("instance#", lin.instanceNumber), zap.String("name", lin.Name), zap.String("text", stderr.Text()))
+			}
 		}
-	}(lin)
+	}(lin, lin.stderr)
 
 	// Start the linter backend.
 	lin.command.Start()
