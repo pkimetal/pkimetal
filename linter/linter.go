@@ -1,8 +1,8 @@
 package linter
 
 import (
-	"bufio"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -59,8 +59,8 @@ type LinterInstance struct {
 	command        *exec.Cmd
 	Mutex          *sync.Mutex
 	Stdin          io.WriteCloser
-	Stdout         *bufio.Scanner
-	stderr         *bufio.Scanner
+	Stdout         *lineScanner
+	stderr         *lineScanner
 	stdinFile      *os.File // Underlying STDIN pipe, retained so that write deadlines can be set.
 	stdoutFile     *os.File // Underlying STDOUT pipe, retained so that read deadlines can be set.
 	directory      string   // Retained so that the backend can be restarted after a failure.
@@ -101,6 +101,8 @@ const (
 	PKIMETAL_READY        = "[Ready]"
 	NOT_INSTALLED         = "not installed"
 )
+
+var ErrResponseTooLong = errors.New("stdout response line exceeds 16 MiB limit")
 
 func (l *Linter) Register() {
 	Linters = append(Linters, l)
@@ -196,21 +198,26 @@ func (lin *LinterInstance) startInstance_external(directory, cmd string, arg ...
 	if stdout, err = lin.command.StdoutPipe(); err != nil {
 		logger.Logger.Fatal("Cmd.StdoutPipe() failed", zap.Error(err), zap.String("cmd", cmd), zap.String("directory", directory), zap.String("name", lin.Name))
 	}
-	lin.Stdout = bufio.NewScanner(stdout)
+	lin.Stdout = newLineScanner(stdout, maxStdoutLineSize)
 	lin.stdoutFile, _ = stdout.(*os.File)
 
 	var stderr io.ReadCloser
 	if stderr, err = lin.command.StderrPipe(); err != nil {
 		logger.Logger.Fatal("Cmd.StderrPipe() failed", zap.Error(err), zap.String("cmd", cmd), zap.String("directory", directory), zap.String("name", lin.Name))
 	}
-	lin.stderr = bufio.NewScanner(stderr)
+	lin.stderr = newLineScanner(stderr, maxStderrLineSize)
 
-	// Continuously log STDERR output as it is produced.
-	go func(lin *LinterInstance) {
-		for lin.stderr.Scan() {
-			logger.Logger.Info("From stderr", zap.Int("instance#", lin.instanceNumber), zap.String("name", lin.Name), zap.String("text", lin.stderr.Text()))
+	// Continuously log STDERR output as it is produced.  The scanner is passed in
+	// so that a restart, which replaces lin.stderr, cannot race with this reader.
+	go func(lin *LinterInstance, stderr *lineScanner) {
+		for stderr.Scan() {
+			if stderr.Oversized() {
+				logger.Logger.Info("From stderr (truncated)", zap.Int("instance#", lin.instanceNumber), zap.String("name", lin.Name), zap.Int("length", stderr.Size()), zap.String("text", stderr.Text()))
+			} else {
+				logger.Logger.Info("From stderr", zap.Int("instance#", lin.instanceNumber), zap.String("name", lin.Name), zap.String("text", stderr.Text()))
+			}
 		}
-	}(lin)
+	}(lin, lin.stderr)
 
 	// Start the linter backend.
 	lin.command.Start()
@@ -480,7 +487,7 @@ func (lin *LinterInstance) serverLoop(ctx context.Context, lif LinterInterface) 
 							Finding:    finding,
 						})
 					}
-					if lin.external {
+					if lin.external && !errors.Is(err, ErrResponseTooLong) {
 						lin.restartInstance_external(err)
 					}
 				}
@@ -500,6 +507,7 @@ func (lin *LinterInstance) serverLoop(ctx context.Context, lif LinterInterface) 
 
 				var err error
 				clientGone := false
+				responseTooLong := false
 			label_forloop:
 				// Write the request to the linter backend's STDIN.
 				for _, err = lin.Stdin.Write(utils.S2B(fmt.Sprintf("%d\n%s\n", lreq.ProfileId, strings.TrimSpace(lreq.B64Input)))); err == nil; {
@@ -509,6 +517,17 @@ func (lin *LinterInstance) serverLoop(ctx context.Context, lif LinterInterface) 
 							err = fmt.Errorf("stdout.Scan() => false")
 						}
 						break label_forloop
+					}
+					if lin.Stdout.Oversized() {
+						responseTooLong = true
+						continue
+					}
+					if responseTooLong {
+						if lin.Stdout.Text() == PKIMETAL_ENDOFRESULTS {
+							err = ErrResponseTooLong
+							break label_forloop
+						}
+						continue
 					}
 
 					// Parse the response token from the linter backend's STDOUT into linting result(s).
@@ -554,7 +573,9 @@ func (lin *LinterInstance) serverLoop(ctx context.Context, lif LinterInterface) 
 							Finding:    finding,
 						})
 					}
-					lin.restartInstance_external(err)
+					if !errors.Is(err, ErrResponseTooLong) {
+						lin.restartInstance_external(err)
+					}
 				}
 			}
 			// Record meta information.

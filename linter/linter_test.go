@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"slices"
 	"strings"
@@ -126,6 +127,50 @@ func TestParseResultToken_Malformed(t *testing.T) {
 	}
 }
 
+func TestLineScannerOversizedLineDrainsAndContinues(t *testing.T) {
+	scanner := newLineScanner(strings.NewReader("12345678901234567\n[EndOfResults]\nnext"), 16)
+
+	if !scanner.Scan() || !scanner.Oversized() {
+		t.Fatal("expected the first line to be reported as oversized")
+	}
+	if scanner.Text() != "1234567890123456" || scanner.Size() != 17 {
+		t.Fatalf("oversized line: got text=%q size=%d, want the first 16 bytes and size 17", scanner.Text(), scanner.Size())
+	}
+	if scanner.Err() != nil {
+		t.Fatalf("unexpected scanner error after oversized line: %v", scanner.Err())
+	}
+	if !scanner.Scan() || scanner.Oversized() || scanner.Text() != PKIMETAL_ENDOFRESULTS {
+		t.Fatalf("scanner did not resume at end-of-results: text=%q oversized=%v", scanner.Text(), scanner.Oversized())
+	}
+	if !scanner.Scan() || scanner.Oversized() || scanner.Text() != "next" {
+		t.Fatalf("scanner did not continue after end-of-results: text=%q oversized=%v", scanner.Text(), scanner.Oversized())
+	}
+	if scanner.Scan() {
+		t.Fatal("scanner returned an unexpected line after the final line")
+	}
+	if scanner.Err() != io.EOF {
+		t.Fatalf("expected EOF after final line, got %v", scanner.Err())
+	}
+}
+
+func TestLineScannerSpansReadBuffer(t *testing.T) {
+	// Lines longer than the internal read buffer must be assembled across reads,
+	// both when they fit the limit and when they exceed it.
+	fits := strings.Repeat("a", 3*stdoutLineBufferSize)
+	tooLong := strings.Repeat("b", 3*stdoutLineBufferSize+1)
+	scanner := newLineScanner(strings.NewReader(fits+"\n"+tooLong+"\nnext\r\n"), len(fits))
+
+	if !scanner.Scan() || scanner.Oversized() || scanner.Text() != fits {
+		t.Fatalf("line at the limit: oversized=%v len=%d, want %d bytes", scanner.Oversized(), len(scanner.Text()), len(fits))
+	}
+	if !scanner.Scan() || !scanner.Oversized() || scanner.Text() != tooLong[:len(fits)] || scanner.Size() != len(tooLong) {
+		t.Fatalf("line over the limit: oversized=%v len=%d size=%d", scanner.Oversized(), len(scanner.Text()), scanner.Size())
+	}
+	if !scanner.Scan() || scanner.Text() != "next" {
+		t.Fatalf("scanner did not continue after an oversized line: text=%q", scanner.Text())
+	}
+}
+
 // --- sendResult ---
 
 func TestSendResult_DeadlineExceeded(t *testing.T) {
@@ -186,6 +231,13 @@ func TestHelperProcess(t *testing.T) {
 		switch in.Text() {
 		case "CRASH": // Exit without emitting the sentinel (simulates a crash/desync).
 			os.Exit(1)
+		case "OVERSIZED": // Emit a response line beyond the production stdout limit.
+			fmt.Println(strings.Repeat("x", maxStdoutLineSize+1))
+		case "STDERRFLOOD": // An over-long stderr line, then more stderr than a pipe buffer holds.
+			fmt.Fprintln(os.Stderr, strings.Repeat("x", maxStderrLineSize+1))
+			for range 1024 {
+				fmt.Fprintln(os.Stderr, strings.Repeat("y", 1023))
+			}
 		case "SLEEP": // Never respond in time (simulates a hang).
 			time.Sleep(2 * time.Second)
 		case "SLOWOK": // Respond, but only after the client is likely to have given up.
@@ -442,6 +494,48 @@ func TestBackend_CleanRequest(t *testing.T) {
 	}
 	if backendPID(lin) != pid {
 		t.Error("backend should not have restarted on a clean request")
+	}
+}
+
+func TestBackend_OversizedResponseDoesNotRestart(t *testing.T) {
+	lin, stop := startStubBackend(t, "")
+	defer stop()
+	pid := backendPID(lin)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	results := runLint(lin, ctx, "OVERSIZED")
+	if !hasResult(results, SEVERITY_FATAL, ErrResponseTooLong.Error()) {
+		t.Fatalf("expected a FATAL result for oversized response, got %+v", results)
+	}
+	if backendPID(lin) != pid {
+		t.Fatal("backend should not have restarted after an oversized response")
+	}
+	if results = runLint(lin, ctx, "hello"); !hasResult(results, SEVERITY_ERROR, "ok") {
+		t.Errorf("backend did not serve the next request after an oversized response: %+v", results)
+	}
+}
+
+func TestBackend_OversizedStderrLineKeepsBackendResponsive(t *testing.T) {
+	saved := config.Config.Linter.BackendTimeout
+	config.Config.Linter.BackendTimeout = 5 * time.Second
+	defer func() { config.Config.Linter.BackendTimeout = saved }()
+
+	lin, stop := startStubBackend(t, "")
+	defer stop()
+	pid := backendPID(lin)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// If the stderr reader stopped at the over-long line, the backend would block
+	// writing the rest of its stderr and the request would time out.
+	if r := runLint(lin, ctx, "STDERRFLOOD"); !hasResult(r, SEVERITY_ERROR, "ok") || hasResult(r, SEVERITY_FATAL, "") {
+		t.Fatalf("backend did not complete a request after an over-long stderr line: %+v", r)
+	}
+	if backendPID(lin) != pid {
+		t.Error("backend should not have restarted after an over-long stderr line")
 	}
 }
 
