@@ -5,7 +5,7 @@ go 1.27.3
 require (
 	github.com/CVE-2008-0166/dwklint/v2 v2.1.0
 	github.com/cps-kit/section7 v0.1.0
-	github.com/crtsh/ccadb_data v1.20261030.202600
+	github.com/crtsh/ccadb_data v1.20261101.163949
 	github.com/crtsh/ctlint v0.0.0-20261027141744-c766457c8f7c
 	github.com/crtsh/ctloglists v1.20261030.194600
 	github.com/goccy/go-json v0.12.0
@@ -16,7 +16,7 @@ require (
 	github.com/titanous/rocacheck v0.0.0-20171023193734-afe73141d399
 	github.com/valyala/fasthttp v1.77.0
 	github.com/zmap/zcrypto v0.0.0-20261025225231-4cf7949d2321
-	github.com/zmap/zlint/v3 v3.7.2
+	github.com/zmap/zlint/v3 v3.7.3
 	go.uber.org/automaxprocs v1.6.0
 	go.uber.org/zap v1.28.0
 	golang.org/x/crypto v0.58.0
@@ -24,7 +24,6 @@ require (
 
 require (
 	github.com/CVE-2008-0166/dwk_blocklists_sqlite3 v0.0.0-20250725083057-d37481c06d85 // indirect
-	github.com/badkeys/badkeys v0.0.21 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/certlint/certlint v1.8.6 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
@@ -41,7 +40,7 @@ require (
 	github.com/molecule-man/go-brrr v1.3.1 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/ncruces/go-strftime v1.1.0 // indirect
-	github.com/pandatix/go-abnf v0.5.4 // indirect
+	github.com/pandatix/go-abnf v0.5.5 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.4.3 // indirect
 	github.com/prometheus/client_model v0.6.3 // indirect
@@ -57,16 +56,16 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/weppos/publicsuffix-go v0.50.4-0.20261018191641-fa5685825dd4 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	go.yaml.in/yaml/v3 v3.0.5 // indirect
+	go.yaml.in/yaml/v3 v3.0.6 // indirect
 	golang.org/x/net v0.62.0 // indirect
 	golang.org/x/sys v0.49.0 // indirect
 	golang.org/x/text v0.43.0 // indirect
 	google.golang.org/protobuf v1.36.12 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	k8s.io/klog/v2 v2.140.0 // indirect
-	modernc.org/libc v1.79.1 // indirect
+	modernc.org/libc v1.80.0 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.12.1 // indirect
-	modernc.org/sqlite v1.61.0 // indirect
+	modernc.org/sqlite v1.61.1 // indirect
 	zombiezen.com/go/sqlite v1.4.2 // indirect
 )
