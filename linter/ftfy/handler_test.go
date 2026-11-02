@@ -5,7 +5,15 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+
+	"github.com/pkimetal/pkimetal/config"
 )
+
+// Unit tests do not need a local ftfy installation or worker process.
+var _ = func() struct{} {
+	config.Config.Linter.Ftfy.NumProcesses = 0
+	return struct{}{}
+}()
 
 func TestSanitizeFtfyInput(t *testing.T) {
 	input := "a\nb\rc\u0085d\u2028e\u2029f\xff"
