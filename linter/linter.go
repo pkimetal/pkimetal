@@ -32,6 +32,10 @@ type LinterInterface interface {
 	ProcessResult(lresult LintingResult) LintingResult
 }
 
+type LinterInterfaceWithError interface {
+	HandleRequestWithError(ctx context.Context, lin *LinterInstance, lreq *LintingRequest) ([]LintingResult, error)
+}
+
 type Linter struct {
 	Name                  string
 	Version               string
@@ -379,6 +383,23 @@ func (lin *LinterInstance) handleRequest(lif LinterInterface, lreq *LintingReque
 	return lif.HandleRequest(lreq.Ctx, lin, lreq)
 }
 
+func (lin *LinterInstance) handleRequestWithError(lif LinterInterface, lreq *LintingRequest) (lresults []LintingResult, err error) {
+	if lifWithError, ok := lif.(LinterInterfaceWithError); ok {
+		defer func() {
+			if r := recover(); r != nil {
+				logger.Logger.Error("Recovered from panic in Linter", zap.Int("instance#", lin.instanceNumber), zap.String("name", lin.Name), zap.Any("panic", r), zap.ByteString("stack", debug.Stack()))
+				lresults = []LintingResult{{
+					Severity: SEVERITY_FATAL,
+					Finding:  fmt.Sprintf("Recovered from panic: %v", r),
+				}}
+				err = fmt.Errorf("recovered from panic: %v", r)
+			}
+		}()
+		return lifWithError.HandleRequestWithError(lreq.Ctx, lin, lreq)
+	}
+	return lin.handleRequest(lif, lreq), nil
+}
+
 func (lin *LinterInstance) serverLoop(ctx context.Context, lif LinterInterface) {
 	defer ShutdownWG.Done()
 
@@ -420,11 +441,47 @@ func (lin *LinterInstance) serverLoop(ctx context.Context, lif LinterInterface) 
 			start := time.Now()
 
 			if lin.useHandleRequest {
-				// Process this linting request in-process, bounded by the request's deadline.
-				for _, lres := range lin.handleRequest(lif, &lreq) {
+				var lresults []LintingResult
+				var err error
+				if _, ok := lif.(LinterInterfaceWithError); ok {
+					// Bound pipe I/O for in-process handlers that use an external worker.
+					backendDeadline := time.Now().Add(config.Config.Linter.BackendTimeout)
+					if lin.stdinFile != nil {
+						_ = lin.stdinFile.SetWriteDeadline(backendDeadline)
+					}
+					if lin.stdoutFile != nil {
+						_ = lin.stdoutFile.SetReadDeadline(backendDeadline)
+					}
+					lresults, err = lin.handleRequestWithError(lif, &lreq)
+					if lin.stdinFile != nil {
+						_ = lin.stdinFile.SetWriteDeadline(time.Time{})
+					}
+					if lin.stdoutFile != nil {
+						_ = lin.stdoutFile.SetReadDeadline(time.Time{})
+					}
+				} else {
+					lresults = lin.handleRequest(lif, &lreq)
+				}
+				for _, lres := range lresults {
 					lres.LinterName = lin.Name
 					if !lin.sendResult(&lreq, lres) {
 						break
+					}
+				}
+				if err != nil {
+					if lreq.Ctx.Err() == nil {
+						finding := fmt.Sprintf("%s: %v", lin.Name, err)
+						if os.IsTimeout(err) {
+							finding = fmt.Sprintf("%s: linting backend timed out", lin.Name)
+						}
+						lin.sendResult(&lreq, LintingResult{
+							LinterName: PKIMETAL_NAME,
+							Severity:   SEVERITY_FATAL,
+							Finding:    finding,
+						})
+					}
+					if lin.external {
+						lin.restartInstance_external(err)
 					}
 				}
 
