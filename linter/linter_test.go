@@ -249,6 +249,37 @@ func TestHelperProcess(t *testing.T) {
 	os.Exit(0)
 }
 
+func TestExternalStdinWriteDeadline(t *testing.T) {
+	lin := &LinterInstance{Linter: &Linter{Name: "stub"}}
+	lin.startInstance_external(".", os.Args[0], "-test.run=TestHelperProcess", helperArg)
+	defer func() {
+		_ = lin.command.Process.Kill()
+		_ = lin.command.Wait()
+	}()
+
+	if lin.stdinFile == nil {
+		t.Fatalf("stdin pipe %T does not support write deadlines", lin.Stdin)
+	}
+	if err := lin.stdinFile.SetWriteDeadline(time.Now().Add(-time.Second)); err != nil {
+		t.Fatalf("setting stdin write deadline: %v", err)
+	}
+	if _, err := io.WriteString(lin.Stdin, "0\nhello\n"); !os.IsTimeout(err) {
+		t.Fatalf("write with expired deadline: got %v, want a timeout", err)
+	}
+	if err := lin.stdinFile.SetWriteDeadline(time.Time{}); err != nil {
+		t.Fatalf("clearing stdin write deadline: %v", err)
+	}
+	if _, err := io.WriteString(lin.Stdin, "0\nhello\n"); err != nil {
+		t.Fatalf("write after clearing deadline: %v", err)
+	}
+	if err := lin.stdoutFile.SetReadDeadline(time.Now().Add(5 * time.Second)); err != nil {
+		t.Fatalf("setting stdout read deadline: %v", err)
+	}
+	if !lin.Stdout.Scan() || lin.Stdout.Text() != "E: ok" {
+		t.Fatalf("unexpected backend response: %q, error: %v", lin.Stdout.Text(), lin.Stdout.Err())
+	}
+}
+
 type stubBackend struct{}
 
 func (stubBackend) StartInstance() (bool, string, string, []string) { return false, ".", "", nil }

@@ -61,11 +61,19 @@ type LinterInstance struct {
 	Stdin          io.WriteCloser
 	Stdout         *lineScanner
 	stderr         *lineScanner
-	stdinFile      *os.File // Underlying STDIN pipe, retained so that write deadlines can be set.
-	stdoutFile     *os.File // Underlying STDOUT pipe, retained so that read deadlines can be set.
-	directory      string   // Retained so that the backend can be restarted after a failure.
+	stdinFile      writeDeadliner // Underlying STDIN pipe, retained so that write deadlines can be set.
+	stdoutFile     readDeadliner  // Underlying STDOUT pipe, retained so that read deadlines can be set.
+	directory      string         // Retained so that the backend can be restarted after a failure.
 	cmd            string
 	args           []string
+}
+
+type writeDeadliner interface {
+	SetWriteDeadline(t time.Time) error
+}
+
+type readDeadliner interface {
+	SetReadDeadline(t time.Time) error
 }
 
 type LintingRequest struct {
@@ -192,14 +200,14 @@ func (lin *LinterInstance) startInstance_external(directory, cmd string, arg ...
 	if lin.Stdin, err = lin.command.StdinPipe(); err != nil {
 		logger.Logger.Fatal("Cmd.StdinPipe() failed", zap.Error(err), zap.String("cmd", cmd), zap.String("directory", directory), zap.String("name", lin.Name))
 	}
-	lin.stdinFile, _ = lin.Stdin.(*os.File)
+	lin.stdinFile, _ = lin.Stdin.(writeDeadliner)
 
 	var stdout io.ReadCloser
 	if stdout, err = lin.command.StdoutPipe(); err != nil {
 		logger.Logger.Fatal("Cmd.StdoutPipe() failed", zap.Error(err), zap.String("cmd", cmd), zap.String("directory", directory), zap.String("name", lin.Name))
 	}
 	lin.Stdout = newLineScanner(stdout, maxStdoutLineSize)
-	lin.stdoutFile, _ = stdout.(*os.File)
+	lin.stdoutFile, _ = stdout.(readDeadliner)
 
 	var stderr io.ReadCloser
 	if stderr, err = lin.command.StderrPipe(); err != nil {
