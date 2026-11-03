@@ -6,7 +6,7 @@ require (
 	github.com/CVE-2008-0166/dwklint/v2 v2.1.0
 	github.com/cps-kit/section7 v0.1.0
 	github.com/crtsh/ccadb_data v1.20261101.163949
-	github.com/crtsh/ctlint v0.0.0-20261027141744-c766457c8f7c
+	github.com/crtsh/ctlint v0.0.0-20261102111801-45f5f65cb30e
 	github.com/crtsh/ctloglists v1.20261030.194600
 	github.com/goccy/go-json v0.12.0
 	github.com/google/certificate-transparency-go v1.4.0
@@ -25,7 +25,6 @@ require (
 
 require (
 	github.com/CVE-2008-0166/dwk_blocklists_sqlite3 v0.0.0-20250725083057-d37481c06d85 // indirect
-	github.com/badkeys/badkeys v0.0.22 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/certlint/certlint v1.8.6 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
