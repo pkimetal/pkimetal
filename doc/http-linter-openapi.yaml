@@ -1,0 +1,89 @@
+openapi: 3.0.0
+info:
+  title: pkimetal HTTP linter endpoint
+  description: >-
+    The API that an HTTP linter endpoint implements so that pkimetal can send it
+    artifacts to lint.  pkimetal is the client.  See doc/linters/http.md for how
+    to configure an endpoint.
+  license:
+    name: GNU General Public License v3.0 or later
+    url: https://spdx.org/licenses/GPL-3.0-or-later.html
+  version: 1.0.0
+
+# Credentials, if the endpoint needs any, are sent as configured headers.
+security: []
+
+servers:
+  - url: http://localhost:8000
+    description: An example; pkimetal uses the endpoint's configured url
+
+paths:
+  /:
+    post:
+      summary: Lint one artifact
+      description: The path is that of the endpoint's configured url.
+      operationId: lint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HTTPLinterRequest'
+      responses:
+        '200':
+          description: The endpoint's findings.  An empty array means that there are no findings.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HTTPLinterFinding'
+        '400':
+          description: The request could not be processed (e.g. an unsupported artifact).  pkimetal reports it as a failed request.
+        default:
+          description: Any other status is reported by pkimetal as a failed request.
+components:
+  schemas:
+    HTTPLinterRequest:
+      type: object
+      required:
+        - b64input
+        - profile
+        - artifact
+      properties:
+        b64input:
+          type: string
+          format: byte
+          description: The Base64-encoded DER of the artifact
+        profile:
+          type: string
+          description: The name of the profile, as listed by pkimetal's /profiles endpoint
+        artifact:
+          type: string
+          enum:
+            - certificate
+            - crl
+            - ocsp
+          description: The type of the artifact
+    HTTPLinterFinding:
+      type: object
+      required:
+        - Finding
+        - Severity
+      properties:
+        Linter:
+          type: string
+          description: Ignored; pkimetal reports the finding under the linter's configured name
+        Finding:
+          type: string
+          description: A textual description of the finding
+        Severity:
+          allOf:
+            - $ref: './openapi.yaml#/components/schemas/FindingSeverity'
+          description: The severity of the finding.  "meta" is reserved for pkimetal and is rejected.
+        Code:
+          type: string
+          description: A unique identifier for the finding
+        Field:
+          type: string
+          description: The field within the document that is applicable to the finding
