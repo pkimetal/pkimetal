@@ -36,8 +36,8 @@ func buildOne(t *testing.T, cfg config.HTTPLinterConfig) (*linter.Linter, *HTTPL
 
 func TestBuildLinters_MapsConfig(t *testing.T) {
 	l, backend := buildOne(t, config.HTTPLinterConfig{
-		Name:            "geonames",
-		URL:             "http://geonames:8000/lint",
+		Name:            "mylinter",
+		URL:             "http://mylinter:8000/lint",
 		NumGoroutines:   intPtr(3),
 		Timeout:         2 * time.Second,
 		ErrorSeverity:   "error",
@@ -46,10 +46,10 @@ func TestBuildLinters_MapsConfig(t *testing.T) {
 		Headers:         map[string]string{"authorization": "Bearer abc"},
 	})
 
-	if l.Name != "geonames" || l.Version != "1.2.3" || l.Url != "http://geonames:8000/lint" || l.NumInstances != 3 {
+	if l.Name != "mylinter" || l.Version != "1.2.3" || l.Url != "http://mylinter:8000/lint" || l.NumInstances != 3 {
 		t.Errorf("linter: got name %q, version %q, url %q, instances %d", l.Name, l.Version, l.Url, l.NumInstances)
 	}
-	if backend.url != "http://geonames:8000/lint" || backend.headers["authorization"] != "Bearer abc" {
+	if backend.url != "http://mylinter:8000/lint" || backend.headers["authorization"] != "Bearer abc" {
 		t.Errorf("backend: got url %q, headers %v", backend.url, backend.headers)
 	}
 	if backend.errorSeverity != linter.SEVERITY_ERROR || backend.timeoutSeverity != linter.SEVERITY_WARNING {

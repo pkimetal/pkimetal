@@ -9,8 +9,8 @@ HTTP linters are declared in `config.yaml` (e.g. `/config/config.yaml`) under `l
 ```yaml
 linter:
   httpLinters:
-    - name: geonames                  # Required. The linter name shown in results; must be unique.
-      url: http://geonames:8000/lint  # Required. An http or https URL.
+    - name: mylinter                  # Required. The linter name shown in results; must be unique.
+      url: http://mylinter:8000/lint  # Required. An http or https URL.
       numGoroutines: 1                # Optional, default 1. The number of concurrent requests; 0 disables the linter.
       timeout: 5s                     # Optional, default 5s (or half of linter.backendTimeout, if less). Must be less than linter.backendTimeout (default 30s).
       artifacts: [certificate]        # Optional, default [certificate]. Any of: certificate, crl, ocsp.
@@ -52,7 +52,7 @@ For each artifact, pkimetal sends a `POST` request to the configured `url`, with
 The endpoint responds with HTTP status 200 and a JSON array of findings, in the same format as pkimetal's own responses:
 
 ```json
-[{"Finding": "Locality does not exist in state", "Severity": "error", "Field": "tbsCertificate.subject.L", "Code": "geonames_locality_unknown"}]
+[{"Finding": "Subject CN contains 'example'", "Severity": "warning", "Field": "tbsCertificate.subject.commonName", "Code": "subjectcn_example"}]
 ```
 
 - `Finding` and `Severity` are required. `Field` and `Code` are optional. A `Linter` value may be included, but is replaced with the configured `name`.

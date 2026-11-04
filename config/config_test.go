@@ -15,8 +15,8 @@ func TestHTTPLintersUnmarshalFromYAML(t *testing.T) {
 	if err := v.ReadConfig(strings.NewReader(`
 linter:
   httpLinters:
-    - name: geonames
-      url: https://geonames.example/lint
+    - name: mylinter
+      url: https://mylinter.example/lint
       numGoroutines: 2
       timeout: 7s
       artifacts: [certificate, crl]
@@ -48,8 +48,8 @@ linter:
 
 	two := 2
 	want := HTTPLinterConfig{
-		Name:            "geonames",
-		URL:             "https://geonames.example/lint",
+		Name:            "mylinter",
+		URL:             "https://mylinter.example/lint",
 		NumGoroutines:   &two,
 		Timeout:         7 * time.Second,
 		Artifacts:       []string{"certificate", "crl"},
