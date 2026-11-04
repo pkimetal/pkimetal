@@ -50,6 +50,10 @@ func buildLinters(cfgs []config.HTTPLinterConfig) ([]*linter.Linter, error) {
 		if cfg.Name == "" {
 			return nil, fmt.Errorf("linter.httpLinters[%d]: name is required", i)
 		}
+		if cfg.Name == linter.PKIMETAL_NAME {
+			// pkimetal's own results (e.g. its end-of-results marker) use this name.
+			return nil, fmt.Errorf("linter.httpLinters[%d]: name %q is reserved", i, cfg.Name)
+		}
 		if seen[cfg.Name] {
 			return nil, fmt.Errorf("http linter %q: declared more than once", cfg.Name)
 		}
@@ -105,6 +109,9 @@ func buildLinter(cfg config.HTTPLinterConfig) (*linter.Linter, error) {
 	if err != nil {
 		return nil, err
 	}
+	if err = checkHeaders(cfg.Headers); err != nil {
+		return nil, err
+	}
 	client, err := newClient(timeout, numInstances, endpoint.Scheme, cfg.TLS)
 	if err != nil {
 		return nil, err
@@ -127,20 +134,46 @@ func buildLinter(cfg config.HTTPLinterConfig) (*linter.Linter, error) {
 	}, nil
 }
 
-// requestTimeout returns the per-request timeout.  It may not exceed
+// requestTimeout returns the per-request timeout.  It must be less than
 // linter.backendTimeout, beyond which pkimetal reports an in-process linter
-// instance as stuck and fails /livez.
+// instance as stuck and fails /livez, leaving time to encode the request and
+// parse the response.
 func requestTimeout(configured time.Duration) (time.Duration, error) {
 	backendTimeout := config.Config.Linter.BackendTimeout
 	switch {
+	case backendTimeout <= 0:
+		return 0, fmt.Errorf("linter.backendTimeout must be positive, got %v", backendTimeout)
 	case configured == 0:
-		return min(defaultTimeout, backendTimeout), nil
+		return min(defaultTimeout, backendTimeout/2), nil
 	case configured < 0:
 		return 0, fmt.Errorf("timeout must be positive, got %v", configured)
-	case configured > backendTimeout:
-		return 0, fmt.Errorf("timeout %v must not exceed linter.backendTimeout (%v)", configured, backendTimeout)
+	case configured >= backendTimeout:
+		return 0, fmt.Errorf("timeout %v must be less than linter.backendTimeout (%v)", configured, backendTimeout)
 	}
 	return configured, nil
+}
+
+// checkHeaders rejects headers that would make every request fail, or that
+// would be silently ignored, so that the mistake is reported at startup.
+func checkHeaders(headers map[string]string) error {
+	for name, value := range headers {
+		if name == "" || strings.ContainsFunc(name, func(r rune) bool { return !isTokenChar(r) }) {
+			return fmt.Errorf("invalid header name %q", name)
+		}
+		if strings.EqualFold(name, "Host") {
+			return errors.New("the Host header cannot be set; it is taken from url")
+		}
+		if strings.ContainsFunc(value, func(r rune) bool { return (r < ' ' && r != '\t') || r == 0x7f }) {
+			return fmt.Errorf("invalid value for header %q", name)
+		}
+	}
+	return nil
+}
+
+// isTokenChar reports whether r may appear in an HTTP header name (RFC 9110
+// section 5.6.2).
+func isTokenChar(r rune) bool {
+	return r < 0x7f && (r >= '0' && r <= '9' || r >= 'a' && r <= 'z' || r >= 'A' && r <= 'Z' || strings.ContainsRune("!#$%&'*+-.^_`|~", r))
 }
 
 func parseSeverity(setting, value, defaultValue string) (linter.SeverityLevel, error) {

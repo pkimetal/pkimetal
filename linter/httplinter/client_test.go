@@ -142,10 +142,11 @@ func TestLint_Failures(t *testing.T) {
 		{"/huge", linter.SEVERITY_ERROR, "invalid API response: larger than 16 MiB"},
 	} {
 		t.Run(strings.TrimPrefix(tc.path, "/"), func(t *testing.T) {
-			l := newTestLinter(t, server.URL+tc.path, 100*time.Millisecond, map[string]string{"authorization": "Bearer abc123"})
-			if tc.path == "/huge" {
-				l = newTestLinter(t, server.URL+tc.path, 5*time.Second, nil) // Allow time to send 16 MiB.
+			timeout := 5 * time.Second // Generous, so that a slow test runner is not reported as a timeout.
+			if tc.path == "/timeout" {
+				timeout = 100 * time.Millisecond
 			}
+			l := newTestLinter(t, server.URL+tc.path, timeout, map[string]string{"authorization": "Bearer abc123"})
 			results := l.lint(context.Background(), testRequest)
 			if len(results) != 1 || results[0].Severity != tc.wantSev || !strings.Contains(results[0].Finding, tc.wantFinding) {
 				t.Errorf("got %+v, want one finding with severity %v containing %q", results, tc.wantSev, tc.wantFinding)
@@ -193,7 +194,7 @@ func TestLint_StopsWhenCallerGivesUp(t *testing.T) {
 	if elapsed := time.Since(start); elapsed > time.Second {
 		t.Errorf("lint took %v after the caller gave up; the worker should be freed promptly", elapsed)
 	}
-	if len(results) != 1 {
-		t.Errorf("got %+v, want a single failure finding", results)
+	if len(results) != 1 || results[0].Severity != linter.SEVERITY_WARNING {
+		t.Errorf("got %+v, want a single timeoutSeverity (warning) finding", results)
 	}
 }

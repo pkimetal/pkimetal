@@ -62,7 +62,12 @@ func lintWith(t *testing.T, l *linter.Linter, profile linter.ProfileId, der []by
 		QueuedAt:     time.Now(),
 		RespChannel:  make(chan linter.LintingResult),
 	}
-	l.ReqChannel <- lreq
+	select {
+	case l.ReqChannel <- lreq:
+	case <-ctx.Done():
+		t.Errorf("timed out sending a request to %s", l.Name)
+		return nil
+	}
 
 	var results []linter.LintingResult
 	for {
@@ -141,7 +146,7 @@ func TestHTTPLinter_EndToEnd(t *testing.T) {
 		time.Sleep(20 * time.Millisecond) // Overlap concurrent requests.
 		fmt.Fprintf(w, `[{"Finding":"profile %s","Severity":"info"}]`, req.Profile)
 	}))
-	defer inline.Close()
+	t.Cleanup(inline.Close) // Registered first, so it runs after the linters have stopped.
 
 	cfgs := []config.HTTPLinterConfig{{Name: "e2e-inline", URL: inline.URL, NumGoroutines: intPtr(2)}}
 	exampleURL := startExample(t)

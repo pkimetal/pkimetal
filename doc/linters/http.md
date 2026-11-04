@@ -12,7 +12,7 @@ linter:
     - name: geonames                  # Required. The linter name shown in results; must be unique.
       url: http://geonames:8000/lint  # Required. An http or https URL.
       numGoroutines: 1                # Optional, default 1. The number of concurrent requests; 0 disables the linter.
-      timeout: 5s                     # Optional, default 5s. Must not exceed linter.backendTimeout (default 30s).
+      timeout: 5s                     # Optional, default 5s (or half of linter.backendTimeout, if less). Must be less than linter.backendTimeout (default 30s).
       artifacts: [certificate]        # Optional, default [certificate]. Any of: certificate, crl, ocsp.
       errorSeverity: bug              # Optional, default bug. The severity reported when a request fails.
       timeoutSeverity: notice         # Optional, default notice. The severity reported when a request times out.
@@ -25,7 +25,7 @@ linter:
         keyFile: /config/client.key   # The client certificate's private key. Requires certFile.
 ```
 
-pkimetal refuses to start if an HTTP linter has no `name` or `url`, if `url` is not an absolute `http` or `https` URL, if `url` contains credentials (e.g. `https://user:password@host/`; use `headers` instead), if a name is already used by another HTTP linter or a built-in linter, if `artifacts` or a severity is not one of the listed values, if `timeout` exceeds `linter.backendTimeout`, if `tls` is set for an `http` URL, if only one of `certFile` and `keyFile` is set, or if a TLS file cannot be loaded.
+pkimetal refuses to start if an HTTP linter has no `name` or `url`, if `url` is not an absolute `http` or `https` URL, if `url` contains credentials (e.g. `https://user:password@host/`; use `headers` instead), if a name is `pkimetal` (which is reserved) or is already used by another HTTP linter or a built-in linter, if `artifacts` or a severity is not one of the listed values, if `numGoroutines` or `timeout` is negative, if `timeout` is not less than `linter.backendTimeout`, if a header name or value is invalid (e.g. a value containing a line break) or the header is `Host` (which is taken from `url`), if `tls` is set for an `http` URL, if only one of `certFile` and `keyFile` is set, or if a TLS file cannot be loaded.
 
 An endpoint is only sent the artifact types listed in `artifacts`.
 

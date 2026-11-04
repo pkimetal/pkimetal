@@ -107,8 +107,20 @@ func TestBuildLinters_DefaultTimeoutCappedByBackendTimeout(t *testing.T) {
 
 	_, backend := buildOne(t, config.HTTPLinterConfig{Name: "x", URL: "http://x/"})
 
-	if backend.client.Timeout != 2*time.Second {
-		t.Errorf("timeout: got %v, want linter.backendTimeout (2s)", backend.client.Timeout)
+	if backend.client.Timeout != time.Second {
+		t.Errorf("timeout: got %v, want half of linter.backendTimeout (1s)", backend.client.Timeout)
+	}
+}
+
+func TestBuildLinters_RejectsNonPositiveBackendTimeout(t *testing.T) {
+	saved := config.Config.Linter.BackendTimeout
+	t.Cleanup(func() { config.Config.Linter.BackendTimeout = saved })
+	config.Config.Linter.BackendTimeout = 0
+
+	_, err := buildLinters([]config.HTTPLinterConfig{{Name: "x", URL: "http://x/"}})
+
+	if err == nil || !strings.Contains(err.Error(), "linter.backendTimeout must be positive") {
+		t.Errorf("got error %v, want one about linter.backendTimeout", err)
 	}
 }
 
@@ -183,7 +195,12 @@ func TestBuildLinters_Errors(t *testing.T) {
 		{"meta timeoutSeverity", []config.HTTPLinterConfig{{Name: "x", URL: "http://x/", TimeoutSeverity: "meta"}}, `timeoutSeverity "meta" is not a valid severity`},
 		{"negative numGoroutines", []config.HTTPLinterConfig{{Name: "x", URL: "http://x/", NumGoroutines: intPtr(-1)}}, "numGoroutines must not be negative"},
 		{"negative timeout", []config.HTTPLinterConfig{{Name: "x", URL: "http://x/", Timeout: -time.Second}}, "timeout must be positive"},
-		{"timeout above backendTimeout", []config.HTTPLinterConfig{{Name: "x", URL: "http://x/", Timeout: tooLong}}, "must not exceed linter.backendTimeout"},
+		{"timeout above backendTimeout", []config.HTTPLinterConfig{{Name: "x", URL: "http://x/", Timeout: tooLong}}, "must be less than linter.backendTimeout"},
+		{"timeout equal to backendTimeout", []config.HTTPLinterConfig{{Name: "x", URL: "http://x/", Timeout: config.Config.Linter.BackendTimeout}}, "must be less than linter.backendTimeout"},
+		{"reserved name", []config.HTTPLinterConfig{{Name: "pkimetal", URL: "http://x/"}}, `name "pkimetal" is reserved`},
+		{"invalid header name", []config.HTTPLinterConfig{{Name: "x", URL: "http://x/", Headers: map[string]string{"bad name": "v"}}}, `invalid header name "bad name"`},
+		{"invalid header value", []config.HTTPLinterConfig{{Name: "x", URL: "http://x/", Headers: map[string]string{"authorization": "Bearer a\nb"}}}, `invalid value for header "authorization"`},
+		{"host header", []config.HTTPLinterConfig{{Name: "x", URL: "http://x/", Headers: map[string]string{"host": "other.example"}}}, "the Host header cannot be set"},
 		{"tls on http url", []config.HTTPLinterConfig{{Name: "x", URL: "http://x/", TLS: config.HTTPLinterTLSConfig{CAFile: notPEM}}}, "tls is only valid for https URLs"},
 		{"certFile without keyFile", []config.HTTPLinterConfig{{Name: "x", URL: "https://x/", TLS: config.HTTPLinterTLSConfig{CertFile: notPEM}}}, "tls.certFile and tls.keyFile must be set together"},
 		{"keyFile without certFile", []config.HTTPLinterConfig{{Name: "x", URL: "https://x/", TLS: config.HTTPLinterTLSConfig{KeyFile: notPEM}}}, "tls.certFile and tls.keyFile must be set together"},
