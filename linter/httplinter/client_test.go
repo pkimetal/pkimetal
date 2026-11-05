@@ -3,6 +3,7 @@ package httplinter
 import (
 	"context"
 	"io"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -12,6 +13,11 @@ import (
 
 	"github.com/pkimetal/pkimetal/config"
 	"github.com/pkimetal/pkimetal/linter"
+	"github.com/pkimetal/pkimetal/logger"
+
+	dto "github.com/prometheus/client_model/go"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zaptest/observer"
 )
 
 var testRequest = request{B64Input: "AAEC", Profile: "tbr_leaf_tlsserver_ov", Artifact: "certificate"}
@@ -25,6 +31,7 @@ func newTestLinter(t *testing.T, url string, timeout time.Duration, headers map[
 		t.Fatalf("newClient: %v", err)
 	}
 	return &HTTPLinter{
+		name:            "test",
 		client:          client,
 		url:             url,
 		headers:         headers,
@@ -196,5 +203,95 @@ func TestLint_StopsWhenCallerGivesUp(t *testing.T) {
 	}
 	if len(results) != 1 || results[0].Severity != linter.SEVERITY_WARNING {
 		t.Errorf("got %+v, want a single timeoutSeverity (warning) finding", results)
+	}
+}
+
+func TestLint_ConnectTimeoutIsAConnectionFailure(t *testing.T) {
+	l := newTestLinter(t, "http://192.0.2.1/", 100*time.Millisecond, nil)
+	// Simulate a firewall that silently drops packets: connecting never completes.
+	l.client.Transport.(*http.Transport).DialContext = func(ctx context.Context, _, _ string) (net.Conn, error) {
+		<-ctx.Done()
+		return nil, ctx.Err()
+	}
+
+	results := l.lint(context.Background(), testRequest)
+
+	// An unreachable endpoint is reported at errorSeverity however the network
+	// fails; timeoutSeverity is for an endpoint that accepted the request but
+	// was too slow to answer.
+	if len(results) != 1 || results[0].Severity != linter.SEVERITY_ERROR || !strings.Contains(results[0].Finding, "could not connect") {
+		t.Errorf("got %+v, want one errorSeverity (error) finding saying it could not connect", results)
+	}
+}
+
+func TestLint_CallerCancelled(t *testing.T) {
+	logs := observeLogs(t)
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		io.Copy(io.Discard, r.Body) // The server only notices a client disconnect once the body has been read.
+		select {
+		case <-r.Context().Done():
+		case <-time.After(3 * time.Second):
+		}
+	}))
+	defer server.Close()
+
+	ctx, cancel := context.WithCancel(context.Background())
+	time.AfterFunc(100*time.Millisecond, cancel)
+	results := newTestLinter(t, server.URL, 5*time.Second, nil).lint(ctx, testRequest)
+
+	if len(results) != 1 || results[0].Severity != linter.SEVERITY_WARNING || results[0].Finding != "API request abandoned" {
+		t.Errorf("got %+v, want one timeoutSeverity (warning) finding \"API request abandoned\"", results)
+	}
+	if logs.Len() != 0 {
+		t.Errorf("an abandoned request is not an endpoint failure, but was logged: %v", logs.All())
+	}
+}
+
+// observeLogs captures pkimetal's warnings for the rest of the test.
+func observeLogs(t *testing.T) *observer.ObservedLogs {
+	t.Helper()
+	core, logs := observer.New(zap.WarnLevel)
+	saved := logger.Logger
+	logger.Logger = zap.New(core)
+	t.Cleanup(func() { logger.Logger = saved })
+	return logs
+}
+
+func failureCount(t *testing.T, linterName, reason string) float64 {
+	t.Helper()
+	var metric dto.Metric
+	if err := failuresTotal.WithLabelValues(linterName, reason).Write(&metric); err != nil {
+		t.Fatal(err)
+	}
+	return metric.GetCounter().GetValue()
+}
+
+func TestLint_RecordsFailures(t *testing.T) {
+	unavailable := httptest.NewServer(respondWith(http.StatusServiceUnavailable, "down"))
+	defer unavailable.Close()
+	refused := httptest.NewServer(respondWith(http.StatusOK, "[]"))
+	refusedURL := refused.URL
+	refused.Close()
+
+	for _, tc := range []struct {
+		url, reason string
+	}{
+		{unavailable.URL, "status"},
+		{refusedURL, "connection"},
+	} {
+		t.Run(tc.reason, func(t *testing.T) {
+			logs := observeLogs(t)
+			before := failureCount(t, "test", tc.reason)
+
+			newTestLinter(t, tc.url, 5*time.Second, nil).lint(context.Background(), testRequest)
+
+			if got := failureCount(t, "test", tc.reason) - before; got != 1 {
+				t.Errorf("failures metric for reason %q went up by %v, want 1", tc.reason, got)
+			}
+			entries := logs.FilterMessage("HTTP linter request failed").All()
+			if len(entries) != 1 || entries[0].ContextMap()["name"] != "test" || entries[0].ContextMap()["reason"] != tc.reason {
+				t.Errorf("got log entries %+v, want one warning naming linter \"test\" and reason %q", entries, tc.reason)
+			}
+		})
 	}
 }

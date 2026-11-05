@@ -9,24 +9,50 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/http/httptrace"
 	"net/url"
 	"os"
 	"strings"
+	"sync/atomic"
 	"time"
 
 	"github.com/pkimetal/pkimetal/config"
 	"github.com/pkimetal/pkimetal/linter"
+	"github.com/pkimetal/pkimetal/logger"
 
 	json "github.com/goccy/go-json"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
+	"go.uber.org/zap"
 )
 
 // maxResponseSize is the largest response body accepted from an endpoint: the
 // same limit that applies to the output of pkimetal's external linter backends.
 const maxResponseSize = 16 << 20
 
+// failuresTotal counts failed requests to HTTP linter endpoints, by linter and
+// reason, so that an unavailable or misbehaving endpoint can be noticed and
+// alerted on.
+// Reasons for a failed request, as recorded in failuresTotal and the log.
+const (
+	reasonRequest    = "request"    // The request could not be built.
+	reasonConnection = "connection" // The endpoint could not be reached, or the connection failed.
+	reasonTimeout    = "timeout"    // The endpoint accepted the request but did not answer in time.
+	reasonStatus     = "status"     // The endpoint answered with a status other than 200.
+	reasonResponse   = "response"   // The endpoint's response was invalid.
+)
+
+var failuresTotal = promauto.NewCounterVec(prometheus.CounterOpts{
+	Namespace: config.ApplicationNamespace,
+	Subsystem: "linter",
+	Name:      "http_failures_total",
+	Help:      "Number of failed requests to HTTP linter endpoints.",
+}, []string{"linter_name", "reason"})
+
 // HTTPLinter is the backend for one configured HTTP linter endpoint.  It is
 // shared by all of the endpoint's Goroutines.
 type HTTPLinter struct {
+	name            string
 	client          *http.Client
 	url             string
 	headers         map[string]string
@@ -109,11 +135,17 @@ func loadTLSConfig(cfg config.HTTPLinterTLSConfig) (*tls.Config, error) {
 func (l *HTTPLinter) lint(ctx context.Context, req request) []linter.LintingResult {
 	body, err := json.Marshal(req)
 	if err != nil {
-		return l.failure(err.Error())
+		return l.failure(reasonRequest, err.Error())
 	}
-	httpRequest, err := http.NewRequestWithContext(ctx, http.MethodPost, l.url, bytes.NewReader(body))
+	// Record whether a connection was obtained, so that an unreachable endpoint
+	// is reported as such even when connecting times out.
+	var connected atomic.Bool
+	traceCtx := httptrace.WithClientTrace(ctx, &httptrace.ClientTrace{
+		GotConn: func(httptrace.GotConnInfo) { connected.Store(true) },
+	})
+	httpRequest, err := http.NewRequestWithContext(traceCtx, http.MethodPost, l.url, bytes.NewReader(body))
 	if err != nil {
-		return l.failure(err.Error())
+		return l.failure(reasonRequest, err.Error())
 	}
 	httpRequest.Header.Set("Content-Type", "application/json")
 	httpRequest.Header.Set("Accept", "application/json")
@@ -124,41 +156,71 @@ func (l *HTTPLinter) lint(ctx context.Context, req request) []linter.LintingResu
 
 	httpResponse, err := l.client.Do(httpRequest)
 	if err != nil {
-		return l.requestError(err)
+		return l.requestError(ctx, err, connected.Load())
 	}
 	defer httpResponse.Body.Close()
 	if httpResponse.StatusCode != http.StatusOK {
-		return l.failure("API request failed: HTTP " + httpResponse.Status)
+		return l.failure(reasonStatus, "API request failed: HTTP "+httpResponse.Status)
 	}
 
 	responseBody, err := io.ReadAll(io.LimitReader(httpResponse.Body, maxResponseSize+1))
 	if err != nil {
-		return l.requestError(err)
+		return l.requestError(ctx, err, true)
 	}
 	if len(responseBody) > maxResponseSize {
-		return l.failure("invalid API response: larger than 16 MiB")
+		return l.failure(reasonResponse, "invalid API response: larger than 16 MiB")
 	}
 	results, err := parseFindings(responseBody)
 	if err != nil {
-		return l.failure("invalid API response: " + err.Error())
+		return l.failure(reasonResponse, "invalid API response: "+err.Error())
 	}
 	return results
 }
 
-func (l *HTTPLinter) requestError(err error) []linter.LintingResult {
-	if os.IsTimeout(err) || errors.Is(err, context.DeadlineExceeded) {
-		return []linter.LintingResult{{Severity: l.timeoutSeverity, Finding: "API request timed out"}}
+// requestError describes a request that did not complete.  ctx is the context of
+// pkimetal's own request; connected reports whether a connection to the
+// endpoint was obtained.
+func (l *HTTPLinter) requestError(ctx context.Context, err error, connected bool) []linter.LintingResult {
+	if ctx.Err() != nil {
+		// pkimetal's request was cancelled or reached its deadline, so this result
+		// will not be used.  It is not a failure of the endpoint.
+		return []linter.LintingResult{{Severity: l.timeoutSeverity, Finding: "API request abandoned"}}
 	}
-	// Report the cause without the endpoint URL, which may contain a secret.
+	timedOut := os.IsTimeout(err) || errors.Is(err, context.DeadlineExceeded)
+	switch {
+	case !connected && timedOut:
+		// e.g. a firewall silently dropping packets: as unreachable as a refused
+		// connection, so it is reported at the same severity.
+		return l.failure(reasonConnection, "API request failed: could not connect within the timeout")
+	case !connected:
+		return l.failure(reasonConnection, "API request failed: could not connect: "+errorCause(err))
+	case timedOut:
+		l.record(reasonTimeout, "API request timed out")
+		return []linter.LintingResult{{Severity: l.timeoutSeverity, Finding: "API request timed out"}}
+	default:
+		return l.failure(reasonConnection, "API request failed: "+errorCause(err))
+	}
+}
+
+// errorCause returns err's message without the endpoint URL, which may contain a
+// secret.
+func errorCause(err error) string {
 	var urlErr *url.Error
 	if errors.As(err, &urlErr) {
 		err = urlErr.Err
 	}
-	return l.failure(err.Error())
+	return err.Error()
 }
 
-func (l *HTTPLinter) failure(message string) []linter.LintingResult {
+func (l *HTTPLinter) failure(reason, message string) []linter.LintingResult {
+	l.record(reason, message)
 	return []linter.LintingResult{{Severity: l.errorSeverity, Finding: message}}
+}
+
+// record logs and counts a failed request.
+func (l *HTTPLinter) record(reason, message string) {
+	failuresTotal.WithLabelValues(l.name, reason).Inc()
+	logger.Logger.Warn("HTTP linter request failed", zap.String("name", l.name), zap.String("reason", reason), zap.String("finding", message))
 }
 
 // parseFindings converts an endpoint's response body into linting results.  An

@@ -118,6 +118,7 @@ func buildLinter(cfg config.HTTPLinterConfig) (*linter.Linter, error) {
 	}
 
 	backend := &HTTPLinter{
+		name:            cfg.Name,
 		client:          client,
 		url:             cfg.URL,
 		headers:         cfg.Headers,

@@ -25,7 +25,15 @@ linter:
         keyFile: /config/client.key   # The client certificate's private key. Requires certFile.
 ```
 
-pkimetal refuses to start if an HTTP linter has no `name` or `url`, if `url` is not an absolute `http` or `https` URL, if `url` contains credentials (e.g. `https://user:password@host/`; use `headers` instead), if a name is `pkimetal` (which is reserved) or is already used by another HTTP linter or a built-in linter, if `artifacts` or a severity is not one of the listed values, if `numGoroutines` or `timeout` is negative, if `timeout` is not less than `linter.backendTimeout`, if a header name or value is invalid (e.g. a value containing a line break) or the header is `Host` (which is taken from `url`), if `tls` is set for an `http` URL, if only one of `certFile` and `keyFile` is set, or if a TLS file cannot be loaded.
+pkimetal refuses to start if an HTTP linter:
+
+- has no `name` or `url`;
+- has a `url` that is not an absolute `http` or `https` URL, or that contains credentials (e.g. `https://user:password@host/`; use `headers` instead);
+- has a `name` that is `pkimetal` (which is reserved), or that is already used by another HTTP linter or a built-in linter;
+- has an `artifacts` value or a severity that is not one of the listed values;
+- has a negative `numGoroutines` or `timeout`, or a `timeout` that is not less than `linter.backendTimeout`;
+- has an invalid header name or value (e.g. a value containing a line break), or a `Host` header (which is taken from `url`);
+- has `tls` set for an `http` URL, has only one of `certFile` and `keyFile` set, or has a TLS file that cannot be loaded.
 
 An endpoint is only sent the artifact types listed in `artifacts`.
 
@@ -65,10 +73,15 @@ The endpoint responds with HTTP status 200 and a JSON array of findings, in the 
 
 If a request does not succeed, pkimetal reports a single finding from that linter instead of the endpoint's findings:
 
-- If the request takes longer than `timeout`: `API request timed out`, with severity `timeoutSeverity`.
-- If the connection or TLS handshake fails: the error, with severity `errorSeverity`.
+- If the endpoint cannot be reached (e.g. the connection is refused, the TLS handshake fails, or connecting takes longer than `timeout` because a firewall drops packets): `API request failed: could not connect...`, with severity `errorSeverity`.
+- If the endpoint accepts the request but does not answer within `timeout`: `API request timed out`, with severity `timeoutSeverity`.
+- If the connection fails after the request was sent: `API request failed: <error>`, with severity `errorSeverity`.
 - If the HTTP status is not 200: `API request failed: HTTP <status>`, with severity `errorSeverity`. Redirects are not followed, so configured headers are never sent to another URL.
 - If the response is larger than 16 MiB, is not a JSON array, or contains a finding with no `Finding` or with an invalid `Severity`: `invalid API response: <reason>`, with severity `errorSeverity`. The whole response is rejected.
+
+If pkimetal's own request is cancelled or reaches its deadline first, the call is abandoned and reported as `API request abandoned`, with severity `timeoutSeverity`; this is not counted as a failure of the endpoint.
+
+Each failure is also logged as a warning (`HTTP linter request failed`, with the linter's `name` and a `reason`), and counted in the `pkimetal_linter_http_failures_total` metric, labelled by `linter_name` and `reason` (`connection`, `timeout`, `status`, `response`, or `request`), so that an unavailable endpoint can be noticed and alerted on. While an endpoint is unavailable, each request to it still waits for up to `timeout` (or until a refused connection is reported), so keep `timeout` short.
 
 ## Example
 
