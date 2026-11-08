@@ -17,7 +17,7 @@ require (
 	github.com/titanous/rocacheck v0.0.0-20171023193734-afe73141d399
 	github.com/valyala/fasthttp v1.77.0
 	github.com/zmap/zcrypto v0.0.0-20261025225231-4cf7949d2321
-	github.com/zmap/zlint/v3 v3.7.4-0.20261101220747-2f53a6a8a843
+	github.com/zmap/zlint/v3 v3.7.4-0.20261108160830-37f4ed84b65c
 	go.uber.org/automaxprocs v1.6.0
 	go.uber.org/zap v1.28.0
 	golang.org/x/crypto v0.58.0
