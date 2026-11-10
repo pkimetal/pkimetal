@@ -9,6 +9,10 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "daily"
+    groups:
+      codeql-action:
+        patterns:
+          - "github/codeql-action*"
   - package-ecosystem: "npm" # Keeps @redocly/cli (doc tooling) pinned in package-lock.json up to date.
     directory: "/"
     schedule:
