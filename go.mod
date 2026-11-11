@@ -1,6 +1,6 @@
 module github.com/pkimetal/pkimetal
 
-go 1.27.3
+go 1.27.4
 
 require (
 	github.com/CVE-2008-0166/dwklint/v2 v2.1.0
@@ -20,7 +20,7 @@ require (
 	github.com/zmap/zlint/v3 v3.7.3
 	go.uber.org/automaxprocs v1.6.0
 	go.uber.org/zap v1.28.0
-	golang.org/x/crypto v0.58.0
+	golang.org/x/crypto v0.59.0
 )
 
 require (
