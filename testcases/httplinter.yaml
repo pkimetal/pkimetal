@@ -1,0 +1,7 @@
+# Used by the "Container smoke test" job in .github/workflows/ci.yml: one HTTP
+# linter, served on the runner by examples/httplinter/subjectcn.
+linter:
+  httpLinters:
+    - name: subjectcn
+      url: http://host.docker.internal:9000/
+      version: 1.0.0

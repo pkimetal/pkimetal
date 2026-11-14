@@ -115,6 +115,11 @@ const (
 var ErrResponseTooLong = errors.New("stdout response line exceeds 16 MiB limit")
 
 func (l *Linter) Register() {
+	for _, existing := range Linters {
+		if existing.Name == l.Name {
+			panic(fmt.Sprintf("linter %q is already registered", l.Name))
+		}
+	}
 	Linters = append(Linters, l)
 	if l.NumInstances > 0 {
 		// Register this linter.

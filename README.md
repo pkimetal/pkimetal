@@ -71,6 +71,8 @@ Special-purpose linters:
 - [rocacheck](https://github.com/titanous/rocacheck): Detects ROCA weak keys (CVE-2017-15361), as required by CABForum Ballot [SC-73](https://github.com/cabforum/servercert/pull/500/files#diff-e0ac1bd190515a4f2ec09139d395ef6a8c7e9e5b612957c1f5a2dea80c6a6cfeR1706).
 - [section7](https://github.com/cps-kit/section7): Checks certificates and precertificates against operator-supplied CPS certificate profiles. Disabled by default; enable it and configure a profile directory as described in the [section7 integration guide](doc/linters/section7.md).
 
+External endpoints can be added as linters without rebuilding pkimetal; see [HTTP linters](doc/linters/http.md).
+
 ## Docker containers
 
 [Docker containers](https://github.com/orgs/pkimetal/packages?repo_name=pkimetal) are pre-built automatically and published on the Github Container Repository (GHCR). Two different release cycles are provided:
