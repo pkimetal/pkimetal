@@ -5,9 +5,9 @@ go 1.27.4
 require (
 	github.com/CVE-2008-0166/dwklint/v2 v2.1.0
 	github.com/cps-kit/section7 v0.1.0
-	github.com/crtsh/ccadb_data v1.20261117.33125
-	github.com/crtsh/ctlint v0.0.0-20261117103154-f8f6bda9ffeb
-	github.com/crtsh/ctloglists v1.20261106.143200
+	github.com/crtsh/ccadb_data v1.20261117.201800
+	github.com/crtsh/ctlint v0.0.0-20261117202305-b47124026ec2
+	github.com/crtsh/ctloglists v1.20261117.202000
 	github.com/goccy/go-json v0.12.0
 	github.com/google/certificate-transparency-go v1.4.0
 	github.com/prometheus/client_golang v1.25.0
@@ -58,7 +58,7 @@ require (
 	github.com/weppos/publicsuffix-go v0.50.4-0.20261018191641-fa5685825dd4 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.6 // indirect
-	golang.org/x/net v0.62.0 // indirect
+	golang.org/x/net v0.63.0 // indirect
 	golang.org/x/sys v0.50.0 // indirect
 	golang.org/x/text v0.44.0 // indirect
 	google.golang.org/protobuf v1.36.12 // indirect
