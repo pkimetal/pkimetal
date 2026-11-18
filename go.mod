@@ -7,7 +7,7 @@ require (
 	github.com/cps-kit/section7 v0.1.0
 	github.com/crtsh/ccadb_data v1.20261118.32602
 	github.com/crtsh/ctlint v0.0.0-20261117202305-b47124026ec2
-	github.com/crtsh/ctloglists v1.20261117.202000
+	github.com/crtsh/ctloglists v1.20261118.151200
 	github.com/goccy/go-json v0.12.0
 	github.com/google/certificate-transparency-go v1.4.0
 	github.com/prometheus/client_golang v1.25.0
@@ -64,7 +64,7 @@ require (
 	google.golang.org/protobuf v1.36.12 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	k8s.io/klog/v2 v2.140.0 // indirect
-	modernc.org/libc v1.82.0 // indirect
+	modernc.org/libc v1.82.2 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.13.0 // indirect
 	modernc.org/sqlite v1.62.0 // indirect
