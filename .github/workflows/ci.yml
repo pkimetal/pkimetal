@@ -78,11 +78,28 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Start example HTTP linter endpoint
+        # Served on the runner and used via testcases/httplinter.yaml (checked in
+        # the "Smoke test endpoints" step).
+        run: |
+          CGO_ENABLED=0 go build -o "$RUNNER_TEMP/subjectcn" ./examples/httplinter/subjectcn
+          nohup "$RUNNER_TEMP/subjectcn" -listen :9000 > "$RUNNER_TEMP/subjectcn.log" 2>&1 &
+
       - name: Build Docker image
         run: docker build -t pkimetal:ci .
 
       - name: Run container
-        run: docker run -d --name pkimetal -p 8080:8080 -p 8081:8081 pkimetal:ci
+        run: |
+          docker run -d --name pkimetal -p 8080:8080 -p 8081:8081 \
+            --add-host=host.docker.internal:host-gateway \
+            -v "$PWD/testcases/httplinter.yaml:/config/config.yaml:ro" \
+            pkimetal:ci
 
       - name: Wait for readiness
         run: |
@@ -104,13 +121,14 @@ jobs:
           curl -fsS http://127.0.0.1:8081/readyz >/dev/null
           curl -fsS http://127.0.0.1:8081/metrics >/dev/null
           curl -fsS http://127.0.0.1:8080/ >/dev/null
-          # Lint a sample certificate and confirm a profile is reported.
+          # Lint a sample certificate and confirm a profile is reported, and that
+          # the example HTTP linter (see testcases/httplinter.yaml) returned findings.
           req="$(mktemp)"
           printf 'b64input=' > "$req"
           openssl x509 -in testcases/tls_ov_certificate.crt -outform der \
             | base64 -w0 | sed 's/+/%2B/g;s/\//%2F/g;s/=/%3D/g' >> "$req"
           curl -fsS --data-binary "@$req" http://127.0.0.1:8080/lintcert \
-            | jq -e '.[0].Finding | startswith("Profile:")'
+            | jq -e '(.[0].Finding | startswith("Profile:")) and any(.[]; .Linter == "subjectcn")'
 
       - name: Profile auto-detection
         working-directory: testcases
@@ -124,7 +142,9 @@ jobs:
 
       - name: Dump container logs
         if: always()
-        run: docker logs pkimetal || true
+        run: |
+          docker logs pkimetal || true
+          cat "$RUNNER_TEMP/subjectcn.log" || true
 
       - name: Stop container
         if: always()

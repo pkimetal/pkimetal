@@ -704,3 +704,16 @@ func TestBackend_InitialisationIsSerialised(t *testing.T) {
 		t.Errorf("initialisation does not appear serialised: both backends ready in %v (expected >= ~800ms)", elapsed)
 	}
 }
+
+func TestRegister_RejectsDuplicateName(t *testing.T) {
+	saved := Linters
+	t.Cleanup(func() { Linters = saved })
+
+	(&Linter{Name: "duplicate-test"}).Register() // NumInstances 0: no instances or metrics are created.
+	defer func() {
+		if r := recover(); r == nil || !strings.Contains(fmt.Sprint(r), `linter "duplicate-test" is already registered`) {
+			t.Fatalf("expected a duplicate-name panic, got %v", r)
+		}
+	}()
+	(&Linter{Name: "duplicate-test"}).Register()
+}
