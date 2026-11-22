@@ -17,7 +17,7 @@ require (
 	github.com/titanous/rocacheck v0.0.0-20171023193734-afe73141d399
 	github.com/valyala/fasthttp v1.79.0
 	github.com/zmap/zcrypto v0.0.0-20261121201429-2f4b44a7a06d
-	github.com/zmap/zlint/v3 v3.7.4-0.20261121152513-673accc39723
+	github.com/zmap/zlint/v3 v3.7.4-0.20261122164110-81f5c0d6bf16
 	go.uber.org/automaxprocs v1.6.0
 	go.uber.org/zap v1.28.0
 	golang.org/x/crypto v0.59.0
@@ -64,9 +64,9 @@ require (
 	google.golang.org/protobuf v1.36.12 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	k8s.io/klog/v2 v2.140.0 // indirect
-	modernc.org/libc v1.82.11 // indirect
+	modernc.org/libc v1.82.12 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.13.0 // indirect
-	modernc.org/sqlite v1.62.0 // indirect
+	modernc.org/sqlite v1.63.0 // indirect
 	zombiezen.com/go/sqlite v1.4.2 // indirect
 )
