@@ -14,8 +14,8 @@ github.com/cespare/xxhash/v2 v2.3.0 h1:UL815xU9SqsFlibzuggzjXhog7bL6oX9BbNZnL2UF
 github.com/cespare/xxhash/v2 v2.3.0/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XLFGgcrjCOs=
 github.com/cps-kit/section7 v0.1.0 h1:9WmArBEGkPLw9Sm/jpr34e6ELpXsAio/F8L2ujhrMD8=
 github.com/cps-kit/section7 v0.1.0/go.mod h1:QAM2nXqKpy/xL5tMts8XadCwBL9y4UP8EnK221DSpe0=
-github.com/crtsh/ccadb_data v1.20261120.194733 h1:TxUHmrRZ82C8le36nxBO9TBAtlVgZ53tlGZrmzknO+Q=
-github.com/crtsh/ccadb_data v1.20261120.194733/go.mod h1:7CKi+iUguHfFbeHyHN4vFuT1BPO4D+6dtu5nHPn3BTE=
+github.com/crtsh/ccadb_data v1.20261123.84354 h1:00AV1HF0jfAqcqqg49Lf2YUJ1Bcu77j2KxwzyEizKGQ=
+github.com/crtsh/ccadb_data v1.20261123.84354/go.mod h1:7CKi+iUguHfFbeHyHN4vFuT1BPO4D+6dtu5nHPn3BTE=
 github.com/crtsh/ctlint v0.0.0-20261119152652-7d382db31a27 h1:3pOD/kAoXC2G1MPU95Tb0kjZe63dIgKV3qQG3NQV4fU=
 github.com/crtsh/ctlint v0.0.0-20261119152652-7d382db31a27/go.mod h1:03hm+3+Wm+1Lc/qFSa8und5siwSnBZkxekdBIy/JFtU=
 github.com/crtsh/ctloglists v1.20261119.151800 h1:zkT109AHK6/oE8ccCiDLcvzCM/i+vNtSOEbglxWQRXI=
@@ -113,8 +113,8 @@ github.com/titanous/rocacheck v0.0.0-20171023193734-afe73141d399 h1:e/5i7d4oYZ+C
 github.com/titanous/rocacheck v0.0.0-20171023193734-afe73141d399/go.mod h1:LdwHTNJT99C5fTAzDz0ud328OgXz+gierycbcIx2fRs=
 github.com/valyala/bytebufferpool v1.0.0 h1:GqA5TC/0021Y/b9FG4Oi9Mr3q7XYx6KllzawFIhcdPw=
 github.com/valyala/bytebufferpool v1.0.0/go.mod h1:6bBcMArwyJ5K/AmCkWv1jt77kVWyCJ6HpOuEn7z0Csc=
-github.com/valyala/fasthttp v1.79.0 h1:32ur91W4kWG+1s6x3oDlP8/KNmjlZZlUzSSC4p9LSWE=
-github.com/valyala/fasthttp v1.79.0/go.mod h1:NQN+PlgP93+JRPnCiApN5XwnI24oMQf8kuzrxtsTy9A=
+github.com/valyala/fasthttp v1.80.0 h1:10pVr/QLFGbSX8ikDS0i+wOi2AGY2Sy0TACVpoiG+7U=
+github.com/valyala/fasthttp v1.80.0/go.mod h1:oulvtxx5dQeORu6sKWaJItcnWXRqiGmrTFQ4gmZjLFM=
 github.com/weppos/publicsuffix-go v0.50.4-0.20261109160800-8c84761b913c h1:HgAzYUTxpuCE63OgSZ0LmZtHYAAVe3K77RmZerSomR8=
 github.com/weppos/publicsuffix-go v0.50.4-0.20261109160800-8c84761b913c/go.mod h1:/rOa781xBykZhHK/I3QeHo92qdDKVmKZKF7s8qAEM/4=
 github.com/zmap/zcrypto v0.0.0-20261121201429-2f4b44a7a06d h1:ie02QpHJ+pE8YSm1yTyOHqTDH4W6zXtrYteivr4Db68=
