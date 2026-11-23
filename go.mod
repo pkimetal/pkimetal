@@ -5,7 +5,7 @@ go 1.27.4
 require (
 	github.com/CVE-2008-0166/dwklint/v2 v2.1.0
 	github.com/cps-kit/section7 v0.1.0
-	github.com/crtsh/ccadb_data v1.20261120.110418
+	github.com/crtsh/ccadb_data v1.20261120.194733
 	github.com/crtsh/ctlint v0.0.0-20261119152652-7d382db31a27
 	github.com/crtsh/ctloglists v1.20261119.151800
 	github.com/goccy/go-json v0.12.0
@@ -15,8 +15,8 @@ require (
 	github.com/sergi/go-diff v1.4.5
 	github.com/spf13/viper v1.21.0
 	github.com/titanous/rocacheck v0.0.0-20171023193734-afe73141d399
-	github.com/valyala/fasthttp v1.79.0
-	github.com/zmap/zcrypto v0.0.0-20261120153550-cc58b1c3510f
+	github.com/valyala/fasthttp v1.80.0
+	github.com/zmap/zcrypto v0.0.0-20261121201429-2f4b44a7a06d
 	github.com/zmap/zlint/v3 v3.7.3
 	go.uber.org/automaxprocs v1.6.0
 	go.uber.org/zap v1.28.0
@@ -55,7 +55,7 @@ require (
 	github.com/spf13/pflag v1.1.0 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	github.com/weppos/publicsuffix-go v0.50.4-0.20261018191641-fa5685825dd4 // indirect
+	github.com/weppos/publicsuffix-go v0.50.4-0.20261109160800-8c84761b913c // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.6 // indirect
 	golang.org/x/net v0.63.0 // indirect
@@ -64,9 +64,9 @@ require (
 	google.golang.org/protobuf v1.36.12 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	k8s.io/klog/v2 v2.140.0 // indirect
-	modernc.org/libc v1.82.6 // indirect
+	modernc.org/libc v1.82.12 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.13.0 // indirect
-	modernc.org/sqlite v1.62.0 // indirect
+	modernc.org/sqlite v1.63.0 // indirect
 	zombiezen.com/go/sqlite v1.4.2 // indirect
 )
