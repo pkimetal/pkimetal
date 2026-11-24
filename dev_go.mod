@@ -55,7 +55,7 @@ require (
 	github.com/spf13/pflag v1.1.0 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	github.com/weppos/publicsuffix-go v0.50.4-0.20261109160800-8c84761b913c // indirect
+	github.com/weppos/publicsuffix-go v0.50.4 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.6 // indirect
 	golang.org/x/net v0.63.0 // indirect
