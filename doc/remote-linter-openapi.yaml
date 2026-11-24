@@ -1,9 +1,9 @@
 openapi: 3.0.0
 info:
-  title: pkimetal HTTP linter endpoint
+  title: pkimetal remote linter endpoint
   description: >-
-    The API that an HTTP linter endpoint implements so that pkimetal can send it
-    artifacts to lint.  pkimetal is the client.  See doc/linters/http.md for how
+    The API that a remote linter endpoint implements so that pkimetal can send it
+    artifacts to lint.  pkimetal is the client.  See doc/linters/remote.md for how
     to configure an endpoint.
   license:
     name: GNU General Public License v3.0 or later
@@ -28,7 +28,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/HTTPLinterRequest'
+              $ref: '#/components/schemas/RemoteLinterRequest'
       responses:
         '200':
           description: The endpoint's findings.  An empty array means that there are no findings.
@@ -37,14 +37,14 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/HTTPLinterFinding'
+                  $ref: '#/components/schemas/RemoteLinterFinding'
         '400':
           description: The request could not be processed (e.g. an unsupported artifact).  pkimetal reports it as a failed request.
         default:
           description: Any other status is reported by pkimetal as a failed request.
 components:
   schemas:
-    HTTPLinterRequest:
+    RemoteLinterRequest:
       type: object
       required:
         - b64input
@@ -65,7 +65,7 @@ components:
             - crl
             - ocsp
           description: The type of the artifact
-    HTTPLinterFinding:
+    RemoteLinterFinding:
       type: object
       required:
         - Finding

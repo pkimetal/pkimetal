@@ -84,11 +84,11 @@ jobs:
           go-version-file: go.mod
           cache: true
 
-      - name: Start example HTTP linter endpoint
-        # Served on the runner and used via testcases/httplinter.yaml (checked in
+      - name: Start example remote linter endpoint
+        # Served on the runner and used via testcases/remotelinter.yaml (checked in
         # the "Smoke test endpoints" step).
         run: |
-          CGO_ENABLED=0 go build -o "$RUNNER_TEMP/subjectcn" ./examples/httplinter/subjectcn
+          CGO_ENABLED=0 go build -o "$RUNNER_TEMP/subjectcn" ./examples/remotelinter/subjectcn
           nohup "$RUNNER_TEMP/subjectcn" -listen :9000 > "$RUNNER_TEMP/subjectcn.log" 2>&1 &
 
       - name: Build Docker image
@@ -98,7 +98,7 @@ jobs:
         run: |
           docker run -d --name pkimetal -p 8080:8080 -p 8081:8081 \
             --add-host=host.docker.internal:host-gateway \
-            -v "$PWD/testcases/httplinter.yaml:/config/config.yaml:ro" \
+            -v "$PWD/testcases/remotelinter.yaml:/config/config.yaml:ro" \
             pkimetal:ci
 
       - name: Wait for readiness
@@ -122,7 +122,7 @@ jobs:
           curl -fsS http://127.0.0.1:8081/metrics >/dev/null
           curl -fsS http://127.0.0.1:8080/ >/dev/null
           # Lint a sample certificate and confirm a profile is reported, and that
-          # the example HTTP linter (see testcases/httplinter.yaml) returned findings.
+          # the example remote linter (see testcases/remotelinter.yaml) returned findings.
           req="$(mktemp)"
           printf 'b64input=' > "$req"
           openssl x509 -in testcases/tls_ov_certificate.crt -outform der \

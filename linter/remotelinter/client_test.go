@@ -1,4 +1,4 @@
-package httplinter
+package remotelinter
 
 import (
 	"context"
@@ -24,13 +24,13 @@ var testRequest = request{B64Input: "AAEC", Profile: "tbr_leaf_tlsserver_ov", Ar
 
 // newTestLinter returns a backend for url using deliberately non-default
 // severities (error / warning), so that tests can tell they were applied.
-func newTestLinter(t *testing.T, url string, timeout time.Duration, headers map[string]string) *HTTPLinter {
+func newTestLinter(t *testing.T, url string, timeout time.Duration, headers map[string]string) *RemoteLinter {
 	t.Helper()
-	client, err := newClient(timeout, 1, "http", config.HTTPLinterTLSConfig{})
+	client, err := newClient(timeout, 1, "http", config.RemoteLinterTLSConfig{})
 	if err != nil {
 		t.Fatalf("newClient: %v", err)
 	}
-	return &HTTPLinter{
+	return &RemoteLinter{
 		name:            "test",
 		client:          client,
 		url:             url,
@@ -288,7 +288,7 @@ func TestLint_RecordsFailures(t *testing.T) {
 			if got := failureCount(t, "test", tc.reason) - before; got != 1 {
 				t.Errorf("failures metric for reason %q went up by %v, want 1", tc.reason, got)
 			}
-			entries := logs.FilterMessage("HTTP linter request failed").All()
+			entries := logs.FilterMessage("Remote linter request failed").All()
 			if len(entries) != 1 || entries[0].ContextMap()["name"] != "test" || entries[0].ContextMap()["reason"] != tc.reason {
 				t.Errorf("got log entries %+v, want one warning naming linter \"test\" and reason %q", entries, tc.reason)
 			}

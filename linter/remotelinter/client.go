@@ -1,4 +1,4 @@
-package httplinter
+package remotelinter
 
 import (
 	"bytes"
@@ -30,7 +30,7 @@ import (
 // same limit that applies to the output of pkimetal's external linter backends.
 const maxResponseSize = 16 << 20
 
-// failuresTotal counts failed requests to HTTP linter endpoints, by linter and
+// failuresTotal counts failed requests to remote linter endpoints, by linter and
 // reason, so that an unavailable or misbehaving endpoint can be noticed and
 // alerted on.
 // Reasons for a failed request, as recorded in failuresTotal and the log.
@@ -45,13 +45,13 @@ const (
 var failuresTotal = promauto.NewCounterVec(prometheus.CounterOpts{
 	Namespace: config.ApplicationNamespace,
 	Subsystem: "linter",
-	Name:      "http_failures_total",
-	Help:      "Number of failed requests to HTTP linter endpoints.",
+	Name:      "remote_failures_total",
+	Help:      "Number of failed requests to remote linter endpoints.",
 }, []string{"linter_name", "reason"})
 
-// HTTPLinter is the backend for one configured HTTP linter endpoint.  It is
+// RemoteLinter is the backend for one configured remote linter endpoint.  It is
 // shared by all of the endpoint's Goroutines.
-type HTTPLinter struct {
+type RemoteLinter struct {
 	name            string
 	client          *http.Client
 	url             string
@@ -80,12 +80,12 @@ type finding struct {
 // newClient returns the HTTP client for one endpoint.  Redirects are not
 // followed, so that configured headers (e.g. credentials) are never sent to
 // another URL.
-func newClient(timeout time.Duration, maxConns int, scheme string, tlsCfg config.HTTPLinterTLSConfig) (*http.Client, error) {
+func newClient(timeout time.Duration, maxConns int, scheme string, tlsCfg config.RemoteLinterTLSConfig) (*http.Client, error) {
 	transport := http.DefaultTransport.(*http.Transport).Clone()
 	if maxConns > 0 {
 		transport.MaxIdleConnsPerHost = maxConns
 	}
-	if tlsCfg != (config.HTTPLinterTLSConfig{}) {
+	if tlsCfg != (config.RemoteLinterTLSConfig{}) {
 		if scheme != "https" {
 			return nil, errors.New("tls is only valid for https URLs")
 		}
@@ -104,7 +104,7 @@ func newClient(timeout time.Duration, maxConns int, scheme string, tlsCfg config
 	}, nil
 }
 
-func loadTLSConfig(cfg config.HTTPLinterTLSConfig) (*tls.Config, error) {
+func loadTLSConfig(cfg config.RemoteLinterTLSConfig) (*tls.Config, error) {
 	tlsConfig := &tls.Config{MinVersion: tls.VersionTLS12}
 	if cfg.CAFile != "" {
 		caPEM, err := os.ReadFile(cfg.CAFile)
@@ -132,7 +132,7 @@ func loadTLSConfig(cfg config.HTTPLinterTLSConfig) (*tls.Config, error) {
 
 // lint sends one artifact to the endpoint and returns its findings or, if the
 // request fails or the response is invalid, a single finding describing why.
-func (l *HTTPLinter) lint(ctx context.Context, req request) []linter.LintingResult {
+func (l *RemoteLinter) lint(ctx context.Context, req request) []linter.LintingResult {
 	body, err := json.Marshal(req)
 	if err != nil {
 		return l.failure(reasonRequest, err.Error())
@@ -180,7 +180,7 @@ func (l *HTTPLinter) lint(ctx context.Context, req request) []linter.LintingResu
 // requestError describes a request that did not complete.  ctx is the context of
 // pkimetal's own request; connected reports whether a connection to the
 // endpoint was obtained.
-func (l *HTTPLinter) requestError(ctx context.Context, err error, connected bool) []linter.LintingResult {
+func (l *RemoteLinter) requestError(ctx context.Context, err error, connected bool) []linter.LintingResult {
 	if ctx.Err() != nil {
 		// pkimetal's request was cancelled or reached its deadline, so this result
 		// will not be used.  It is not a failure of the endpoint.
@@ -212,15 +212,15 @@ func errorCause(err error) string {
 	return err.Error()
 }
 
-func (l *HTTPLinter) failure(reason, message string) []linter.LintingResult {
+func (l *RemoteLinter) failure(reason, message string) []linter.LintingResult {
 	l.record(reason, message)
 	return []linter.LintingResult{{Severity: l.errorSeverity, Finding: message}}
 }
 
 // record logs and counts a failed request.
-func (l *HTTPLinter) record(reason, message string) {
+func (l *RemoteLinter) record(reason, message string) {
 	failuresTotal.WithLabelValues(l.name, reason).Inc()
-	logger.Logger.Warn("HTTP linter request failed", zap.String("name", l.name), zap.String("reason", reason), zap.String("finding", message))
+	logger.Logger.Warn("Remote linter request failed", zap.String("name", l.name), zap.String("reason", reason), zap.String("finding", message))
 }
 
 // parseFindings converts an endpoint's response body into linting results.  An

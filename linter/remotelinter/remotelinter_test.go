@@ -1,4 +1,4 @@
-package httplinter
+package remotelinter
 
 import (
 	"context"
@@ -18,24 +18,24 @@ import (
 
 func intPtr(i int) *int { return &i }
 
-func buildOne(t *testing.T, cfg config.HTTPLinterConfig) (*linter.Linter, *HTTPLinter) {
+func buildOne(t *testing.T, cfg config.RemoteLinterConfig) (*linter.Linter, *RemoteLinter) {
 	t.Helper()
-	linters, err := buildLinters([]config.HTTPLinterConfig{cfg})
+	linters, err := buildLinters([]config.RemoteLinterConfig{cfg})
 	if err != nil {
 		t.Fatalf("buildLinters: %v", err)
 	}
 	if len(linters) != 1 {
 		t.Fatalf("got %d linters, want 1", len(linters))
 	}
-	backend, ok := linters[0].Interface().(*HTTPLinter)
+	backend, ok := linters[0].Interface().(*RemoteLinter)
 	if !ok {
-		t.Fatalf("Interface() returned %T, want *HTTPLinter", linters[0].Interface())
+		t.Fatalf("Interface() returned %T, want *RemoteLinter", linters[0].Interface())
 	}
 	return linters[0], backend
 }
 
 func TestBuildLinters_MapsConfig(t *testing.T) {
-	l, backend := buildOne(t, config.HTTPLinterConfig{
+	l, backend := buildOne(t, config.RemoteLinterConfig{
 		Name:            "mylinter",
 		URL:             "http://mylinter:8000/lint",
 		NumGoroutines:   intPtr(3),
@@ -64,7 +64,7 @@ func TestBuildLinters_MapsConfig(t *testing.T) {
 }
 
 func TestBuildLinters_Defaults(t *testing.T) {
-	l, backend := buildOne(t, config.HTTPLinterConfig{Name: "x", URL: "https://x.example/lint"})
+	l, backend := buildOne(t, config.RemoteLinterConfig{Name: "x", URL: "https://x.example/lint"})
 
 	if l.NumInstances != 1 {
 		t.Errorf("NumInstances: got %d, want 1", l.NumInstances)
@@ -82,7 +82,7 @@ func TestBuildLinters_Defaults(t *testing.T) {
 }
 
 func TestBuildLinters_PublishedURLOmitsQuery(t *testing.T) {
-	l, backend := buildOne(t, config.HTTPLinterConfig{Name: "x", URL: "https://x.example/lint?api_key=SECRET"})
+	l, backend := buildOne(t, config.RemoteLinterConfig{Name: "x", URL: "https://x.example/lint?api_key=SECRET"})
 
 	if l.Url != "https://x.example/lint" {
 		t.Errorf("published Url: got %q, want the URL without its query (shown by /linters and the web page)", l.Url)
@@ -93,7 +93,7 @@ func TestBuildLinters_PublishedURLOmitsQuery(t *testing.T) {
 }
 
 func TestBuildLinters_ExplicitZeroDisables(t *testing.T) {
-	l, _ := buildOne(t, config.HTTPLinterConfig{Name: "x", URL: "http://x/", NumGoroutines: intPtr(0)})
+	l, _ := buildOne(t, config.RemoteLinterConfig{Name: "x", URL: "http://x/", NumGoroutines: intPtr(0)})
 
 	if l.NumInstances != 0 {
 		t.Errorf("NumInstances: got %d, want 0", l.NumInstances)
@@ -105,7 +105,7 @@ func TestBuildLinters_DefaultTimeoutCappedByBackendTimeout(t *testing.T) {
 	t.Cleanup(func() { config.Config.Linter.BackendTimeout = saved })
 	config.Config.Linter.BackendTimeout = 2 * time.Second
 
-	_, backend := buildOne(t, config.HTTPLinterConfig{Name: "x", URL: "http://x/"})
+	_, backend := buildOne(t, config.RemoteLinterConfig{Name: "x", URL: "http://x/"})
 
 	if backend.client.Timeout != time.Second {
 		t.Errorf("timeout: got %v, want half of linter.backendTimeout (1s)", backend.client.Timeout)
@@ -117,7 +117,7 @@ func TestBuildLinters_RejectsNonPositiveBackendTimeout(t *testing.T) {
 	t.Cleanup(func() { config.Config.Linter.BackendTimeout = saved })
 	config.Config.Linter.BackendTimeout = 0
 
-	_, err := buildLinters([]config.HTTPLinterConfig{{Name: "x", URL: "http://x/"}})
+	_, err := buildLinters([]config.RemoteLinterConfig{{Name: "x", URL: "http://x/"}})
 
 	if err == nil || !strings.Contains(err.Error(), "linter.backendTimeout must be positive") {
 		t.Errorf("got error %v, want one about linter.backendTimeout", err)
@@ -151,7 +151,7 @@ func TestBuildLinters_Artifacts(t *testing.T) {
 		},
 	} {
 		t.Run(strings.Join(tc.artifacts, "+"), func(t *testing.T) {
-			l, _ := buildOne(t, config.HTTPLinterConfig{Name: "x", URL: "http://x/", Artifacts: tc.artifacts})
+			l, _ := buildOne(t, config.RemoteLinterConfig{Name: "x", URL: "http://x/", Artifacts: tc.artifacts})
 
 			for _, id := range tc.wantSupported {
 				if slices.Contains(l.Unsupported, id) {
@@ -180,33 +180,33 @@ func TestBuildLinters_Errors(t *testing.T) {
 
 	for _, tc := range []struct {
 		name    string
-		cfgs    []config.HTTPLinterConfig
+		cfgs    []config.RemoteLinterConfig
 		wantErr string
 	}{
-		{"missing name", []config.HTTPLinterConfig{{URL: "http://x/"}}, "linter.httpLinters[0]: name is required"},
-		{"missing url", []config.HTTPLinterConfig{{Name: "x"}}, `http linter "x": url is required`},
-		{"relative url", []config.HTTPLinterConfig{{Name: "x", URL: "/lint"}}, "must be an absolute http or https URL"},
-		{"unsupported scheme", []config.HTTPLinterConfig{{Name: "x", URL: "ftp://x/lint"}}, "must be an absolute http or https URL"},
-		{"unparseable url", []config.HTTPLinterConfig{{Name: "x", URL: "http://[::1"}}, "must be an absolute http or https URL"},
-		{"credentials in url", []config.HTTPLinterConfig{{Name: "x", URL: "https://user:pass@x/lint"}}, "url must not contain credentials; use headers instead"},
-		{"duplicate names", []config.HTTPLinterConfig{{Name: "x", URL: "http://x/"}, {Name: "x", URL: "http://y/"}}, `http linter "x": declared more than once`},
-		{"unknown artifact", []config.HTTPLinterConfig{{Name: "x", URL: "http://x/", Artifacts: []string{"cert"}}}, `unknown artifact "cert"`},
-		{"unknown errorSeverity", []config.HTTPLinterConfig{{Name: "x", URL: "http://x/", ErrorSeverity: "serious"}}, `errorSeverity "serious" is not a valid severity`},
-		{"meta timeoutSeverity", []config.HTTPLinterConfig{{Name: "x", URL: "http://x/", TimeoutSeverity: "meta"}}, `timeoutSeverity "meta" is not a valid severity`},
-		{"negative numGoroutines", []config.HTTPLinterConfig{{Name: "x", URL: "http://x/", NumGoroutines: intPtr(-1)}}, "numGoroutines must not be negative"},
-		{"negative timeout", []config.HTTPLinterConfig{{Name: "x", URL: "http://x/", Timeout: -time.Second}}, "timeout must be positive"},
-		{"timeout above backendTimeout", []config.HTTPLinterConfig{{Name: "x", URL: "http://x/", Timeout: tooLong}}, "must be less than linter.backendTimeout"},
-		{"timeout equal to backendTimeout", []config.HTTPLinterConfig{{Name: "x", URL: "http://x/", Timeout: config.Config.Linter.BackendTimeout}}, "must be less than linter.backendTimeout"},
-		{"reserved name", []config.HTTPLinterConfig{{Name: "pkimetal", URL: "http://x/"}}, `name "pkimetal" is reserved`},
-		{"invalid header name", []config.HTTPLinterConfig{{Name: "x", URL: "http://x/", Headers: map[string]string{"bad name": "v"}}}, `invalid header name "bad name"`},
-		{"invalid header value", []config.HTTPLinterConfig{{Name: "x", URL: "http://x/", Headers: map[string]string{"authorization": "Bearer a\nb"}}}, `invalid value for header "authorization"`},
-		{"host header", []config.HTTPLinterConfig{{Name: "x", URL: "http://x/", Headers: map[string]string{"host": "other.example"}}}, "the Host header cannot be set"},
-		{"tls on http url", []config.HTTPLinterConfig{{Name: "x", URL: "http://x/", TLS: config.HTTPLinterTLSConfig{CAFile: notPEM}}}, "tls is only valid for https URLs"},
-		{"certFile without keyFile", []config.HTTPLinterConfig{{Name: "x", URL: "https://x/", TLS: config.HTTPLinterTLSConfig{CertFile: notPEM}}}, "tls.certFile and tls.keyFile must be set together"},
-		{"keyFile without certFile", []config.HTTPLinterConfig{{Name: "x", URL: "https://x/", TLS: config.HTTPLinterTLSConfig{KeyFile: notPEM}}}, "tls.certFile and tls.keyFile must be set together"},
-		{"missing caFile", []config.HTTPLinterConfig{{Name: "x", URL: "https://x/", TLS: config.HTTPLinterTLSConfig{CAFile: filepath.Join(dir, "missing.pem")}}}, "tls.caFile"},
-		{"caFile not PEM", []config.HTTPLinterConfig{{Name: "x", URL: "https://x/", TLS: config.HTTPLinterTLSConfig{CAFile: notPEM}}}, "no PEM certificates found"},
-		{"unloadable client certificate", []config.HTTPLinterConfig{{Name: "x", URL: "https://x/", TLS: config.HTTPLinterTLSConfig{CertFile: notPEM, KeyFile: notPEM}}}, "tls client certificate"},
+		{"missing name", []config.RemoteLinterConfig{{URL: "http://x/"}}, "linter.remoteLinters[0]: name is required"},
+		{"missing url", []config.RemoteLinterConfig{{Name: "x"}}, `remote linter "x": url is required`},
+		{"relative url", []config.RemoteLinterConfig{{Name: "x", URL: "/lint"}}, "must be an absolute http or https URL"},
+		{"unsupported scheme", []config.RemoteLinterConfig{{Name: "x", URL: "ftp://x/lint"}}, "must be an absolute http or https URL"},
+		{"unparseable url", []config.RemoteLinterConfig{{Name: "x", URL: "http://[::1"}}, "must be an absolute http or https URL"},
+		{"credentials in url", []config.RemoteLinterConfig{{Name: "x", URL: "https://user:pass@x/lint"}}, "url must not contain credentials; use headers instead"},
+		{"duplicate names", []config.RemoteLinterConfig{{Name: "x", URL: "http://x/"}, {Name: "x", URL: "http://y/"}}, `remote linter "x": declared more than once`},
+		{"unknown artifact", []config.RemoteLinterConfig{{Name: "x", URL: "http://x/", Artifacts: []string{"cert"}}}, `unknown artifact "cert"`},
+		{"unknown errorSeverity", []config.RemoteLinterConfig{{Name: "x", URL: "http://x/", ErrorSeverity: "serious"}}, `errorSeverity "serious" is not a valid severity`},
+		{"meta timeoutSeverity", []config.RemoteLinterConfig{{Name: "x", URL: "http://x/", TimeoutSeverity: "meta"}}, `timeoutSeverity "meta" is not a valid severity`},
+		{"negative numGoroutines", []config.RemoteLinterConfig{{Name: "x", URL: "http://x/", NumGoroutines: intPtr(-1)}}, "numGoroutines must not be negative"},
+		{"negative timeout", []config.RemoteLinterConfig{{Name: "x", URL: "http://x/", Timeout: -time.Second}}, "timeout must be positive"},
+		{"timeout above backendTimeout", []config.RemoteLinterConfig{{Name: "x", URL: "http://x/", Timeout: tooLong}}, "must be less than linter.backendTimeout"},
+		{"timeout equal to backendTimeout", []config.RemoteLinterConfig{{Name: "x", URL: "http://x/", Timeout: config.Config.Linter.BackendTimeout}}, "must be less than linter.backendTimeout"},
+		{"reserved name", []config.RemoteLinterConfig{{Name: "pkimetal", URL: "http://x/"}}, `name "pkimetal" is reserved`},
+		{"invalid header name", []config.RemoteLinterConfig{{Name: "x", URL: "http://x/", Headers: map[string]string{"bad name": "v"}}}, `invalid header name "bad name"`},
+		{"invalid header value", []config.RemoteLinterConfig{{Name: "x", URL: "http://x/", Headers: map[string]string{"authorization": "Bearer a\nb"}}}, `invalid value for header "authorization"`},
+		{"host header", []config.RemoteLinterConfig{{Name: "x", URL: "http://x/", Headers: map[string]string{"host": "other.example"}}}, "the Host header cannot be set"},
+		{"tls on http url", []config.RemoteLinterConfig{{Name: "x", URL: "http://x/", TLS: config.RemoteLinterTLSConfig{CAFile: notPEM}}}, "tls is only valid for https URLs"},
+		{"certFile without keyFile", []config.RemoteLinterConfig{{Name: "x", URL: "https://x/", TLS: config.RemoteLinterTLSConfig{CertFile: notPEM}}}, "tls.certFile and tls.keyFile must be set together"},
+		{"keyFile without certFile", []config.RemoteLinterConfig{{Name: "x", URL: "https://x/", TLS: config.RemoteLinterTLSConfig{KeyFile: notPEM}}}, "tls.certFile and tls.keyFile must be set together"},
+		{"missing caFile", []config.RemoteLinterConfig{{Name: "x", URL: "https://x/", TLS: config.RemoteLinterTLSConfig{CAFile: filepath.Join(dir, "missing.pem")}}}, "tls.caFile"},
+		{"caFile not PEM", []config.RemoteLinterConfig{{Name: "x", URL: "https://x/", TLS: config.RemoteLinterTLSConfig{CAFile: notPEM}}}, "no PEM certificates found"},
+		{"unloadable client certificate", []config.RemoteLinterConfig{{Name: "x", URL: "https://x/", TLS: config.RemoteLinterTLSConfig{CertFile: notPEM, KeyFile: notPEM}}}, "tls client certificate"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			_, err := buildLinters(tc.cfgs)
@@ -225,7 +225,7 @@ func TestHandleRequest_SendsArtifactAndProfile(t *testing.T) {
 		io.WriteString(w, "[]")
 	}))
 	defer server.Close()
-	_, backend := buildOne(t, config.HTTPLinterConfig{Name: "x", URL: server.URL, Artifacts: []string{"crl"}})
+	_, backend := buildOne(t, config.RemoteLinterConfig{Name: "x", URL: server.URL, Artifacts: []string{"crl"}})
 
 	backend.HandleRequest(context.Background(), nil, &linter.LintingRequest{DecodedInput: []byte{0, 1, 2}, ProfileId: linter.RFC5280_CRL})
 

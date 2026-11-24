@@ -1,4 +1,4 @@
-package httplinter
+package remotelinter
 
 import (
 	"context"
@@ -133,9 +133,9 @@ func startTLSServer(t *testing.T, pki testPKI, requireClientCert bool) *httptest
 	return server
 }
 
-func lintTLS(t *testing.T, url string, tlsCfg config.HTTPLinterTLSConfig) []linter.LintingResult {
+func lintTLS(t *testing.T, url string, tlsCfg config.RemoteLinterTLSConfig) []linter.LintingResult {
 	t.Helper()
-	_, backend := buildOne(t, config.HTTPLinterConfig{Name: "x", URL: url, TLS: tlsCfg})
+	_, backend := buildOne(t, config.RemoteLinterConfig{Name: "x", URL: url, TLS: tlsCfg})
 	return backend.lint(context.Background(), testRequest)
 }
 
@@ -143,7 +143,7 @@ func TestTLS_TrustsConfiguredCA(t *testing.T) {
 	pki := newTestPKI(t)
 	server := startTLSServer(t, pki, false)
 
-	if results := lintTLS(t, server.URL, config.HTTPLinterTLSConfig{CAFile: pki.caFile}); len(results) != 0 {
+	if results := lintTLS(t, server.URL, config.RemoteLinterTLSConfig{CAFile: pki.caFile}); len(results) != 0 {
 		t.Errorf("expected a successful request, got %+v", results)
 	}
 }
@@ -152,7 +152,7 @@ func TestTLS_ConfiguredCAReplacesOtherRoots(t *testing.T) {
 	pki := newTestPKI(t)
 	server := startTLSServer(t, pki, false)
 
-	results := lintTLS(t, server.URL, config.HTTPLinterTLSConfig{CAFile: pki.otherCAFile})
+	results := lintTLS(t, server.URL, config.RemoteLinterTLSConfig{CAFile: pki.otherCAFile})
 
 	if len(results) != 1 || results[0].Severity != linter.SEVERITY_BUG {
 		t.Errorf("expected one errorSeverity (bug) finding for an untrusted server, got %+v", results)
@@ -163,12 +163,12 @@ func TestTLS_MutualTLS(t *testing.T) {
 	pki := newTestPKI(t)
 	server := startTLSServer(t, pki, true)
 
-	withClientCert := config.HTTPLinterTLSConfig{CAFile: pki.caFile, CertFile: pki.clientCert, KeyFile: pki.clientKey}
+	withClientCert := config.RemoteLinterTLSConfig{CAFile: pki.caFile, CertFile: pki.clientCert, KeyFile: pki.clientKey}
 	if results := lintTLS(t, server.URL, withClientCert); len(results) != 0 {
 		t.Errorf("with a client certificate: expected a successful request, got %+v", results)
 	}
 
-	results := lintTLS(t, server.URL, config.HTTPLinterTLSConfig{CAFile: pki.caFile})
+	results := lintTLS(t, server.URL, config.RemoteLinterTLSConfig{CAFile: pki.caFile})
 	if len(results) != 1 || results[0].Severity != linter.SEVERITY_BUG {
 		t.Errorf("without a client certificate: expected one errorSeverity (bug) finding, got %+v", results)
 	}

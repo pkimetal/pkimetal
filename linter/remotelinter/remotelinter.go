@@ -1,7 +1,7 @@
-// Package httplinter registers HTTP linters: external endpoints, declared under
-// linter.httpLinters in config.yaml, that pkimetal sends each artifact to and
-// whose findings it reports.  See doc/linters/http.md.
-package httplinter
+// Package remotelinter registers remote linters: external endpoints, declared under
+// linter.remoteLinters in config.yaml, that pkimetal sends each artifact to and
+// whose findings it reports.  See doc/linters/remote.md.
+package remotelinter
 
 import (
 	"context"
@@ -17,7 +17,7 @@ import (
 	"github.com/pkimetal/pkimetal/linter"
 )
 
-// Values accepted in an HTTP linter's "artifacts" list, and sent as "artifact".
+// Values accepted in a remote linter's "artifacts" list, and sent as "artifact".
 const (
 	ArtifactCertificate = "certificate"
 	ArtifactCRL         = "crl"
@@ -32,43 +32,43 @@ const (
 )
 
 func init() {
-	linters, err := buildLinters(config.Config.Linter.HTTPLinters)
+	linters, err := buildLinters(config.Config.Linter.RemoteLinters)
 	if err != nil {
-		panic("httplinter: " + err.Error())
+		panic("remotelinter: " + err.Error())
 	}
 	for _, l := range linters {
 		l.Register() // Register panics if the name clashes with any other linter's.
 	}
 }
 
-// buildLinters validates the HTTP linter declarations and converts each one into
+// buildLinters validates the remote linter declarations and converts each one into
 // a linter.Linter, ready to be registered.
-func buildLinters(cfgs []config.HTTPLinterConfig) ([]*linter.Linter, error) {
+func buildLinters(cfgs []config.RemoteLinterConfig) ([]*linter.Linter, error) {
 	var linters []*linter.Linter
 	seen := make(map[string]bool)
 	for i, cfg := range cfgs {
 		if cfg.Name == "" {
-			return nil, fmt.Errorf("linter.httpLinters[%d]: name is required", i)
+			return nil, fmt.Errorf("linter.remoteLinters[%d]: name is required", i)
 		}
 		if cfg.Name == linter.PKIMETAL_NAME {
 			// pkimetal's own results (e.g. its end-of-results marker) use this name.
-			return nil, fmt.Errorf("linter.httpLinters[%d]: name %q is reserved", i, cfg.Name)
+			return nil, fmt.Errorf("linter.remoteLinters[%d]: name %q is reserved", i, cfg.Name)
 		}
 		if seen[cfg.Name] {
-			return nil, fmt.Errorf("http linter %q: declared more than once", cfg.Name)
+			return nil, fmt.Errorf("remote linter %q: declared more than once", cfg.Name)
 		}
 		seen[cfg.Name] = true
 
 		l, err := buildLinter(cfg)
 		if err != nil {
-			return nil, fmt.Errorf("http linter %q: %w", cfg.Name, err)
+			return nil, fmt.Errorf("remote linter %q: %w", cfg.Name, err)
 		}
 		linters = append(linters, l)
 	}
 	return linters, nil
 }
 
-func buildLinter(cfg config.HTTPLinterConfig) (*linter.Linter, error) {
+func buildLinter(cfg config.RemoteLinterConfig) (*linter.Linter, error) {
 	numInstances := defaultNumGoroutines
 	if cfg.NumGoroutines != nil {
 		numInstances = *cfg.NumGoroutines
@@ -117,7 +117,7 @@ func buildLinter(cfg config.HTTPLinterConfig) (*linter.Linter, error) {
 		return nil, err
 	}
 
-	backend := &HTTPLinter{
+	backend := &RemoteLinter{
 		name:            cfg.Name,
 		client:          client,
 		url:             cfg.URL,
@@ -224,14 +224,14 @@ func artifactOf(id linter.ProfileId) string {
 	}
 }
 
-func (l *HTTPLinter) StartInstance() (useHandleRequest bool, directory, cmd string, args []string) {
-	return true, "", "", nil // HTTP linters are called from Goroutine(s) in the pkimetal process, so there are no "external" instances.
+func (l *RemoteLinter) StartInstance() (useHandleRequest bool, directory, cmd string, args []string) {
+	return true, "", "", nil // Remote linters are called from Goroutine(s) in the pkimetal process, so there are no "external" instances.
 }
 
-func (l *HTTPLinter) StopInstance(lin *linter.LinterInstance) {
+func (l *RemoteLinter) StopInstance(lin *linter.LinterInstance) {
 }
 
-func (l *HTTPLinter) HandleRequest(ctx context.Context, lin *linter.LinterInstance, lreq *linter.LintingRequest) []linter.LintingResult {
+func (l *RemoteLinter) HandleRequest(ctx context.Context, lin *linter.LinterInstance, lreq *linter.LintingRequest) []linter.LintingResult {
 	return l.lint(ctx, request{
 		B64Input: base64.StdEncoding.EncodeToString(lreq.DecodedInput),
 		Profile:  linter.AllProfiles[lreq.ProfileId].Name,
@@ -239,6 +239,6 @@ func (l *HTTPLinter) HandleRequest(ctx context.Context, lin *linter.LinterInstan
 	})
 }
 
-func (l *HTTPLinter) ProcessResult(lresult linter.LintingResult) linter.LintingResult {
+func (l *RemoteLinter) ProcessResult(lresult linter.LintingResult) linter.LintingResult {
 	return lresult
 }

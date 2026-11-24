@@ -9,12 +9,12 @@ import (
 	"github.com/spf13/viper"
 )
 
-func TestHTTPLintersUnmarshalFromYAML(t *testing.T) {
+func TestRemoteLintersUnmarshalFromYAML(t *testing.T) {
 	v := viper.New()
 	v.SetConfigType("yaml")
 	if err := v.ReadConfig(strings.NewReader(`
 linter:
-  httpLinters:
+  remoteLinters:
     - name: mylinter
       url: https://mylinter.example/lint
       numGoroutines: 2
@@ -42,12 +42,12 @@ linter:
 	if err := v.Unmarshal(&c); err != nil {
 		t.Fatalf("unmarshalling: %v", err)
 	}
-	if len(c.Linter.HTTPLinters) != 3 {
-		t.Fatalf("got %d HTTP linters, want 3: %+v", len(c.Linter.HTTPLinters), c.Linter.HTTPLinters)
+	if len(c.Linter.RemoteLinters) != 3 {
+		t.Fatalf("got %d remote linters, want 3: %+v", len(c.Linter.RemoteLinters), c.Linter.RemoteLinters)
 	}
 
 	two := 2
-	want := HTTPLinterConfig{
+	want := RemoteLinterConfig{
 		Name:            "mylinter",
 		URL:             "https://mylinter.example/lint",
 		NumGoroutines:   &two,
@@ -57,19 +57,19 @@ linter:
 		TimeoutSeverity: "warning",
 		Version:         "1.0.0",
 		Headers:         map[string]string{"authorization": "Bearer abc123"}, // viper lowercases map keys.
-		TLS:             HTTPLinterTLSConfig{CAFile: "/config/ca.pem", CertFile: "/config/client.pem", KeyFile: "/config/client.key"},
+		TLS:             RemoteLinterTLSConfig{CAFile: "/config/ca.pem", CertFile: "/config/client.pem", KeyFile: "/config/client.key"},
 	}
-	if got := c.Linter.HTTPLinters[0]; !reflect.DeepEqual(got, want) {
+	if got := c.Linter.RemoteLinters[0]; !reflect.DeepEqual(got, want) {
 		t.Errorf("full entry:\ngot  %+v\nwant %+v", got, want)
 	}
 
-	minimal := c.Linter.HTTPLinters[1]
+	minimal := c.Linter.RemoteLinters[1]
 	if minimal.Name != "minimal" || minimal.URL != "http://minimal:8000/" || minimal.NumGoroutines != nil ||
-		minimal.Timeout != 0 || len(minimal.Artifacts) != 0 || len(minimal.Headers) != 0 || minimal.TLS != (HTTPLinterTLSConfig{}) {
+		minimal.Timeout != 0 || len(minimal.Artifacts) != 0 || len(minimal.Headers) != 0 || minimal.TLS != (RemoteLinterTLSConfig{}) {
 		t.Errorf("minimal entry: got %+v", minimal)
 	}
 
-	if disabled := c.Linter.HTTPLinters[2]; disabled.NumGoroutines == nil || *disabled.NumGoroutines != 0 {
+	if disabled := c.Linter.RemoteLinters[2]; disabled.NumGoroutines == nil || *disabled.NumGoroutines != 0 {
 		t.Errorf("disabled entry: numGoroutines should be an explicit 0, got %v", disabled.NumGoroutines)
 	}
 }

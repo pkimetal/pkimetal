@@ -1,14 +1,14 @@
-# HTTP linters
+# Remote linters
 
-HTTP linters let you add your own linters to pkimetal without rebuilding it. An HTTP linter is an external endpoint that pkimetal sends each certificate, CRL, or OCSP response to, in the format described below. pkimetal reports the endpoint's findings alongside those of its other linters.
+Remote linters let you add your own linters to pkimetal without rebuilding it. A remote linter is an external HTTP(S) endpoint that pkimetal sends each certificate, CRL, or OCSP response to, in the format described below. pkimetal reports the endpoint's findings alongside those of its other linters.
 
 ## Configuration
 
-HTTP linters are declared in `config.yaml` (e.g. `/config/config.yaml`) under `linter.httpLinters`. Several endpoints can be declared; each one is a separate linter, with its own name in the results and in the `/linters` list. HTTP linters cannot be declared with environment variables.
+Remote linters are declared in `config.yaml` (e.g. `/config/config.yaml`) under `linter.remoteLinters`. Several endpoints can be declared; each one is a separate linter, with its own name in the results and in the `/linters` list. Remote linters cannot be declared with environment variables.
 
 ```yaml
 linter:
-  httpLinters:
+  remoteLinters:
     - name: mylinter                  # Required. The linter name shown in results; must be unique.
       url: http://mylinter:8000/lint  # Required. An http or https URL.
       numGoroutines: 1                # Optional, default 1. The number of concurrent requests; 0 disables the linter.
@@ -25,11 +25,11 @@ linter:
         keyFile: /config/client.key   # The client certificate's private key. Requires certFile.
 ```
 
-pkimetal refuses to start if an HTTP linter:
+pkimetal refuses to start if a remote linter:
 
 - has no `name` or `url`;
 - has a `url` that is not an absolute `http` or `https` URL, or that contains credentials (e.g. `https://user:password@host/`; use `headers` instead);
-- has a `name` that is `pkimetal` (which is reserved), or that is already used by another HTTP linter or a built-in linter;
+- has a `name` that is `pkimetal` (which is reserved), or that is already used by another remote linter or a built-in linter;
 - has an `artifacts` value or a severity that is not one of the listed values;
 - has a negative `numGoroutines` or `timeout`, or a `timeout` that is not less than `linter.backendTimeout`;
 - has an invalid header name or value (e.g. a value containing a line break), or a `Host` header (which is taken from `url`);
@@ -67,7 +67,7 @@ The endpoint responds with HTTP status 200 and a JSON array of findings, in the 
 - `Severity` must be one of `debug`, `info`, `notice`, `warning`, `error`, `bug`, or `fatal`. (`meta` is reserved for pkimetal.)
 - An empty array (`[]`) means that there are no findings.
 
-[`doc/http-linter-openapi.yaml`](../http-linter-openapi.yaml) describes this request and response as an OpenAPI document.
+[`doc/remote-linter-openapi.yaml`](../remote-linter-openapi.yaml) describes this request and response as an OpenAPI document.
 
 ## Failures
 
@@ -81,18 +81,18 @@ If a request does not succeed, pkimetal reports a single finding from that linte
 
 If pkimetal's own request is cancelled or reaches its deadline first, the call is abandoned and reported as `API request abandoned`, with severity `timeoutSeverity`; this is not counted as a failure of the endpoint.
 
-Each failure is also logged as a warning (`HTTP linter request failed`, with the linter's `name` and a `reason`), and counted in the `pkimetal_linter_http_failures_total` metric, labelled by `linter_name` and `reason` (`connection`, `timeout`, `status`, `response`, or `request`), so that an unavailable endpoint can be noticed and alerted on. While an endpoint is unavailable, each request to it still waits for up to `timeout` (or until a refused connection is reported), so keep `timeout` short.
+Each failure is also logged as a warning (`Remote linter request failed`, with the linter's `name` and a `reason`), and counted in the `pkimetal_linter_remote_failures_total` metric, labelled by `linter_name` and `reason` (`connection`, `timeout`, `status`, `response`, or `request`), so that an unavailable endpoint can be noticed and alerted on. While an endpoint is unavailable, each request to it still waits for up to `timeout` (or until a refused connection is reported), so keep `timeout` short.
 
 ## Example
 
-[`examples/httplinter/subjectcn`](../../examples/httplinter/subjectcn/main.go) is a complete example endpoint in Go. It warns when a certificate's Subject CN contains "example".
+[`examples/remotelinter/subjectcn`](../../examples/remotelinter/subjectcn/main.go) is a complete example endpoint in Go. It warns when a certificate's Subject CN contains "example".
 
 ```bash
-go run ./examples/httplinter/subjectcn -listen :8000 &
+go run ./examples/remotelinter/subjectcn -listen :8000 &
 mkdir -p config
 cat > config/config.yaml <<'EOF'
 linter:
-  httpLinters:
+  remoteLinters:
     - name: subjectcn
       url: http://host.docker.internal:8000/
 EOF

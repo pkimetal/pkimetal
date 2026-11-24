@@ -1,10 +1,10 @@
-// Command subjectcn is an example pkimetal HTTP linter endpoint; see
-// doc/linters/http.md.
+// Command subjectcn is an example pkimetal remote linter endpoint; see
+// doc/linters/remote.md.
 //
-// It answers POST requests in pkimetal's HTTP linter format and warns when a
+// It answers POST requests in pkimetal's remote linter format and warns when a
 // certificate's Subject CN contains "example".  Run it with:
 //
-//	go run ./examples/httplinter/subjectcn -listen :8000
+//	go run ./examples/remotelinter/subjectcn -listen :8000
 package main
 
 import (

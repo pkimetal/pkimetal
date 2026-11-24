@@ -1,4 +1,4 @@
-package httplinter
+package remotelinter
 
 import (
 	"context"
@@ -103,7 +103,7 @@ func startExample(t *testing.T) string {
 		return ""
 	}
 	binary := filepath.Join(t.TempDir(), "subjectcn")
-	build := exec.Command(goBinary, "build", "-o", binary, "github.com/pkimetal/pkimetal/examples/httplinter/subjectcn")
+	build := exec.Command(goBinary, "build", "-o", binary, "github.com/pkimetal/pkimetal/examples/remotelinter/subjectcn")
 	build.Env = append(os.Environ(), "CGO_ENABLED=0")
 	if output, err := build.CombinedOutput(); err != nil {
 		t.Fatalf("building the example endpoint: %v\n%s", err, output)
@@ -136,7 +136,7 @@ func startExample(t *testing.T) string {
 	return "http://" + address + "/"
 }
 
-func TestHTTPLinter_EndToEnd(t *testing.T) {
+func TestRemoteLinter_EndToEnd(t *testing.T) {
 	inline := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var req request
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -148,10 +148,10 @@ func TestHTTPLinter_EndToEnd(t *testing.T) {
 	}))
 	t.Cleanup(inline.Close) // Registered first, so it runs after the linters have stopped.
 
-	cfgs := []config.HTTPLinterConfig{{Name: "e2e-inline", URL: inline.URL, NumGoroutines: intPtr(2)}}
+	cfgs := []config.RemoteLinterConfig{{Name: "e2e-inline", URL: inline.URL, NumGoroutines: intPtr(2)}}
 	exampleURL := startExample(t)
 	if exampleURL != "" {
-		cfgs = append(cfgs, config.HTTPLinterConfig{Name: "e2e-example", URL: exampleURL})
+		cfgs = append(cfgs, config.RemoteLinterConfig{Name: "e2e-example", URL: exampleURL})
 	}
 	linters, err := buildLinters(cfgs)
 	if err != nil {
