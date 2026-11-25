@@ -16,6 +16,29 @@ import (
 	"go.uber.org/zap"
 )
 
+// RemoteLinterConfig declares a remote linter: an external endpoint that pkimetal
+// sends each artifact to, and whose findings it reports.  See
+// doc/linters/remote.md.
+type RemoteLinterConfig struct {
+	Name            string                `mapstructure:"name"`
+	URL             string                `mapstructure:"url"`
+	NumGoroutines   *int                  `mapstructure:"numGoroutines"` // nil = default (1); 0 = disabled.
+	Timeout         time.Duration         `mapstructure:"timeout"`       // 0 = default.
+	Artifacts       []string              `mapstructure:"artifacts"`
+	ErrorSeverity   string                `mapstructure:"errorSeverity"`
+	TimeoutSeverity string                `mapstructure:"timeoutSeverity"`
+	Version         string                `mapstructure:"version"`
+	Headers         map[string]string     `mapstructure:"headers"`
+	TLS             RemoteLinterTLSConfig `mapstructure:"tls"`
+}
+
+// RemoteLinterTLSConfig configures the TLS client used for a remote linter.
+type RemoteLinterTLSConfig struct {
+	CAFile   string `mapstructure:"caFile"`
+	CertFile string `mapstructure:"certFile"`
+	KeyFile  string `mapstructure:"keyFile"`
+}
+
 type config struct {
 	Server struct {
 		WebserverPort        int           `mapstructure:"webserverPort"`
@@ -90,6 +113,7 @@ type config struct {
 		Zlint struct {
 			NumGoroutines int `mapstructure:"numGoroutines"`
 		}
+		RemoteLinters []RemoteLinterConfig `mapstructure:"remoteLinters"`
 	}
 	Response struct {
 		DefaultFormat   string `mapstructure:"defaultFormat"`
