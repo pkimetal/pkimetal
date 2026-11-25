@@ -77,6 +77,44 @@ Linter | Severity | Finding | When
 
 Linter workers that encounter an unexpected error whilst linting an input report it as a fatal finding (e.g. `F: Exception: ...`) from that linter and continue serving subsequent requests.
 
+## Severity levels
+
+The severity values are ordered from least to most severe: `meta`, `debug`, `info`, `notice`, `warning`, `error`, `bug`, `fatal`. pkimetal sorts findings in descending order of severity and applies the requested minimum severity inclusively. For example, `severity=error` includes `error`, `bug`, and `fatal` findings. The default minimum is `meta`, which includes all findings.
+
+The values are a ranking used for filtering, not a fully normalized measure of risk across different linter engines. Their usual roles and important variations are:
+
+Severity | Typical use | Important variation
+--- | --- | ---
+`meta` | pkimetal's profile, linter availability, timing, and version information; not a diagnostic finding | Reserved for pkimetal's own metadata and cannot be returned by a remote linter.
+`debug` | Detailed diagnostic information | Some integrations or endpoints may emit it; it is normally useful only when explicitly requested.
+`info` | Informational result or an affirmative check with no issue found | Examples include a key not found to be weak, or a check skipped because there was nothing to inspect.
+`notice` | A noteworthy condition that is not necessarily a lint failure | Pwnedkeys and remote-linter timeouts default to this level; it can also mean a check had limited coverage.
+`warning` | A possible issue, unsupported case, or suggested correction | Examples include unsupported key types and text that a normalizer would change. A violation of an applicable normative `SHOULD`/`SHOULD NOT` requirement is commonly reported at this level.
+`error` | A substantive lint finding | Many integrations use it for violations. A violation of an applicable normative `MUST`/`MUST NOT` requirement is commonly reported at this level.
+`bug` | More severe than `error` in pkimetal's ordering | Some upstream tools use it for their own findings. Pwnedkeys and remote linters use it by default for API/request errors.
+`fatal` | The most severe level; often means the check could not be completed reliably | pkimetal uses it for worker failures, malformed worker output, panics, and invalid input, but an upstream linter can also use it for its own finding. It does not mean the pkimetal process has terminated.
+
+The `SHOULD`/`MUST` mapping is a convention, not a rule enforced by pkimetal. It applies when those capitalized terms are used normatively (as defined by RFC 2119 and RFC 8174), and the requirement applies to the selected profile and artifact. Individual linter engines may map requirements differently or account for permitted exceptions. A `MUST` violation is ordinarily an `error`, not `fatal`; `fatal` is generally for a check or its backend failing.
+
+Integrations do not all assign these levels in the same way:
+
+Integration | How it assigns severity
+--- | ---
+`badkeys` | `info` for a key reported as OK, `warning` for unsupported or missing keys, `error` for a detected vulnerability, and `fatal` for unparseable input or an exception.
+`certlint` and `ctlint` | Translate the levels emitted by their upstream tools. `ctlint` supports `info`, `notice`, `warning`, `error`, `bug`, and `fatal`; `certlint` uses the shared worker-output format. Worker exceptions are reported as `fatal`.
+`x509lint` | Maps upstream `info`, `warning`, and `error`; malformed output is reported as `fatal`.
+`pkilint` | Carries severity values from pkilint's JSON output through to pkimetal; an unknown, missing, or `meta` severity is treated as malformed worker output rather than silently becoming metadata.
+`zlint` | Maps upstream `notice`, `warning`, `error`, and `fatal`; it does not use `debug`, `info`, or `bug` for its lint results.
+`section7` | Maps rule findings to `info`, `warning`, or `error`, and uses `fatal` when the certificate cannot be parsed.
+`paranoid` | Maps lower-level checks to `warning` and higher-level checks to `error`; unsupported checks are `notice`, while an unchecked signature is `info`.
+`ftfy` | Reports invalid text as `error`, proposed text changes as `warning`, and skipped checks as `info`; worker or protocol failures are `fatal`.
+`dwklint` | Uses `info` for a non-weak key, `notice` or `warning` when coverage is limited, `error` for a weak key, and `fatal` for parse or check failures.
+`rocacheck` | Uses `info` when no ROCA weakness is found and `error` when one is found.
+`pwnedkeys` | Uses `info` when a key is not found to be pwned and `error` when it is. API errors default to `bug`; rate limits and timeouts default to `notice`. These defaults are configurable.
+`remotelinter` | Preserves a remote endpoint's finding severity except `meta`, which is reserved. Connection, status, and invalid-response failures use configurable `errorSeverity` (default `bug`, matching pwnedkeys); endpoint timeouts use configurable `timeoutSeverity` (default `notice`).
+
+There are two notable differences in failure handling. First, pkimetal reports worker crashes, timeouts, protocol errors, and in-process panics as `fatal`; network-backed integrations instead return configurable findings, as described above for pwnedkeys and remotelinter. Second, `bug` is above `error`, but it can describe an API failure as well as an upstream linter result. Do not assume the same severity always means the same condition across integrations; configure the remote integration's failure severities to match your policy.
+
 ## Metrics
 
 pkimetal exposes the following Prometheus metrics on its monitoring server, each labelled with `linter_name`:
