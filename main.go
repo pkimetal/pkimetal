@@ -29,7 +29,7 @@ import (
 	_ "github.com/pkimetal/pkimetal/linter/zlint"
 
 	// Operator-configured (see doc/linters/remote.md):
-	_ "github.com/pkimetal/pkimetal/linter/remotelinter"
+	_ "github.com/pkimetal/pkimetal/linter/remote"
 )
 
 func main() {
