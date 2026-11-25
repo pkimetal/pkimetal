@@ -378,12 +378,17 @@ func parseResultToken(linterName, token string) (results []LintingResult, end bo
 		}
 		for _, r := range pr.Results {
 			for _, fd := range r.FindingDescriptions {
+				severity, ok := Severity[strings.ToLower(fd.Severity)]
+				if !ok || severity == SEVERITY_META {
+					err = fmt.Errorf("unexpected severity in worker response: %q", fd.Severity)
+					return
+				}
 				results = append(results, LintingResult{
 					LinterName: linterName,
 					Finding:    fd.Code,
 					Field:      r.NodePath,
 					Code:       fd.Code,
-					Severity:   Severity[strings.ToLower(fd.Severity)],
+					Severity:   severity,
 				})
 			}
 		}

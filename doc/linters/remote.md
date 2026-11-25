@@ -67,6 +67,8 @@ The endpoint responds with HTTP status 200 and a JSON array of findings, in the 
 - `Severity` must be one of `debug`, `info`, `notice`, `warning`, `error`, `bug`, or `fatal`. (`meta` is reserved for pkimetal.)
 - An empty array (`[]`) means that there are no findings.
 
+Severity levels are ranked for response filtering and are not normalized risk scores across linter engines. See [severity levels and integration differences](pkimetal.md#severity-levels).
+
 [`doc/remote-linter-openapi.yaml`](../remote-linter-openapi.yaml) describes this request and response as an OpenAPI document.
 
 ## Failures
@@ -81,7 +83,7 @@ If a request does not succeed, pkimetal reports a single finding from that linte
 
 If pkimetal's own request is cancelled or reaches its deadline first, the call is abandoned and reported as `API request abandoned`, with severity `timeoutSeverity`; this is not counted as a failure of the endpoint.
 
-Each failure is also logged as a warning (`Remote linter request failed`, with the linter's `name` and a `reason`), and counted in the `pkimetal_linter_remote_failures_total` metric, labelled by `linter_name` and `reason` (`connection`, `timeout`, `status`, `response`, or `request`), so that an unavailable endpoint can be noticed and alerted on. While an endpoint is unavailable, each request to it still waits for up to `timeout` (or until a refused connection is reported), so keep `timeout` short.
+Each failure is also logged as a warning (`Remote linter request failed`, with the linter's `name` and a `reason`), and counted in the `pkimetal_linter_remote_failures_total` metric, labelled by `linter_name` and `reason` (`connection`, `timeout`, `status`, `response`, or `request`), so that an unavailable endpoint can be noticed and alerted on. Request failures use configurable `errorSeverity`, which defaults to `bug`, matching pwnedkeys' default for API errors. Timeouts default to `notice`, as they do for pwnedkeys. Configure these levels according to whether an unavailable or slow remote check should block your workflow. While an endpoint is unavailable, each request to it still waits for up to `timeout` (or until a refused connection is reported), so keep `timeout` short.
 
 ## Example
 

@@ -107,6 +107,25 @@ func TestParseResultToken_JSONMultiple(t *testing.T) {
 	}
 }
 
+func TestParseResultToken_JSONRejectsInvalidSeverity(t *testing.T) {
+	tests := []struct {
+		name, finding string
+	}{
+		{"missing", `{"code":"c1"}`},
+		{"empty", `{"severity":"","code":"c1"}`},
+		{"unknown", `{"severity":"unknown","code":"c1"}`},
+		{"meta", `{"severity":"meta","code":"c1"}`},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			token := `{"results":[{"finding_descriptions":[` + tt.finding + `]}]}`
+			if _, _, err := parseResultToken("pkilint", token); err == nil {
+				t.Errorf("expected an error, got nil")
+			}
+		})
+	}
+}
+
 func TestParseResultToken_JSONEmptyResults(t *testing.T) {
 	results, end, err := parseResultToken("pkilint", `{"results":[]}`)
 	if err != nil {
