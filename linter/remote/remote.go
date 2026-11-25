@@ -1,7 +1,7 @@
-// Package remotelinter registers remote linters: external endpoints, declared under
+// Package remote registers remote linters: external endpoints, declared under
 // linter.remoteLinters in config.yaml, that pkimetal sends each artifact to and
 // whose findings it reports.  See doc/linters/remote.md.
-package remotelinter
+package remote
 
 import (
 	"context"
@@ -34,7 +34,7 @@ const (
 func init() {
 	linters, err := buildLinters(config.Config.Linter.RemoteLinters)
 	if err != nil {
-		panic("remotelinter: " + err.Error())
+		panic("remote: " + err.Error())
 	}
 	for _, l := range linters {
 		l.Register() // Register panics if the name clashes with any other linter's.

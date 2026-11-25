@@ -1,4 +1,4 @@
-package remotelinter
+package remote
 
 import (
 	"context"

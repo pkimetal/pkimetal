@@ -108,13 +108,13 @@ Integration | How it assigns severity
 `paranoid` | Maps lower-level checks to `warning` and higher-level checks to `error`; unsupported checks are `notice`, while an unchecked signature is `info`.
 `pkilint` | Carries severity values from pkilint's JSON output through to pkimetal; an unknown, missing, or `meta` severity is treated as malformed worker output rather than silently becoming metadata.
 `pwnedkeys` | Uses `info` when a key is not found to be pwned and `error` when it is. API errors default to `bug`; rate limits and timeouts default to `notice`. These defaults are configurable.
-`remotelinter` | Preserves a remote endpoint's finding severity except `meta`, which is reserved. Connection, status, and invalid-response failures use configurable `errorSeverity` (default `bug`, matching pwnedkeys); endpoint timeouts use configurable `timeoutSeverity` (default `notice`).
+`remote` | Preserves a remote endpoint's finding severity except `meta`, which is reserved. Connection, status, and invalid-response failures use configurable `errorSeverity` (default `bug`, matching pwnedkeys); endpoint timeouts use configurable `timeoutSeverity` (default `notice`).
 `rocacheck` | Uses `info` when no ROCA weakness is found and `error` when one is found.
 `section7` | Maps rule findings to `info`, `warning`, or `error`, and uses `fatal` when the certificate cannot be parsed.
 `x509lint` | Maps upstream `info`, `warning`, and `error`; malformed output is reported as `fatal`.
 `zlint` | Maps upstream `notice`, `warning`, `error`, and `fatal`; it does not use `debug`, `info`, or `bug` for its lint results.
 
-There are two notable differences in failure handling. First, pkimetal reports worker crashes, timeouts, protocol errors, and in-process panics as `fatal`; network-backed integrations instead return configurable findings, as described above for pwnedkeys and remotelinter. Second, `bug` is above `error`, but it can describe an API failure as well as an upstream linter result. Do not assume the same severity always means the same condition across integrations; configure the remote integration's failure severities to match your policy.
+There are two notable differences in failure handling. First, pkimetal reports worker crashes, timeouts, protocol errors, and in-process panics as `fatal`; network-backed integrations instead return configurable findings, as described above for pwnedkeys and remote. Second, `bug` is above `error`, but it can describe an API failure as well as an upstream linter result. Do not assume the same severity always means the same condition across integrations; configure the remote integration's failure severities to match your policy.
 
 ## Metrics
 
