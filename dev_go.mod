@@ -66,7 +66,7 @@ require (
 	k8s.io/klog/v2 v2.140.0 // indirect
 	modernc.org/libc v1.82.13 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
-	modernc.org/memory v1.13.0 // indirect
+	modernc.org/memory v1.13.1 // indirect
 	modernc.org/sqlite v1.63.0 // indirect
 	zombiezen.com/go/sqlite v1.4.2 // indirect
 )
