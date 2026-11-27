@@ -81,15 +81,15 @@ linter:
     numProcesses: 2  # Run certlint in 2 processes (instead of the default 1).
   ftfy:
     numProcesses: 0  # Disable ftfy.
-  pkilint:
-    numProcesses: 4  # Run pkilint in 4 processes (instead of the default 1).
-    pythonDir: "/root/pkilint"  # Run pkilint from this directory (instead of autodetecting the directory using pipx).
   paranoid:
     numProcesses: 1
     enableCACertificates: true
     enableLeafCertificates: false
     enableCRLs: false
     enableOCSPResponses: false
+  pkilint:
+    numProcesses: 4  # Run pkilint in 4 processes (instead of the default 1).
+    pythonDir: "/root/pkilint"  # Run pkilint from this directory (instead of autodetecting the directory using pipx).
   section7:
     numGoroutines: 1  # Enable section7 (default is 0, disabled).
     profilesDir: "/config/profiles"  # Directory containing your CPS certificate profiles.

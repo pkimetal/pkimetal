@@ -28,7 +28,7 @@ import (
 	_ "github.com/pkimetal/pkimetal/linter/x509lint"
 	_ "github.com/pkimetal/pkimetal/linter/zlint"
 
-	// Operator-configured (see doc/linters/remote.md):
+	// Remote: (Operator-configured, see doc/linters/remote.md):
 	_ "github.com/pkimetal/pkimetal/linter/remote"
 )
 

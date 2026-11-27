@@ -81,10 +81,6 @@ type config struct {
 			NumProcesses int    `mapstructure:"numProcesses"`
 			PythonDir    string `mapstructure:"pythonDir"`
 		}
-		Pkilint struct {
-			NumProcesses int    `mapstructure:"numProcesses"`
-			PythonDir    string `mapstructure:"pythonDir"`
-		}
 		Paranoid struct {
 			NumProcesses           int    `mapstructure:"numProcesses"`
 			PythonDir              string `mapstructure:"pythonDir"`
@@ -93,6 +89,10 @@ type config struct {
 			EnableCRLs             bool   `mapstructure:"enableCRLs"`
 			EnableOCSPResponses    bool   `mapstructure:"enableOCSPResponses"`
 		}
+		Pkilint struct {
+			NumProcesses int    `mapstructure:"numProcesses"`
+			PythonDir    string `mapstructure:"pythonDir"`
+		}
 		Pwnedkeys struct {
 			NumGoroutines     int           `mapstructure:"numGoroutines"`
 			APIErrorSeverity  string        `mapstructure:"apiErrorSeverity"`
@@ -100,7 +100,8 @@ type config struct {
 			TimeoutSeverity   string        `mapstructure:"timeoutSeverity"`
 			HTTPTimeout       time.Duration `mapstructure:"httpTimeout"`
 		}
-		Rocacheck struct {
+		RemoteLinters []RemoteLinterConfig `mapstructure:"remoteLinters"`
+		Rocacheck     struct {
 			NumGoroutines int `mapstructure:"numGoroutines"`
 		}
 		Section7 struct {
@@ -113,7 +114,6 @@ type config struct {
 		Zlint struct {
 			NumGoroutines int `mapstructure:"numGoroutines"`
 		}
-		RemoteLinters []RemoteLinterConfig `mapstructure:"remoteLinters"`
 	}
 	Response struct {
 		DefaultFormat   string `mapstructure:"defaultFormat"`
@@ -241,14 +241,14 @@ func initViper() error {
 	viper.SetDefault("linter.dwklint.blocklistDBPath", "")
 	viper.SetDefault("linter.ftfy.numProcesses", 1)
 	viper.SetDefault("linter.ftfy.pythonDir", "autodetect")
-	viper.SetDefault("linter.pkilint.numProcesses", 1)
-	viper.SetDefault("linter.pkilint.pythonDir", "autodetect")
 	viper.SetDefault("linter.paranoid.numProcesses", 1)
 	viper.SetDefault("linter.paranoid.pythonDir", "autodetect")
 	viper.SetDefault("linter.paranoid.enableCACertificates", true)
 	viper.SetDefault("linter.paranoid.enableLeafCertificates", false)
 	viper.SetDefault("linter.paranoid.enableCRLs", false)
 	viper.SetDefault("linter.paranoid.enableOCSPResponses", false)
+	viper.SetDefault("linter.pkilint.numProcesses", 1)
+	viper.SetDefault("linter.pkilint.pythonDir", "autodetect")
 	viper.SetDefault("linter.pwnedkeys.numGoroutines", 0)
 	viper.SetDefault("linter.pwnedkeys.apiErrorSeverity", "bug")
 	viper.SetDefault("linter.pwnedkeys.rateLimitSeverity", "notice")
