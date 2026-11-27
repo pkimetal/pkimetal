@@ -75,9 +75,9 @@ func TestBuildLinters_Defaults(t *testing.T) {
 	if backend.errorSeverity != linter.SEVERITY_BUG || backend.timeoutSeverity != linter.SEVERITY_NOTICE {
 		t.Errorf("severities: got %v / %v, want bug / notice", backend.errorSeverity, backend.timeoutSeverity)
 	}
-	want := slices.Sorted(slices.Values(slices.Concat(linter.CrlProfileIDs, linter.OcspProfileIDs)))
+	want := slices.Sorted(slices.Values(slices.Concat(linter.CrlProfileIDs, linter.OcspResponseProfileIDs)))
 	if !slices.Equal(l.Unsupported, want) {
-		t.Errorf("Unsupported: got %v, want the CRL and OCSP profiles %v", l.Unsupported, want)
+		t.Errorf("Unsupported: got %v, want the CRL and OCSP Response profiles %v", l.Unsupported, want)
 	}
 }
 

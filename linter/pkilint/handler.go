@@ -177,7 +177,7 @@ def lint_crl(pem_data, crl_profile_id):
 
 
 # lint_ocsp_response:
-ocspresponse_profile_ids = {` + linter.ProfileIDList(linter.OcspProfileIDs) + `}
+ocspresponse_profile_ids = {` + linter.ProfileIDList(linter.OcspResponseProfileIDs) + `}
 ocsp_doc_validator = ocsp.create_pkix_ocsp_response_validator_container(
 	[ocsp.create_response_decoder(), pkix.create_attribute_decoder(name.ATTRIBUTE_TYPE_MAPPINGS), pkix.create_extension_decoder(extension.EXTENSION_MAPPINGS)], []
 )
