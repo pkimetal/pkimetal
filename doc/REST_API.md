@@ -66,4 +66,6 @@ Browse (i.e., send a GET request) to any of the POST endpoints.
 
 ## Health endpoints
 
+`/livez` returns HTTP 503 when the most recently completed lint POST returned HTTP 5xx, when a lint POST timed out, or when an in-process linter is stuck. A subsequent completed request returning below 500 restores liveness; client errors (4xx) count as a healthy response. Linter findings do not affect liveness when returned with HTTP 200.
+
 `/readyz` returns HTTP 503 when a request has recently timed out or when any enabled linter's request queue is more than 90% full. Configure the queue threshold with `server.readyzLinterQueueThresholdPerc` (an integer percentage from 0 to 100; default `90`). Each linter has its own queue, so readiness changes when any one queue exceeds the threshold.
