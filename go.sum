@@ -14,10 +14,10 @@ github.com/cps-kit/section7 v0.1.0 h1:9WmArBEGkPLw9Sm/jpr34e6ELpXsAio/F8L2ujhrMD
 github.com/cps-kit/section7 v0.1.0/go.mod h1:QAM2nXqKpy/xL5tMts8XadCwBL9y4UP8EnK221DSpe0=
 github.com/crtsh/ccadb_data v1.20261126.44611 h1:Z1Hxm7Q7uCtBnQVvB92kSVvVPbg5HNQGQ9op2X0KRwA=
 github.com/crtsh/ccadb_data v1.20261126.44611/go.mod h1:7CKi+iUguHfFbeHyHN4vFuT1BPO4D+6dtu5nHPn3BTE=
-github.com/crtsh/ctlint v0.0.0-20261124101003-82f12a3ba816 h1:nuWy4BFrZ+qecFCKyX8q90bNJyEjgrvLYXuvZh5m6+4=
-github.com/crtsh/ctlint v0.0.0-20261124101003-82f12a3ba816/go.mod h1:ayG3LFNdRyC0WDbANtu605Ym19ZWpy9foGDtQXbKqc4=
-github.com/crtsh/ctloglists v1.20261119.151800 h1:zkT109AHK6/oE8ccCiDLcvzCM/i+vNtSOEbglxWQRXI=
-github.com/crtsh/ctloglists v1.20261119.151800/go.mod h1:f5b0NKoGPOkIuvn8xGFMrxlolQbw15/gKcvN2AwaDgg=
+github.com/crtsh/ctlint v0.0.0-20261127113225-94c5ac59712d h1:3eq+dFiyyTrZTt1o6uC6g+RahNyuMeOnUX7OW1012QU=
+github.com/crtsh/ctlint v0.0.0-20261127113225-94c5ac59712d/go.mod h1:GiMFw5YEJwmDHFGTRL0OqH95jKr6f2gauc0eF31xUuk=
+github.com/crtsh/ctloglists v1.20261127.113000 h1:QxVbQ29awUPWg8LboMygeircAQPHJY9QAcdBw9lb+L4=
+github.com/crtsh/ctloglists v1.20261127.113000/go.mod h1:f5b0NKoGPOkIuvn8xGFMrxlolQbw15/gKcvN2AwaDgg=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/digicert/pkilint v0.13.3 h1:jOuBh80LhIjkz+F7HsCLr1PF1ebA9DvWpBq6uHH9qu8=
