@@ -193,7 +193,7 @@ func POST(fhctx *fasthttp.RequestCtx, path string) int {
 			status = sendTEXTResponse(fhctx, lrespFiltered)
 		}
 		fhctx.SetStatusCode(status)
-		doneChan <- 0
+		doneChan <- status
 	}()
 
 	return health.CompleteRequest(ctxWithDeadline, doneChan)

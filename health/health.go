@@ -33,15 +33,30 @@ func UpdateLatestTimestamps(nonErrorTimestamp *time.Time, errorTimestamp *time.T
 	timestampMutex.Unlock()
 }
 
+// CompleteRequest records the HTTP status produced by the request, or records
+// a failed and busy request if its deadline expires.
 func CompleteRequest(ctxWithDeadline context.Context, doneChan chan int) int {
 	select {
 	case reqStatus := <-doneChan: // Request completed.
+		if ctxWithDeadline.Err() != nil {
+			return recordTimedOutRequest()
+		}
+		now := time.Now()
+		if reqStatus >= fasthttp.StatusInternalServerError {
+			UpdateLatestTimestamps(nil, &now, nil)
+		} else {
+			UpdateLatestTimestamps(&now, nil, nil)
+		}
 		return reqStatus
 	case <-ctxWithDeadline.Done(): // Request timed out.
-		now := time.Now()
-		UpdateLatestTimestamps(nil, nil, &now) // Busy.
-		return -1
+		return recordTimedOutRequest()
 	}
+}
+
+func recordTimedOutRequest() int {
+	now := time.Now()
+	UpdateLatestTimestamps(nil, &now, &now)
+	return -1
 }
 
 func IsAlive(ctx *fasthttp.RequestCtx) bool {
