@@ -44,19 +44,19 @@ func init() {
 	}).Register()
 }
 
-func unsupportedProfiles(enableCA, enableLeaf, enableCRL, enableOCSP bool) []linter.ProfileId {
+func unsupportedProfiles(enableCA, enableLeaf, enableCRL, enableOCSPResponse bool) []linter.ProfileId {
 	var unsupported []linter.ProfileId
 	for id := range linter.AllProfiles {
 		var enabled bool
 		switch {
 		case id == linter.AUTODETECT:
-			enabled = enableCA || enableLeaf || enableCRL || enableOCSP
+			enabled = enableCA || enableLeaf || enableCRL || enableOCSPResponse
 		case slices.Contains(linter.RootProfileIDs, id), slices.Contains(linter.SubordinateProfileIDs, id):
 			enabled = enableCA
 		case slices.Contains(linter.CrlProfileIDs, id):
 			enabled = enableCRL
-		case slices.Contains(linter.OcspProfileIDs, id):
-			enabled = enableOCSP
+		case slices.Contains(linter.OcspResponseProfileIDs, id):
+			enabled = enableOCSPResponse
 		default:
 			enabled = enableLeaf
 		}

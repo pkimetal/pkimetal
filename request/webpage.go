@@ -256,7 +256,7 @@ func APIWebpage(fhctx *fasthttp.RequestCtx, endpoint string) {
 				isShown = true
 			}
 		case ENDPOINTSTRING_LINTOCSP, ENDPOINTSTRING_LINTTBSOCSP:
-			if linter.ProfileId(id) == linter.AUTODETECT || slices.Contains(linter.OcspProfileIDs, linter.ProfileId(id)) {
+			if linter.ProfileId(id) == linter.AUTODETECT || slices.Contains(linter.OcspResponseProfileIDs, linter.ProfileId(id)) {
 				isShown = true
 			}
 		}

@@ -222,7 +222,7 @@ func (ri *RequestInfo) ProfileMatchesEndpoint() bool {
 	case ENDPOINT_LINTCRL, ENDPOINT_LINTTBSCRL:
 		return slices.Contains(linter.CrlProfileIDs, ri.profileId)
 	case ENDPOINT_LINTOCSP, ENDPOINT_LINTTBSOCSP:
-		return slices.Contains(linter.OcspProfileIDs, ri.profileId)
+		return slices.Contains(linter.OcspResponseProfileIDs, ri.profileId)
 	default:
 		return !slices.Contains(linter.NonCertificateProfileIDs, ri.profileId)
 	}

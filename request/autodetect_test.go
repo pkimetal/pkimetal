@@ -19,7 +19,7 @@ func TestGetProfile_Explicit(t *testing.T) {
 	}
 }
 
-func TestGetProfile_OCSPAutodetect(t *testing.T) {
+func TestGetProfile_OCSPResponseAutodetect(t *testing.T) {
 	for _, ep := range []Endpoint{ENDPOINT_LINTOCSP, ENDPOINT_LINTTBSOCSP} {
 		ri := RequestInfo{endpoint: ep}
 		if !ri.GetProfile("") || ri.profileId != linter.RFC6960_OCSPRESPONSE {

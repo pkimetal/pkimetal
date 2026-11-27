@@ -197,7 +197,7 @@ func (l *Zlint) HandleRequest(ctx context.Context, lin *linter.LinterInstance, l
 		registry = &defaultRegistry
 	}
 
-	if slices.Contains(linter.OcspProfileIDs, lreq.ProfileId) {
+	if slices.Contains(linter.OcspResponseProfileIDs, lreq.ProfileId) {
 		return lintOCSPResponse(lreq, registry)
 	} else if slices.Contains(linter.CrlProfileIDs, lreq.ProfileId) {
 		return lintCRL(lreq, registry)

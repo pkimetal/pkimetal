@@ -251,7 +251,7 @@ var (
 	}
 
 	AllProfilesOrdered                                                               []Profile
-	CrlProfileIDs, OcspProfileIDs, RootProfileIDs, SubordinateProfileIDs             []ProfileId
+	CrlProfileIDs, OcspResponseProfileIDs, RootProfileIDs, SubordinateProfileIDs     []ProfileId
 	SbrLeafProfileIDs, TbrTevgLeafProfileIDs, TbrTevgCertificateProfileIDs           []ProfileId
 	TbrArlProfileIDs                                                                 = []ProfileId{TBR_ARL}
 	NonTbrTevgCertificateProfileIDs, NonCabforumProfileIDs, NonCertificateProfileIDs []ProfileId
@@ -266,7 +266,7 @@ func init() {
 		if strings.HasSuffix(v.Name, "_crl") || strings.HasSuffix(v.Name, "_arl") {
 			CrlProfileIDs = append(CrlProfileIDs, k)
 		} else if strings.HasSuffix(v.Name, "_ocspresponse") {
-			OcspProfileIDs = append(OcspProfileIDs, k)
+			OcspResponseProfileIDs = append(OcspResponseProfileIDs, k)
 		} else if strings.Contains(v.Name, "_root_") || strings.HasSuffix(v.Name, "_root") {
 			RootProfileIDs = append(RootProfileIDs, k)
 		} else if strings.Contains(v.Name, "_subordinate_") || strings.HasSuffix(v.Name, "_subordinate") || strings.Contains(v.Name, "_cross_") {
@@ -283,7 +283,7 @@ func init() {
 	// Second pass.  NonCabforumProfileIDs intersects with other lists, and TbrTevgCertificateProfileIDs requires CrlProfileIDs to be populated first.
 	for k, v := range AllProfiles {
 		// These are independent (not else-if) because QWAC-l profiles are both CABForum EV compliant and ETSI QWAC compliant, so they belong in both buckets.
-		if (strings.HasPrefix(v.Name, "tbr_") || strings.HasPrefix(v.Name, "tevg_") || (strings.HasPrefix(v.Name, "etsi_leaf_tlsserver_") && !strings.Contains(v.Name, "person"))) && !slices.Contains(CrlProfileIDs, k) && !slices.Contains(OcspProfileIDs, k) {
+		if (strings.HasPrefix(v.Name, "tbr_") || strings.HasPrefix(v.Name, "tevg_") || (strings.HasPrefix(v.Name, "etsi_leaf_tlsserver_") && !strings.Contains(v.Name, "person"))) && !slices.Contains(CrlProfileIDs, k) && !slices.Contains(OcspResponseProfileIDs, k) {
 			TbrTevgCertificateProfileIDs = append(TbrTevgCertificateProfileIDs, k)
 		}
 		if !strings.HasPrefix(v.Name, "tbr_") && !strings.HasPrefix(v.Name, "tevg_") && !strings.HasPrefix(v.Name, "sbr_") && !strings.HasPrefix(v.Name, "csbr_") {
@@ -302,8 +302,8 @@ func init() {
 		}
 	}
 
-	// Third pass.  NonCertificateProfileIDs requires CrlProfileIDs and OcspProfileIDs to be populated first, and intersects with other lists.
-	NonCertificateProfileIDs = append(CrlProfileIDs, OcspProfileIDs...)
+	// Third pass.  NonCertificateProfileIDs requires CrlProfileIDs and OcspResponseProfileIDs to be populated first, and intersects with other lists.
+	NonCertificateProfileIDs = append(CrlProfileIDs, OcspResponseProfileIDs...)
 
 	// Fourth pass.  NonTbrTevgCertificateProfileIDs requires TbrTevgCertificateProfileIDs to be populated first.
 	for k := range AllProfiles {

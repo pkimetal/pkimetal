@@ -38,9 +38,9 @@ var _ = func() bool {
 
 func TestUnsupportedProfiles(t *testing.T) {
 	for mask := 0; mask < 16; mask++ {
-		enableCA, enableLeaf, enableCRL, enableOCSP := mask&1 != 0, mask&2 != 0, mask&4 != 0, mask&8 != 0
-		t.Run(fmt.Sprintf("ca=%t/leaf=%t/crl=%t/ocsp=%t", enableCA, enableLeaf, enableCRL, enableOCSP), func(t *testing.T) {
-			unsupported := unsupportedProfiles(enableCA, enableLeaf, enableCRL, enableOCSP)
+		enableCA, enableLeaf, enableCRL, enableOCSPResponse := mask&1 != 0, mask&2 != 0, mask&4 != 0, mask&8 != 0
+		t.Run(fmt.Sprintf("ca=%t/leaf=%t/crl=%t/ocspresponse=%t", enableCA, enableLeaf, enableCRL, enableOCSPResponse), func(t *testing.T) {
+			unsupported := unsupportedProfiles(enableCA, enableLeaf, enableCRL, enableOCSPResponse)
 			for id, profile := range linter.AllProfiles {
 				var wantEnabled bool
 				switch {
@@ -49,7 +49,7 @@ func TestUnsupportedProfiles(t *testing.T) {
 				case strings.HasSuffix(profile.Name, "_crl"), strings.HasSuffix(profile.Name, "_arl"):
 					wantEnabled = enableCRL
 				case strings.HasSuffix(profile.Name, "_ocspresponse"):
-					wantEnabled = enableOCSP
+					wantEnabled = enableOCSPResponse
 				case strings.Contains(profile.Name, "_root"), strings.Contains(profile.Name, "_subordinate"), strings.Contains(profile.Name, "_cross_"):
 					wantEnabled = enableCA
 				default:
@@ -165,7 +165,7 @@ func TestWorkerIntegration(t *testing.T) {
 	if err != nil {
 		t.Fatalf("create CRL: %v", err)
 	}
-	makeOCSP := func(embedded bool) []byte {
+	makeOCSPResponse := func(embedded bool) []byte {
 		t.Helper()
 		response := ocsp.Response{
 			Status:       ocsp.Good,
@@ -214,12 +214,12 @@ func TestWorkerIntegration(t *testing.T) {
 			wantCodes: []string{"no_public_key", "signature_not_checked"}, exactCodes: true,
 		},
 		{
-			name: "ocsp_with_signer", pemType: "OCSP RESPONSE", der: makeOCSP(true),
+			name: "ocsp_response_with_signer", pemType: "OCSP RESPONSE", der: makeOCSPResponse(true),
 			wantCodes: []string{"paranoid.CheckWeakECPrivateKey"}, absentCodes: []string{"signature_not_checked"},
 			fieldPrefix: "certificates[0]",
 		},
 		{
-			name: "ocsp_without_signer", pemType: "OCSP RESPONSE", der: makeOCSP(false),
+			name: "ocsp_response_without_signer", pemType: "OCSP RESPONSE", der: makeOCSPResponse(false),
 			wantCodes: []string{"no_public_key", "signature_not_checked"}, exactCodes: true,
 		},
 		{

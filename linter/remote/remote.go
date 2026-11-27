@@ -19,9 +19,9 @@ import (
 
 // Values accepted in a remote linter's "artifacts" list, and sent as "artifact".
 const (
-	ArtifactCertificate = "certificate"
-	ArtifactCRL         = "crl"
-	ArtifactOCSP        = "ocsp"
+	ArtifactCertificate  = "certificate"
+	ArtifactCRL          = "crl"
+	ArtifactOCSPResponse = "ocsp"
 )
 
 const (
@@ -197,9 +197,9 @@ func unsupportedProfiles(artifacts []string) ([]linter.ProfileId, error) {
 	}
 	for _, artifact := range artifacts {
 		switch artifact {
-		case ArtifactCertificate, ArtifactCRL, ArtifactOCSP:
+		case ArtifactCertificate, ArtifactCRL, ArtifactOCSPResponse:
 		default:
-			return nil, fmt.Errorf("unknown artifact %q (want %s, %s or %s)", artifact, ArtifactCertificate, ArtifactCRL, ArtifactOCSP)
+			return nil, fmt.Errorf("unknown artifact %q (want %s, %s or %s)", artifact, ArtifactCertificate, ArtifactCRL, ArtifactOCSPResponse)
 		}
 	}
 
@@ -217,8 +217,8 @@ func artifactOf(id linter.ProfileId) string {
 	switch {
 	case slices.Contains(linter.CrlProfileIDs, id):
 		return ArtifactCRL
-	case slices.Contains(linter.OcspProfileIDs, id):
-		return ArtifactOCSP
+	case slices.Contains(linter.OcspResponseProfileIDs, id):
+		return ArtifactOCSPResponse
 	default:
 		return ArtifactCertificate
 	}
