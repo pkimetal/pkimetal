@@ -118,10 +118,11 @@ There are two notable differences in failure handling. First, pkimetal reports w
 
 ## Metrics
 
-pkimetal exposes the following Prometheus metrics on its monitoring server, each labelled with `linter_name`:
+pkimetal exposes the following Prometheus metrics on its monitoring server. Labels are noted in the descriptions.
 
 Metric | Type | Description
 --- | --- | ---
 `pkimetal_linter_queue_time` | summary | Seconds that a request waited in the linter's queue.
 `pkimetal_linter_processing_time` | summary | Seconds that the linter took to process a request.
 `pkimetal_linter_stuck_instances` | gauge | Number of the linter's in-process instances that are [stuck](#stuck-in-process-linters). Always 0 for linters that run as worker processes.
+`pkimetal_linter_remote_request_failures_total` | counter | Failed requests to [remote linters](./remote.md), labelled by `linter_name` and `reason`.

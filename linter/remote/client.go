@@ -45,7 +45,7 @@ const (
 var failuresTotal = promauto.NewCounterVec(prometheus.CounterOpts{
 	Namespace: config.ApplicationNamespace,
 	Subsystem: "linter",
-	Name:      "remote_failures_total",
+	Name:      "remote_request_failures_total",
 	Help:      "Number of failed requests to remote linter endpoints.",
 }, []string{"linter_name", "reason"})
 
