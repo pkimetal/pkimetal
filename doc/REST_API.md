@@ -63,3 +63,7 @@ Endpoint | Description
 ### Web forms
 
 Browse (i.e., send a GET request) to any of the POST endpoints.
+
+## Health endpoints
+
+`/readyz` returns HTTP 503 when a request has recently timed out or when any enabled linter's request queue is more than 90% full. Configure the queue threshold with `server.readyzLinterQueueThresholdPerc` (an integer percentage from 0 to 100; default `90`). Each linter has its own queue, so readiness changes when any one queue exceeds the threshold.
