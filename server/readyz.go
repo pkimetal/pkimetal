@@ -6,6 +6,7 @@ import (
 
 	"github.com/pkimetal/pkimetal/config"
 	"github.com/pkimetal/pkimetal/health"
+	"github.com/pkimetal/pkimetal/linter"
 	"github.com/pkimetal/pkimetal/utils"
 
 	"github.com/valyala/fasthttp"
@@ -23,7 +24,7 @@ func readyz(ctx *fasthttp.RequestCtx) int {
 	doneChan := make(chan int, 1)
 	go func() {
 		statusCode := fasthttp.StatusOK
-		if !health.IsReady(ctx) {
+		if !health.IsReady(ctx) || linterQueueExceedsThreshold(linter.Linters, config.Config.Server.ReadyzLinterQueueThresholdPerc) {
 			statusCode = fasthttp.StatusServiceUnavailable
 		}
 
@@ -46,4 +47,16 @@ func readyz(ctx *fasthttp.RequestCtx) int {
 	case <-ctxWithDeadline.Done():
 		return -1 // Request timed out.
 	}
+}
+
+func linterQueueExceedsThreshold(linters linter.LinterSlice, thresholdPerc int) bool {
+	for _, lin := range linters {
+		if lin == nil || lin.ReqChannel == nil || cap(lin.ReqChannel) == 0 {
+			continue
+		}
+		if float64(len(lin.ReqChannel))*100/float64(cap(lin.ReqChannel)) > float64(thresholdPerc) {
+			return true
+		}
+	}
+	return false
 }
